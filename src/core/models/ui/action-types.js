@@ -1,0 +1,1 @@
+export const ADD_VISIBLE_ITEM = 'ADD_VISIBLE_ITEM';

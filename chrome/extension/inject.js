@@ -1,52 +1,31 @@
 import React from 'react';
 import { render } from 'react-dom';
-import Dock from 'react-dock';
+import { Provider } from 'react-redux';
+import { Store } from 'react-chrome-redux';
+import App from '../../src/containers/App';
 
-class InjectApp extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { isVisible: false };
+function inject() {
+  if(document.getElementById('dsxray')) {
+    return;
   }
 
-  componentDidMount() {
-
-  }
-
-  buttonOnClick = () => {
-    this.setState({ isVisible: !this.state.isVisible });
-  };
-
-  render() {
-    return (
-      <div>
-        <button onClick={this.buttonOnClick}>
-          Open App
-        </button>
-        <Dock
-          position="right"
-          dimMode="transparent"
-          defaultSize={0.4}
-          isVisible={this.state.isVisible}
-        >
-          <iframe
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-            frameBorder={0}
-            allowTransparency="true"
-            src={chrome.extension.getURL(`inject.html?protocol=${location.protocol}`)}
-          />
-        </Dock>
-      </div>
+  const el = document.createElement('div');
+  el.id = 'dsxray'
+  document.body.appendChild(el);
+  const store = new Store({ portName: 'DSXray'});
+  store.ready().then(() => {
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>, 
+      el
     );
-  }
+  })
 }
 
-window.addEventListener('load', () => {
-  const injectDOM = document.createElement('div');
-  injectDOM.className = 'inject-react-example';
-  injectDOM.style.textAlign = 'center';
-  document.body.appendChild(injectDOM);
-  render(<InjectApp />, injectDOM);
-});
+window.addEventListener('load', inject);
+if (document.readyState === 'complete') inject();
+
+// Scrape webpage for styles
+// Load design system (or find a suitable system)
+// Group styles into

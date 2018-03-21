@@ -1,10 +1,10 @@
 {
   "version": "0.0.0",
-  "name": "react-chrome-extension-example",
+  "name": "design-system-xray",
   "manifest_version": 2,
-  "description": "Example for react-chrome-extension-boilerplate",
+  "description": "Provide insights into design systems.",
   "browser_action": {
-    "default_title": "React Chrome Extension Example",
+    "default_title": "Design System Xray",
     "default_icon": {
       "16": "img/icon-16.png",
       "48": "img/icon-48.png",
@@ -22,6 +22,6 @@
   "background": {
     "page": "background.html"
   },
-  "permissions": [ "activeTab", "contextMenus", "management", "tabs", "storage", "https://github.com/*" ],
+  "permissions": [ "activeTab", "contextMenus", "management", "tabs", "storage", "<all_urls>" ],
   "content_security_policy": "default-src 'self'; script-src 'self' http://localhost:3000 https://localhost:3000 'unsafe-eval'; connect-src http://localhost:3000 https://localhost:3000; style-src * 'unsafe-inline' 'self' blob:; img-src 'self' data:;"
 }
