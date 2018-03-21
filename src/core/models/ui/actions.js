@@ -1,8 +1,10 @@
 import * as types from './action-types';
+import difference from 'lodash/difference';
 
-export function addVisibleItem(item) {
+export function toggleVisible(arr) {
+  console.log('toggleVisible', arr);
   return {
-    type: types.ADD_VISIBLE_ITEM,
-    payload: item,
+    type: types.TOGGLE_VISIBLE,
+    payload: arr,
   }
 }

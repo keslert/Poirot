@@ -115,7 +115,7 @@ const typography = {
       */
       label: 'Copy 4',
       fontFamily: 'Apercu',
-      fontWeight: 400,
+      fontWeight: 200, // This is not in the documentation
       fontSize: '12px',
       lineHeight: '20px',
     },

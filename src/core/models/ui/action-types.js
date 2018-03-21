@@ -1,1 +1,1 @@
-export const ADD_VISIBLE_ITEM = 'ADD_VISIBLE_ITEM';
+export const TOGGLE_VISIBLE = 'TOGGLE_VISIBLE';

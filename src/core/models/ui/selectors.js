@@ -2,6 +2,6 @@ export function getUI(state) {
   return state.ui;
 }
 
-export function getVisibleItems(state) {
+export function getVisible(state) {
   return getUI(state).visible;
 }

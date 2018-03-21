@@ -7,6 +7,8 @@ import {
   getVisibleNodes,
   getTextNodes,
 } from '../core/utils/html';
+import { getVisible } from '../core/models/ui/selectors';
+import { getTypographyCategories } from '../core/models/page/selectors';
 
 import { addPage } from '../core/models/page/actions';
 import { parseAndTagPage } from '../core/utils/ds';
@@ -26,6 +28,7 @@ class Page extends React.Component {
 
   render() {
     const styles = [
+      ...this.props.visible.map(key => ({ selector: `.${key}`, css: 'background: #aaeeaa !important; }' }))
       // { selector: '*', css: 'background: transparent !important; color: #444 !important; }' },
       // { selector: 'img', css: 'background: #aae !important; object-position: -99999px 99999px; }' },
       // { selector: 'svg', css: 'background: #f171ea !important; fill: transparent !important; color: transparent !important' },
@@ -36,6 +39,7 @@ class Page extends React.Component {
 
     return (
       <div>
+        
         {styles.map(({selector, css}) => 
           <Style 
             key={selector}
@@ -48,8 +52,13 @@ class Page extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  visible: getVisible(state),
+  typography: getTypographyCategories(state),
+})
+
 const mapDispatchToProps = {
   addPage,
 }
 
-export default connect(undefined, mapDispatchToProps)(Page);
+export default connect(mapStateToProps, mapDispatchToProps)(Page);

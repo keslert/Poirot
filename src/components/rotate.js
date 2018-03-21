@@ -1,6 +1,11 @@
+import PropTypes from 'prop-types';
 import { Box } from 'rebass'
 
-export default Box.extend(`
-  transform: rotateX(${props => props.rotated ? 90 : 0});
+const Rotate = Box.extend`
+  transform: rotateZ(${props => props.rotated ? 90 : 0}deg);
   transition: transform .2s;
-`)
+`
+Rotate.propTypes = {
+  rotated: PropTypes.bool,
+}
+export default Rotate;

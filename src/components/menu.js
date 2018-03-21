@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Flex, Box, Text } from 'rebass';
 import { getActiveDS } from '../core/models/ds/selectors';
-import { getTypographyGroups } from '../core/models/page/selectors';
-import { getVisibleItems } from '../core/models/ui/selectors';
+import { getTypographyCategories } from '../core/models/page/selectors';
+import { toggleVisible } from '../core/models/ui/actions';
+import { getVisible } from '../core/models/ui/selectors';
 import MenuItem from './menu-item';
 import TypographyTable from './typography-table';
 
@@ -40,26 +41,26 @@ class Menu extends React.Component {
   }
 
   render() {
-    const { typography } = this.props; 
     return (
       <SMenu>
         {this.renderHeader()}
-        <TypographyTable typography={typography} />
+        <TypographyTable 
+          toggleVisible={this.props.toggleVisible}
+          typography={this.props.typography} 
+          visible={this.props.visible}
+          />
       </SMenu>
     )
   }
 }
 
-const mapStateToProps = createSelector(
-  getActiveDS,
-  getTypographyGroups,
-  (ds, typography) => ({
-    typography,
-  })
-)
+const mapStateToProps = state => ({
+  visible: getVisible(state),
+  typography: getTypographyCategories(state),
+})
 
 const mapDispatchToProps = {
-
+  toggleVisible,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);
