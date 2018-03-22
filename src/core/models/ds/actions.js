@@ -8,10 +8,10 @@ export function addDS(ds) {
   }
 }
 
-export function updateDSTypography(keys, changes) {
+export function updateDSTypography(keys, changeset) {
   return {
-    type: types.UPDATE_DS_TYPOGRAPHY,
-    payload: {keys, changes}
+    type: types.OVERWRITE_DS_TYPOGRAPHY,
+    payload: {keys, changeset}
   }
 }
 
@@ -20,6 +20,7 @@ export function buildDSObject(ds) {
     _original: JSON.parse(JSON.stringify(ds)),
     typography: {
       ...ds.typography,
+      overwrites: {},
       categories: [
         ...ds.typography.categories,
         {label: 'Unknown', groups: []},

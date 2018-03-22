@@ -1,21 +1,20 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import stylis from 'stylis'
+import toCss from 'to-css'
 
 class Style extends React.Component {
   
   static propTypes = {
-    css: PropTypes.string.isRequired,
-    selector: PropTypes.string.isRequired,
+    css: PropTypes.object.isRequired,
   }
 
   state = { 
-    rules: stylis(this.props.selector, this.props.css)
+    rules: toCss(this.props.css)
   }
 
   componentWillReceiveProps(next) {
     if (next.css === this.props.css) return
-    const rules = stylis(next.selector, next.css)
+    const rules = toCss(next.css)
     this.setState({rules})
   }
 

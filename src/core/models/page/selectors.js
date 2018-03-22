@@ -26,7 +26,10 @@ export const getTypographyCategories = createSelector(
       key: cat.label.replace(/ /g, '-').toLowerCase(),
       groups: cat.groups.map(group => {
         const key = getTypographyGroupKey(group);
-        return {...group, key,
+        return {
+          ...group,
+          ...(ds.typography.overwrites[key] || {}),
+          key,
           nodes: textNodes.filter(n => n.group === key)
         }  
       })
@@ -34,12 +37,17 @@ export const getTypographyCategories = createSelector(
 
     const usedNodes = _.flatMapDeep(categories, cat => cat.groups.map(g => g.nodes))
     const unknownNodes = _.difference(textNodes, usedNodes);
-    const unknownGroups = _.chain(unknownNodes).groupBy('group').map(nodes => ({
-      ...nodes[0].style,
-      key: getTypographyGroupKey(nodes[0].style),
-      label: `${nodes[0].style.fontFamily} ${nodes[0].style.fontWeight} ${nodes[0].style.fontSize}`,
-      nodes,
-    })).value();
+    const unknownGroups = _.chain(unknownNodes).groupBy('group').map(nodes => {
+      const style = nodes[0].style;
+      const key = getTypographyGroupKey(style);
+      return {
+        ...style,
+        ...(ds.typography.overwrites[key] || {}),
+        key,
+        label: `${style.fontFamily} ${style.fontWeight} ${style.fontSize}`,
+        nodes,
+      }
+    }).value();
     const unknownCategory = _.find(categories, cat => cat.label === 'Unknown');
     unknownCategory.groups = _.chain([...unknownCategory.groups, ...unknownGroups]).sortBy('fontSize').reverse().value();
 
@@ -49,6 +57,7 @@ export const getTypographyCategories = createSelector(
         ...cat,
         fontFamily: getMostFrequent(cat.groups.map(g => g.fontFamily))
       })),
+      groups: _.flatMap(categories, 'groups'),
     }
   }
 )

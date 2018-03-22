@@ -82,6 +82,7 @@
     "redux-thunk": "^2.0.1",
     "reselect": "^3.0.1",
     "stylis": "^3.4.10",
-    "tinycolor2": "^1.4.1"
+    "tinycolor2": "^1.4.1",
+    "to-css": "^1.2.1"
   }
 }

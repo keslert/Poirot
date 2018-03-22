@@ -86,19 +86,19 @@ class TypographyTable extends React.Component {
         <td>
           <FontPicker
             value={body.fontFamily}
-            onChange={(e) => this.handleCategoryUpdate(key, 'font', e.target.value)}
+            onChange={(e) => this.handleCategoryUpdate(key, 'fontFamily', e.target.value)}
           />
         </td>
         <td>
           <Input
             value={body.fontSize}
-            onChange={(e) => this.handleCategoryUpdate(key, 'size', e.target.value)}
+            onChange={(e) => this.handleCategoryUpdate(key, 'fontSize', e.target.value)}
           />
         </td>
         <td>
           <Input
             value={body.fontWeight}
-            onChange={(e) => this.handleCategoryUpdate(key, 'weight', e.target.value)}
+            onChange={(e) => this.handleCategoryUpdate(key, 'fontWeight', e.target.value)}
           />
         </td>
         <td>
@@ -134,7 +134,7 @@ class TypographyTable extends React.Component {
         <td>
           <FontPicker 
             value={category.fontFamily}
-            onChange={(e) => this.handleCategoryUpdate(key, 'font', e.target.value)} 
+            onChange={(e) => this.handleCategoryUpdate(key, 'fontFamily', e.target.value)} 
           />
         </td>
         <td colSpan="4" />
@@ -161,19 +161,19 @@ class TypographyTable extends React.Component {
         <td>
           <FontPicker
             value={group.fontFamily}
-            onChange={value => this.handleGroupUpdate(group, 'font', value)}
+            onChange={value => this.handleGroupUpdate(group, 'fontFamily', value)}
           />
         </td>
         <td>
           <Input
             value={group.fontSize}
-            onChange={(e) => this.handleGroupUpdate(group, 'size', e.target.value)}
+            onChange={(e) => this.handleGroupUpdate(group, 'fontSize', e.target.value)}
           />
         </td>
         <td>
           <Input
             value={group.fontWeight}
-            onChange={(e) => this.handleGroupUpdate(group, 'weight', e.target.value)}
+            onChange={(e) => this.handleGroupUpdate(group, 'fontWeight', e.target.value)}
           />
         </td>
         <td>

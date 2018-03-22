@@ -26,7 +26,12 @@ class Page extends React.Component {
     this.props.addPage(page);
   }
 
+  selector(selector, noSpace) {
+    return `${this.superSpecificHammerTime}${noSpace ? '' : ' '}${selector}`
+  }
+
   render() {
+
     const styles = [
       ...this.props.visible.map(key => ({ selector: `.${key}`, css: 'background: #aaeeaa !important; }' })),
       // { selector: 'img', css: 'background: #aae !important; object-position: -99999px 99999px; }' },
@@ -36,20 +41,19 @@ class Page extends React.Component {
       // { selector: '.dsxray-text-node', css: 'background: #aaeeaa !important; }' },
     ]
 
+    const overwrites = _.chain(this.props.typography.overwrites).map((style, key) => [
+      this.selector(`.${key}`), cleanCSS(style)
+    ]).fromPairs().value();
+
+    const visible = _.chain(this.props.visible).map(key => [
+      this.selector(`.${key}`), {background: '#aaeeaa !important'}
+    ]).fromPairs().value();
+
     return (
       <div>
-        <Style
-          selector={`${this.superSpecificHammerTime}.dsxray-no-scroll`}
-          css="overflow: hidden !important"
-        />
-        
-        {styles.map(({selector, css}) => 
-          <Style 
-            key={selector}
-            selector={this.superSpecificHammerTime + ` ${selector}`} 
-            css={css} 
-          />
-        )}
+        <Style css={{ [this.selector('.no-scroll', true)]: { overflow: 'hidden !important' } }} />
+        <Style css={overwrites} />
+        <Style css={visible} />
       </div>
     );
   }
@@ -62,6 +66,17 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   addPage,
+}
+
+function cleanCSS(style) {
+  return _.chain(style).map((value, key) => [
+    camelcaseToHyphenated(key),
+    key === 'fontFamily' ? `'${value}'` : value
+  ]).fromPairs().value();
+}
+
+function camelcaseToHyphenated(str) {
+  return str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Page);
