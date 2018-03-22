@@ -28,8 +28,7 @@ class Page extends React.Component {
 
   render() {
     const styles = [
-      ...this.props.visible.map(key => ({ selector: `.${key}`, css: 'background: #aaeeaa !important; }' }))
-      // { selector: '*', css: 'background: transparent !important; color: #444 !important; }' },
+      ...this.props.visible.map(key => ({ selector: `.${key}`, css: 'background: #aaeeaa !important; }' })),
       // { selector: 'img', css: 'background: #aae !important; object-position: -99999px 99999px; }' },
       // { selector: 'svg', css: 'background: #f171ea !important; fill: transparent !important; color: transparent !important' },
       // { selector: '*[style*="background-image:"]', css: 'background: #00beef !important; }' },
@@ -39,6 +38,10 @@ class Page extends React.Component {
 
     return (
       <div>
+        <Style
+          selector={`${this.superSpecificHammerTime}.dsxray-no-scroll`}
+          css="overflow: hidden !important"
+        />
         
         {styles.map(({selector, css}) => 
           <Style 

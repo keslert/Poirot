@@ -59,7 +59,7 @@ class TypographyTable extends React.Component {
   }
 
   handleGroupUpdate = (group, key, value) => {
-
+    this.props.updateTypography([group.key], {[key]: value})
   }
 
   renderHeader() {
@@ -75,7 +75,49 @@ class TypographyTable extends React.Component {
     )
   }
 
-  renderCategoryRow = (category, hideToggle) => {
+  renderBodyRow = (body) => {
+    return (
+      <tr style={{ background: '#f4f4f4' }}>
+        <td />
+        <td />
+        <td style={{ fontSize: 15, fontWeight: 'bold' }}>
+          Body
+        </td>
+        <td>
+          <FontPicker
+            value={body.fontFamily}
+            onChange={(e) => this.handleCategoryUpdate(key, 'font', e.target.value)}
+          />
+        </td>
+        <td>
+          <Input
+            value={body.fontSize}
+            onChange={(e) => this.handleCategoryUpdate(key, 'size', e.target.value)}
+          />
+        </td>
+        <td>
+          <Input
+            value={body.fontWeight}
+            onChange={(e) => this.handleCategoryUpdate(key, 'weight', e.target.value)}
+          />
+        </td>
+        <td>
+          <Input
+            value={body.lineHeight}
+            onChange={(e) => this.handleCategoryUpdate(key, 'lineHeight', e.target.value)}
+          />
+        </td>
+        <td>
+          <Input
+            value={body.letterSpacing}
+            onChange={(e) => this.handleCategoryUpdate(key, 'letterSpacing', e.target.value)}
+          />
+        </td>
+      </tr>
+    )
+  }
+
+  renderCategoryRow = (category) => {
     const key = category.key;
     const isVisible = category.groups && difference(category.groups.map(g => g.key), this.props.visible).length === 0
     return (
@@ -83,9 +125,9 @@ class TypographyTable extends React.Component {
         <td style={{ fontSize: 12, textAlign: 'center', cursor: 'pointer' }} onClick={() => this.handleToggleOpen(key)}>
           {category.groups && <Rotate rotated={this.state.open[key]}>▶</Rotate>}
         </td>
-        <td>{!hideToggle && 
+        <td>
           <Toggle checked={isVisible} onClick={() => this.handleToggleCategoryVisibile(category)} />
-        }</td>
+        </td>
         <td style={{fontSize: 15, fontWeight: 'bold'}}>
           {category.label} <Text is="span" fontWeight={400}>{category.groups ? `(${category.groups.length})` : ''}</Text>
         </td>
@@ -95,30 +137,7 @@ class TypographyTable extends React.Component {
             onChange={(e) => this.handleCategoryUpdate(key, 'font', e.target.value)} 
           />
         </td>
-        <td>
-          <Input
-            value={category.fontSize} 
-            onChange={(e) => this.handleCategoryUpdate(key, 'size', e.target.value)} 
-          />
-        </td>
-        <td>
-          <Input 
-            value={category.fontWeight} 
-            onChange={(e) => this.handleCategoryUpdate(key, 'weight', e.target.value)} 
-          />
-        </td>
-        <td>
-          <Input 
-            value={category.lineHeight} 
-            onChange={(e) => this.handleCategoryUpdate(key, 'lineHeight', e.target.value)} 
-          />
-        </td>
-        <td>
-          <Input 
-            value={category.letterSpacing} 
-            onChange={(e) => this.handleCategoryUpdate(key, 'letterSpacing', e.target.value)} 
-          />
-        </td>
+        <td colSpan="4" />
       </tr>
     )
   }
@@ -140,33 +159,33 @@ class TypographyTable extends React.Component {
           {group.label} <Text is="span" fontWeight={400}>{group.nodes ? `(${group.nodes.length})` : ''}</Text>
         </td>
         <td>
-          <Input
+          <FontPicker
             value={group.fontFamily}
-            onChange={(e) => this.handleGroupUpdate(key, 'font', e.target.value)}
+            onChange={value => this.handleGroupUpdate(group, 'font', value)}
           />
         </td>
         <td>
           <Input
             value={group.fontSize}
-            onChange={(e) => this.handleGroupUpdate(key, 'size', e.target.value)}
+            onChange={(e) => this.handleGroupUpdate(group, 'size', e.target.value)}
           />
         </td>
         <td>
           <Input
             value={group.fontWeight}
-            onChange={(e) => this.handleGroupUpdate(key, 'weight', e.target.value)}
+            onChange={(e) => this.handleGroupUpdate(group, 'weight', e.target.value)}
           />
         </td>
         <td>
           <Input
             value={group.lineHeight}
-            onChange={(e) => this.handleGroupUpdate(key, 'lineHeight', e.target.value)}
+            onChange={(e) => this.handleGroupUpdate(group, 'lineHeight', e.target.value)}
           />
         </td>
         <td>
           <Input
             value={group.letterSpacing}
-            onChange={(e) => this.handleGroupUpdate(key, 'letterSpacing', e.target.value)}
+            onChange={(e) => this.handleGroupUpdate(group, 'letterSpacing', e.target.value)}
           />
         </td>
       </tr>
@@ -221,10 +240,8 @@ class TypographyTable extends React.Component {
               {columns.map((width, i) => <col width={width} key={i} />)}
             </colgroup>
             <tbody style={{maxHeight: 100, overflowY: 'scroll'}}>
-              {this.renderCategoryRow(typography.body, true)}
-              {this.renderCategory(typography.headers)}
-              {this.renderCategory(typography.copy)}
-              {this.renderCategory(typography.unknown)}
+              {this.renderBodyRow(typography.body)}
+              {typography.categories.map(this.renderCategory)}
             </tbody>
           </Table>
         </div>
