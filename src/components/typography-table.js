@@ -55,7 +55,8 @@ class TypographyTable extends React.Component {
   }
 
   handleCategoryUpdate = (category, key, value) => {
-
+    const groups = category.groups.filter(g => g[key] === category[key]).map(g => g.key);
+    this.props.updateTypography(groups, {[key]: value});
   }
 
   handleGroupUpdate = (group, key, value) => {
@@ -86,7 +87,7 @@ class TypographyTable extends React.Component {
         <td>
           <FontPicker
             value={body.fontFamily}
-            onChange={(e) => this.handleCategoryUpdate(key, 'fontFamily', e.target.value)}
+            onChange={value => this.handleCategoryUpdate(key, 'fontFamily', value)}
           />
         </td>
         <td>
@@ -134,7 +135,7 @@ class TypographyTable extends React.Component {
         <td>
           <FontPicker 
             value={category.fontFamily}
-            onChange={(e) => this.handleCategoryUpdate(key, 'fontFamily', e.target.value)} 
+            onChange={value => this.handleCategoryUpdate(category, 'fontFamily', value)} 
           />
         </td>
         <td colSpan="4" />
