@@ -21,7 +21,7 @@ export function parseAndTagPage() {
       nodeName: node.nodeName.toLowerCase(),
       hostname,
       pathname,
-      text: node.innerText,
+      text: node.textContent,
       style: {
         fontFamily: style.fontFamily.split(',')[0].replace(/\"/g, ""),
         fontSize: style.fontSize,

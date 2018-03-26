@@ -201,7 +201,7 @@ class TypographyTable extends React.Component {
           <img src="https://icon.now.sh/find_in_page" />
         </td>
         <td colSpan={6}>
-          ≣ {node.name}&#9;{node.text}
+          ≣ {node.name}&#9;{node.text} {node.uid}
         </td>
       </tr>
     )

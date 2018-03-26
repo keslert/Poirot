@@ -51,7 +51,7 @@ class Page extends React.Component {
 
     return (
       <div>
-        <Style css={{ [this.selector('.no-scroll', true)]: { overflow: 'hidden !important' } }} />
+        <Style css={{ [this.selector('.dsxray-no-scroll', true)]: { overflow: 'hidden !important' } }} />
         <Style css={overwrites} />
         <Style css={visible} />
       </div>

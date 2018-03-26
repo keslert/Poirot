@@ -7,6 +7,8 @@ export function getDOMNodes() {
 export function getVisibleNodes(nodes) {
   return nodes.filter(node => 
     !!(node.offsetWidth || node.offsetHeight || node.getClientRects().length)
+    && !!(node.clientWidth || node.clientHeight)
+    && window.getComputedStyle(node).visibility !== "hidden"
   )
 }
 

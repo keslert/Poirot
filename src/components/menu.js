@@ -16,6 +16,7 @@ const SOpenMenu = Box.extend`
   height: auto;
   background-color: #fff;
   border-radius: 4px;
+  font-size: 15px;
 `;
 
 const SClosedMenu = Box.extend`
