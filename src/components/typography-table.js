@@ -2,27 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Flex, Box, Text } from 'rebass';
 import Rotate from './rotate';
+import Table from './table';
 import Toggle from './toggle';
 import Input from './input';
 import difference from 'lodash/difference';
 import FontPicker from './font-picker';
-
-const Table = Box.extend`
-  border-collapse: separate;
-  border-spacing: 0 1px;
-  width: 100%;
-  td {
-    padding: 4px;
-  }
-  th {
-    padding: 4px;
-    font-size: 10px;
-    text-align: left;
-    text-transform: uppercase;
-    font-weight: bold;
-    background: #ddd;
-  }
-`
 
 class TypographyTable extends React.Component {
 
@@ -201,7 +185,7 @@ class TypographyTable extends React.Component {
           <img src="https://icon.now.sh/find_in_page" />
         </td>
         <td colSpan={6}>
-          ≣ {node.name}&#9;{node.text} {node.uid}
+          ≣ {node.name}&#9;{node.textContent} {node.uid}
         </td>
       </tr>
     )

@@ -99,6 +99,60 @@ const typography = {
   ]
 }
 
+const colors = {
+  settings: {
+    max: 80,
+    min: 20,
+    darken: 10,
+    lighten: 10,
+  },
+  roots: [
+    {
+      label: 'Black',
+      hex: '#252729',
+      level: 'primary',
+      base: 50,
+    },
+    {
+      label: 'Gray',
+      hex: '#c1c1c2',
+      level: 'primary',
+      base: 50,
+    },
+    {
+      label: 'Yellow',
+      hex: '#ffd16d',
+      level: 'primary',
+      base: 50,
+    },
+    {
+      label: 'Blue',
+      hex: '#5499c3',
+      level: 'secondary',
+      base: 50,
+    },
+    {
+      label: 'Red',
+      hex: '#d86262',
+      level: 'secondary',
+      base: 50,
+    },
+    {
+      label: 'Green',
+      hex: '#599fa0',
+      level: 'secondary',
+      base: 50,
+    },
+  ]
+}
+
+const spacing = {
+  defaults: [5, 10, 15, 20, 30, 40],
+  exceptions: {
+    forms: [3,4,5,10,20,30]
+  }
+}
+
 export default {
   typography,
 }

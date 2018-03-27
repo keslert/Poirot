@@ -80,24 +80,12 @@ injectPageConfig.output = {
   path: path.join(__dirname, '../dev/js'),
   filename: 'inject.bundle.js',
 };
-const injectPageConfig2 = baseDevConfig();
-injectPageConfig2.entry = [
-  customPath,
-  path.join(__dirname, '../chrome/extension/inject-style')
-];
-delete injectPageConfig2.hotMiddleware;
-delete injectPageConfig2.module.rules[0].options;
-injectPageConfig2.plugins.shift(); // remove HotModuleReplacementPlugin
-injectPageConfig2.output = {
-  path: path.join(__dirname, '../dev/js'),
-  filename: 'inject-style.bundle.js',
-};
 
 
 const appConfig = baseDevConfig();
 
 module.exports = [
   injectPageConfig,
-  injectPageConfig2,
+  // injectPageConfig2,
   appConfig
 ];

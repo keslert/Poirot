@@ -1,42 +1,73 @@
 import { 
   getDOMNodes, 
   getVisibleNodes,
-  getTextNodes,
+  isTextNode,
   getTypographyGroupKey,
 } from './html';
-import _ from 'lodash';
 
 export function parseAndTagPage() {
   const all = getDOMNodes();
   const visible = getVisibleNodes(all);
-  const textNodes = getTextNodes(visible);
   const hostname = location.hostname;
   const pathname = location.pathname;
 
-  const textNodes_ = textNodes.map((node, i) => {
-    const style = window.getComputedStyle(node);
-    const obj = {
-      uid: `dsxray-textnode-${i}`,
-      group: `${getTypographyGroupKey(style)}`,
-      nodeName: node.nodeName.toLowerCase(),
+  const uidToDOMNode = {};
+  const nodes = visible.map(({node, computedStyle: style}, i) => {
+    const uid = `dsxray-node-${i}`;
+    uidToDOMNode[uid] = node;
+    return {
+      uid,
       hostname,
       pathname,
-      text: node.textContent,
+      nodeName: node.nodeName.toLowerCase(),
       style: {
         fontFamily: style.fontFamily.split(',')[0].replace(/\"/g, ""),
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
         lineHeight: style.lineHeight,
         letterSpacing: style.letterSpacing,
+
+        paddingTop: style.paddingTop,
+        paddingBottom: style.paddingBottom,
+        paddingLeft: style.paddingLeft,
+        paddingRight: style.paddingRight,
+        marginTop: style.marginTop,
+        marginBottom: style.marginBottom,
+        marginLeft: style.marginLeft,
+        marginRight: style.marginRight,
+
+        color: style.color,
+        backgroundColor: style.backgroundColor,
+        boxShadow: style.boxShadow,
       }
     }
-    node.classList.add(obj.uid, obj.group)
-    return obj;
+  })
+  nodes.forEach(node => {
+    const domNode = uidToDOMNode[node.uid]
+    domNode.classList.add(node.uid)
+
+    node.style.marginTop !== '0px' && domNode.classList.add(`dsxray-mt-${node.style.marginTop}`)
+    node.style.marginRight !== '0px' && domNode.classList.add(`dsxray-mr-${node.style.marginRight}`)
+    node.style.marginBottom !== '0px' && domNode.classList.add(`dsxray-mb-${node.style.marginBottom}`)
+    node.style.marginLeft !== '0px' && domNode.classList.add(`dsxray-ml-${node.style.marginLeft}`)
+    node.style.paddingTop !== '0px' && domNode.classList.add(`dsxray-pt-${node.style.paddingTop}`)
+    node.style.paddingRight !== '0px' && domNode.classList.add(`dsxray-pr-${node.style.paddingRight}`)
+    node.style.paddingBottom !== '0px' && domNode.classList.add(`dsxray-pb-${node.style.paddingBottom}`)
+    node.style.paddingLeft !== '0px' && domNode.classList.add(`dsxray-pl-${node.style.paddingLeft}`)
+  });
+
+  const textNodes = nodes.filter(({uid}) => isTextNode(uidToDOMNode[uid]));
+  textNodes.forEach(node => {
+    const domNode = uidToDOMNode[node.uid];
+    node.typographyGroup = getTypographyGroupKey(node.style);
+    node.textContent = domNode.textContent;
+    domNode.classList.add(node.typographyGroup);
   })
   
   return {
     hostname,
     pathname,
-    textNodes: textNodes_,
+    nodes,
+    textNodes,
   }
 }

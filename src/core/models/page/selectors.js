@@ -1,10 +1,6 @@
 import { createSelector } from 'reselect';
 import { getTypographyGroupKey } from '../../utils/html';
 import { getDS } from '../ds/selectors';
-// import groupBy from 'lodash/groupBy';
-// import difference from 'lodash/difference';
-// import flatMap from 'lodash/flatMap';
-// import map from 'lodash/map';
 import _ from 'lodash';
 
 
@@ -15,6 +11,18 @@ export function getPage(state) {
 export function getTextNodes(state) {
   return getPage(state).textNodes;
 }
+
+export function getNodes(state) {
+  return getPage(state).nodes;
+}
+
+export const getSpacingCategories = createSelector(
+  getNodes,
+  getDS,
+  (nodes, ds) => {
+    return [];
+  }
+)
 
 export const getTypographyCategories = createSelector(
   getTextNodes,
@@ -30,14 +38,14 @@ export const getTypographyCategories = createSelector(
           ...group,
           ...(ds.typography.overwrites[key] || {}),
           key,
-          nodes: textNodes.filter(n => n.group === key)
+          nodes: textNodes.filter(n => n.typographyGroup === key)
         }  
       })
     }))
 
     const usedNodes = _.flatMapDeep(categories, cat => cat.groups.map(g => g.nodes))
     const unknownNodes = _.difference(textNodes, usedNodes);
-    const unknownGroups = _.chain(unknownNodes).groupBy('group').map(nodes => {
+    const unknownGroups = _.chain(unknownNodes).groupBy('typographyGroup').map(nodes => {
       const style = nodes[0].style;
       const key = getTypographyGroupKey(style);
       return {

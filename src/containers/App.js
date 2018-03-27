@@ -1,6 +1,7 @@
 import React from 'react';
 import DesignSystem from '../data/we-work';
 import Page from './Page';
+import ElementInspector from './ElementInspector';
 import { Flex, Fixed } from 'rebass';
 import { Provider as Rebass } from 'rebass';
 import theme from '../styles/rebass-theme';
@@ -16,6 +17,7 @@ class App extends React.Component {
           <Menu ds={DesignSystem} />
         </Fixed>
         <Page />
+        <ElementInspector />
       </Rebass>
     );
   }

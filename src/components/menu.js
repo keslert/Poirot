@@ -9,6 +9,9 @@ import { updateDSTypography } from '../core/models/ds/actions';
 import MenuItem from './menu-item';
 import TypographyTable from './typography-table';
 
+import { addPage } from '../core/models/page/actions';
+import { parseAndTagPage } from '../core/utils/ds';
+
 const SOpenMenu = Box.extend`
   display: flex;
   flex-direction: column;
@@ -16,7 +19,7 @@ const SOpenMenu = Box.extend`
   height: auto;
   background-color: #fff;
   border-radius: 4px;
-  font-size: 15px;
+  font-size: 14px;
 `;
 
 const SClosedMenu = Box.extend`
@@ -40,14 +43,26 @@ class Menu extends React.Component {
     menu: 'Typography',
   }
 
+  handleRefresh = () => {
+    const page = parseAndTagPage();
+    this.props.addPage(page);
+  }
+
   renderHeader = (str) => {
     return (
       <Flex p="12px" pt={2}>
-        <Text is="span" bold children="DSXray" />
-        <Box mx="auto"><Text center bold>{this.state.menu} <Text is="span" f="8px" children="▼" /></Text></Box>
-        <Box onClick={() => (this.setState({open: false}), this.handleMouseLeave())} style={{cursor: 'pointer'}}>
-          <img src="https://icon.now.sh/x/12" />
+        <Box flex={1}>
+          <Text is="span" bold children="Designer Tools" />
         </Box>
+        <Text center bold>{this.state.menu} <Text is="span" f="8px" children="▼" /></Text>
+        <Flex flex={1} justify="flex-end" m={-1}>
+          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
+            <img src="https://icon.now.sh/refresh/18" />
+          </Box>
+          <Box p={1} style={{ cursor: 'pointer' }} onClick={() => (this.setState({ open: false }), this.handleMouseLeave())}>
+            <img src="https://icon.now.sh/x/12" />
+          </Box>
+        </Flex>
       </Flex>
     )
   }
@@ -92,6 +107,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   toggleVisible,
   updateDSTypography,
+  addPage,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);
