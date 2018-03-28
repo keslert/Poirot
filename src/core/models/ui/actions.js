@@ -7,3 +7,17 @@ export function toggleVisible(keys) {
     payload: keys,
   }
 }
+
+export function toggleSelectedElements(keys) {
+  return {
+    type: types.TOGGLE_SELECTED_ELEMENTS,
+    payload: keys,
+  }
+}
+
+export function setSelectedElements(keys) {
+  return {
+    type: types.SET_SELECTED_ELEMENTS,
+    payload: keys,
+  }
+}

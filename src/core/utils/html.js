@@ -53,7 +53,7 @@ export function getTypographyGroupKey(style) {
   return `dsxray-${clean(style.fontFamily.split(',')[0])}-${style.fontWeight}-${style.fontSize}`
 }
 
-function hasParentWithId(node, id) {
+export function hasParentWithId(node, id) {
   let node_ = node.parentNode;
   while(node_) {
     if(node_.id === id)

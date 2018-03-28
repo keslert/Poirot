@@ -45,6 +45,7 @@ export function parseAndTagPage() {
   nodes.forEach(node => {
     const domNode = uidToDOMNode[node.uid]
     domNode.classList.add(node.uid)
+    domNode.setAttribute('data-uid', node.uid);
 
     node.style.marginTop !== '0px' && domNode.classList.add(`dsxray-mt-${node.style.marginTop}`)
     node.style.marginRight !== '0px' && domNode.classList.add(`dsxray-mr-${node.style.marginRight}`)

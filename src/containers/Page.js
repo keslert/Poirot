@@ -46,7 +46,6 @@ class Page extends React.Component {
     const paddingColor = 'rgba(169,248,77,.25)';
     const spacing = _.chain(this.props.nodes).map(node => [
       this.selector(`.${node.uid}`), {
-        // background: 'transparent !important',
         'box-shadow': `
           ${node.style.boxShadow === 'none' ? '' : `${node.style.boxShadow},`}
           
@@ -68,7 +67,7 @@ class Page extends React.Component {
         <Style css={{ [this.selector('.dsxray-no-scroll', true)]: { overflow: 'hidden !important' } }} />
         <Style css={overwrites} />
         <Style css={visible} />
-        <Style css={spacing} />
+        {false && <Style css={spacing} />}
       </div>
     );
   }
