@@ -46,6 +46,13 @@ export function parseAndTagPage() {
     const domNode = uidToDOMNode[node.uid]
     domNode.classList.add(node.uid)
     domNode.setAttribute('data-uid', node.uid);
+    
+    node.parents = [];
+    let el = domNode.parentElement;
+    while(el) {
+      node.parents.push(el.dataset.uid);
+      el = el.parentElement;
+    }
 
     node.style.marginTop !== '0px' && domNode.classList.add(`dsxray-mt-${node.style.marginTop}`)
     node.style.marginRight !== '0px' && domNode.classList.add(`dsxray-mr-${node.style.marginRight}`)
@@ -56,6 +63,7 @@ export function parseAndTagPage() {
     node.style.paddingBottom !== '0px' && domNode.classList.add(`dsxray-pb-${node.style.paddingBottom}`)
     node.style.paddingLeft !== '0px' && domNode.classList.add(`dsxray-pl-${node.style.paddingLeft}`)
   });
+
 
   const textNodes = nodes.filter(({uid}) => isTextNode(uidToDOMNode[uid]));
   textNodes.forEach(node => {

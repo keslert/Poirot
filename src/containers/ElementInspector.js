@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Box } from 'rebass';
-import { hasParentWithId } from '../core/utils/html';
+import { hasParentWithUid } from '../core/utils/html';
 import { getSelectedElements } from '../core/models/ui/selectors';
 import { toggleSelectedElements, setSelectedElements } from '../core/models/ui/actions';
 
 const SFrame = Box.extend`
   position: absolute;
   ${props => `
-    background: ${props.color}55;
+    // background: ${props.color}11;
     border: 2px solid ${props.color}99;
   `}
   z-index: 2147483646;
@@ -22,6 +22,7 @@ const keyCodes = {
   right: 39,
   down: 40,
   up: 38,
+  shift: 65,
 }
 const resetBB = {top: 0, left: 0, width: 0, height: 0}
 class ElementInspector extends React.Component {
@@ -68,14 +69,15 @@ class ElementInspector extends React.Component {
 
   handleClick = (e) => {
     const el = e.target;
-    if (!hasParentWithId(el, 'dsxray')) {
+    if (!hasParentWithUid(el, 'dsxray')) {
       this.props.setSelectedElements([getElementData(el)]);
     }
+    return e.shiftKey;
   }
 
   handleMouseOver = (e) => {
     const el = e.target;
-    if(!hasParentWithId(el, 'dsxray')) {
+    if(!hasParentWithUid(el, 'dsxray')) {
       this.setBB('hoverBB', el.getBoundingClientRect());
     }
   }

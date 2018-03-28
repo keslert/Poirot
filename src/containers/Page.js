@@ -3,7 +3,11 @@ import Style from '../components/style';
 import { connect } from 'react-redux';
 
 import { getVisible } from '../core/models/ui/selectors';
-import { getTypographyCategories, getNodes } from '../core/models/page/selectors';
+import { 
+  getTypographyCategories, 
+  getSelectedNodes,
+  getSelectedChildNodes,
+} from '../core/models/page/selectors';
 
 import { addPage } from '../core/models/page/actions';
 import { parseAndTagPage } from '../core/utils/ds';
@@ -44,7 +48,10 @@ class Page extends React.Component {
 
     const marginColor = 'rgba(255,152,0,.25)';
     const paddingColor = 'rgba(169,248,77,.25)';
-    const spacing = _.chain(this.props.nodes).map(node => [
+
+
+    const nodes = [...this.props.selectedNodes, ...this.props.selectedChildNodes];
+    const spacing = _.chain(nodes).map(node => [
       this.selector(`.${node.uid}`), {
         'box-shadow': `
           ${node.style.boxShadow === 'none' ? '' : `${node.style.boxShadow},`}
@@ -67,7 +74,7 @@ class Page extends React.Component {
         <Style css={{ [this.selector('.dsxray-no-scroll', true)]: { overflow: 'hidden !important' } }} />
         <Style css={overwrites} />
         <Style css={visible} />
-        {false && <Style css={spacing} />}
+        <Style css={spacing} />
       </div>
     );
   }
@@ -75,7 +82,8 @@ class Page extends React.Component {
 
 const mapStateToProps = state => ({
   visible: getVisible(state),
-  nodes: getNodes(state),
+  selectedNodes: getSelectedNodes(state),
+  selectedChildNodes: getSelectedChildNodes(state),
   typography: getTypographyCategories(state),
 })
 

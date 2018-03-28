@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import { getTypographyGroupKey } from '../../utils/html';
 import { getDS } from '../ds/selectors';
 import _ from 'lodash';
+import { getSelectedElements } from '../ui/selectors';
 
 
 export function getPage(state) {
@@ -15,6 +16,24 @@ export function getTextNodes(state) {
 export function getNodes(state) {
   return getPage(state).nodes;
 }
+
+export const getSelectedNodes = createSelector(
+  getNodes,
+  getSelectedElements,
+  (nodes, selectedElements) => {
+    const uids = _.map(selectedElements, 'uid');
+    return nodes.filter(({uid}) => uids.includes(uid));
+  }
+)
+
+export const getSelectedChildNodes = createSelector(
+  getNodes,
+  getSelectedElements,
+  (nodes, selectedElements) => {
+    const uids = _.map(selectedElements, 'uid');
+    return nodes.filter(({parents}) => _.some(uids, uid => parents.includes(uid)))
+  }
+)
 
 export const getSpacingCategories = createSelector(
   getNodes,

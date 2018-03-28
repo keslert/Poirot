@@ -4,7 +4,7 @@
 
 export function getDOMNodes() {
   return [...document.getElementsByTagName("*")]
-    .filter(node => !hasParentWithId(node, 'dsxray'))
+    .filter(node => !hasParentWithUid(node, 'dsxray'))
     .map(node => ({node, computedStyle: window.getComputedStyle(node)}))
 }
 
@@ -53,10 +53,10 @@ export function getTypographyGroupKey(style) {
   return `dsxray-${clean(style.fontFamily.split(',')[0])}-${style.fontWeight}-${style.fontSize}`
 }
 
-export function hasParentWithId(node, id) {
+export function hasParentWithUid(node, uid) {
   let node_ = node.parentNode;
   while(node_) {
-    if(node_.id === id)
+    if(node_.dataset && node_.dataset.uid === uid)
       return true;
     node_ = node_.parentNode
   }
