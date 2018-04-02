@@ -12,7 +12,7 @@ export function dsReducer(state = dsState(), { payload, type }) {
     case types.OVERWRITE_DS_TYPOGRAPHY:
       const overwrites = _.merge({}, state.typography.overwrites,
         ...payload.keys.map(key => ({[key]: payload.changeset})),
-      )      
+      )
 
       const newState = Object.assign({}, state, {
         typography: {...state.typography, overwrites}

@@ -3,12 +3,16 @@ import { connect } from 'react-redux';
 import { Box } from 'rebass';
 import { hasParentWithUid } from '../core/utils/html';
 import { getSelectedElements } from '../core/models/ui/selectors';
-import { toggleSelectedElements, setSelectedElements } from '../core/models/ui/actions';
+import { 
+  setSelectedElements,
+  toggleSelectedElements, 
+  toggleShowSpacing,
+} from '../core/models/ui/actions';
 
 const SFrame = Box.extend`
   position: absolute;
   ${props => `
-    // background: ${props.color}11;
+    background: ${props.color}08;
     border: 2px solid ${props.color}99;
   `}
   z-index: 2147483646;
@@ -23,6 +27,7 @@ const keyCodes = {
   down: 40,
   up: 38,
   shift: 65,
+  m: 77,
 }
 const resetBB = {top: 0, left: 0, width: 0, height: 0}
 class ElementInspector extends React.Component {
@@ -47,6 +52,10 @@ class ElementInspector extends React.Component {
   handleKeyDown = (e) => {
     if(this.props.selected.length !== 1)
       return;
+
+    if(e.which === keyCodes.m) {
+      this.props.toggleShowSpacing();
+    }
 
     const el = document.querySelector(`.${this.props.selected[0].uid}`) || {};
     let nextEl;
@@ -99,7 +108,7 @@ class ElementInspector extends React.Component {
     const { selected } = this.props;
     return (
       <div>
-        <SFrame color="#999999" style={this.state.hoverBB} />,
+        <SFrame color="#888888" style={this.state.hoverBB} />,
         {selected.map(bb => 
           <SFrame color="#00beef" style={bb} key={bb.uid} />,
         )}
@@ -113,8 +122,9 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-  toggleSelectedElements,
   setSelectedElements,
+  toggleSelectedElements,
+  toggleShowSpacing,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ElementInspector);

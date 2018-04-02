@@ -7,6 +7,7 @@ import Toggle from './toggle';
 import Input from './input';
 import difference from 'lodash/difference';
 import FontPicker from './font-picker';
+import WebFont from 'webfontloader';
 
 class TypographyTable extends React.Component {
 
@@ -41,10 +42,25 @@ class TypographyTable extends React.Component {
   handleCategoryUpdate = (category, key, value) => {
     const groups = category.groups.filter(g => g[key] === category[key]).map(g => g.key);
     this.props.updateTypography(groups, {[key]: value});
+    
+    if(key === 'fontFamily') {
+      this.loadWebFont(value)
+    }
   }
 
   handleGroupUpdate = (group, key, value) => {
     this.props.updateTypography([group.key], {[key]: value})
+    if(key === 'fontFamily') {
+      this.loadWebFont(value);
+    }
+  }
+
+  webFontCache = {};
+  loadWebFont(fontFamily) {
+    if (!this.webFontCache[fontFamily]) {
+      this.webFontCache[fontFamily] = true;
+      WebFont.load({ google: { families: [fontFamily] } })
+    }
   }
 
   renderHeader() {
@@ -185,7 +201,7 @@ class TypographyTable extends React.Component {
           <img src="https://icon.now.sh/find_in_page" />
         </td>
         <td colSpan={6}>
-          ≣ {node.name}&#9;{node.textContent} {node.uid}
+          ≣ {node.name}&#9;{node.textContent}
         </td>
       </tr>
     )

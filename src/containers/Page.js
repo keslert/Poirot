@@ -2,7 +2,11 @@ import React from 'react';
 import Style from '../components/style';
 import { connect } from 'react-redux';
 
-import { getVisible } from '../core/models/ui/selectors';
+import { 
+  getVisible,
+  getShowSpacing,
+} from '../core/models/ui/selectors';
+
 import { 
   getTypographyCategories, 
   getSelectedNodes,
@@ -30,6 +34,7 @@ class Page extends React.Component {
   }
 
   render() {
+    const { selectedNodes, selectedChildNodes, showSpacing } = this.props;
 
     const styles = [
       // { selector: 'img', css: 'background: #aae !important; object-position: -99999px 99999px; }' },
@@ -50,7 +55,7 @@ class Page extends React.Component {
     const paddingColor = 'rgba(169,248,77,.25)';
 
 
-    const nodes = [...this.props.selectedNodes, ...this.props.selectedChildNodes];
+    const nodes = showSpacing ? [...selectedNodes, ...selectedChildNodes] : [];
     const spacing = _.chain(nodes).map(node => [
       this.selector(`.${node.uid}`), {
         'box-shadow': `
@@ -84,6 +89,7 @@ const mapStateToProps = state => ({
   visible: getVisible(state),
   selectedNodes: getSelectedNodes(state),
   selectedChildNodes: getSelectedChildNodes(state),
+  showSpacing: getShowSpacing(state),
   typography: getTypographyCategories(state),
 })
 

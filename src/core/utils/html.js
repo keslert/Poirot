@@ -54,11 +54,11 @@ export function getTypographyGroupKey(style) {
 }
 
 export function hasParentWithUid(node, uid) {
-  let node_ = node.parentNode;
+  let node_ = node.parentElement;
   while(node_) {
     if(node_.dataset && node_.dataset.uid === uid)
       return true;
-    node_ = node_.parentNode
+    node_ = node_.parentElement
   }
   return false;
 }

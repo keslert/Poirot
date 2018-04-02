@@ -9,3 +9,7 @@ export function getVisible(state) {
 export function getSelectedElements(state) {
   return getUI(state).selectedElements;
 }
+
+export function getShowSpacing(state) {
+  return getUI(state).showSpacing;
+}

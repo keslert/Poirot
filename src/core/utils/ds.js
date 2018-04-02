@@ -63,6 +63,7 @@ export function parseAndTagPage() {
     node.style.paddingBottom !== '0px' && domNode.classList.add(`dsxray-pb-${node.style.paddingBottom}`)
     node.style.paddingLeft !== '0px' && domNode.classList.add(`dsxray-pl-${node.style.paddingLeft}`)
   });
+  document.getElementById('dsxray').setAttribute('data-uid', 'dsxray');
 
 
   const textNodes = nodes.filter(({uid}) => isTextNode(uidToDOMNode[uid]));

@@ -17,6 +17,7 @@ class FontPicker extends React.Component {
           options={fonts}
           clearable={false}
           value={{ label: value, value }}
+          scrollMenuIntoView={false}
         />
       </div>
     )

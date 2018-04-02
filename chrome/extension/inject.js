@@ -11,7 +11,7 @@ function inject() {
 
   const el = document.createElement('div');
   el.id = 'dsxray'
-  el.setAttribute('uid', 'dsxray');
+  el.setAttribute('data-uid', 'dsxray');
   document.body.appendChild(el);
   const store = new Store({ portName: 'DSXray'});
   store.ready().then(() => {

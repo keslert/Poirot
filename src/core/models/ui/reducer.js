@@ -4,6 +4,7 @@ import uniq from 'lodash/uniq';
 const uiState = () => ({
   visible: [],
   selectedElements: [],
+  showSpacing: false,
 });
 
 export function uiReducer(state = uiState(), { payload, type }) {
@@ -24,8 +25,10 @@ export function uiReducer(state = uiState(), { payload, type }) {
       });
 
     case types.SET_SELECTED_ELEMENTS:
-      debugger;
       return Object.assign({}, state, {selectedElements: payload})
+
+    case types.TOGGLE_SHOW_SPACING:
+      return Object.assign({}, state, {showSpacing: !state.showSpacing})
 
     default:
       return state;

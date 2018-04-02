@@ -4,10 +4,12 @@ import { createSelector } from 'reselect';
 import { Flex, Box, Text } from 'rebass';
 import { getTypographyCategories } from '../core/models/page/selectors';
 import { toggleVisible } from '../core/models/ui/actions';
-import { getVisible } from '../core/models/ui/selectors';
+import { getVisible, getSelectedElements } from '../core/models/ui/selectors';
 import { updateDSTypography } from '../core/models/ds/actions';
 import MenuItem from './menu-item';
 import TypographyTable from './typography-table';
+import domtoimage from 'dom-to-image';
+
 
 import { addPage } from '../core/models/page/actions';
 import { parseAndTagPage } from '../core/utils/ds';
@@ -48,6 +50,18 @@ class Menu extends React.Component {
     this.props.addPage(page);
   }
 
+  handleSnapshot = () => {
+    this.props.selected.forEach(({uid}) => {
+      domtoimage.toPng(document.querySelector(`.${uid}`), { quality: 0.95 })
+        .then(function (dataUrl) {
+          var link = document.createElement('a');
+          link.download = `${uid}.png`;
+          link.href = dataUrl;
+          link.click();
+        });
+    })
+  }
+
   renderHeader = (str) => {
     return (
       <Flex p="12px" pt={2}>
@@ -56,6 +70,9 @@ class Menu extends React.Component {
         </Box>
         <Text center bold>{this.state.menu} <Text is="span" f="8px" children="▼" /></Text>
         <Flex flex={1} justify="flex-end" m={-1}>
+          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleSnapshot}>
+            <img src="https://icon.now.sh/photo_camera/18" />
+          </Box>
           <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
             <img src="https://icon.now.sh/refresh/18" />
           </Box>
@@ -102,6 +119,7 @@ class Menu extends React.Component {
 const mapStateToProps = state => ({
   visible: getVisible(state),
   typography: getTypographyCategories(state),
+  selected: getSelectedElements(state),
 })
 
 const mapDispatchToProps = {

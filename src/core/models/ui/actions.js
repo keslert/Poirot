@@ -21,3 +21,9 @@ export function setSelectedElements(keys) {
     payload: keys,
   }
 }
+
+export function toggleShowSpacing() {
+  return {
+    type: types.TOGGLE_SHOW_SPACING,
+  }
+}
