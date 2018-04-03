@@ -27,7 +27,7 @@ const SOpenMenu = Box.extend`
 const SClosedMenu = Box.extend`
   width: 40px;
   height: 40px;
-  line-height: 44px;
+  line-height: 38px;
   text-align: center;
   border-radius: 20px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
@@ -35,6 +35,9 @@ const SClosedMenu = Box.extend`
   cursor: pointer;
   &:hover {
     background: #f9f9f9;
+  }
+  img {
+    vertical-align: middle;
   }
 `;
 
@@ -99,8 +102,13 @@ class Menu extends React.Component {
 
   render() {
     const { open } = this.state;
-    return (open 
-      ? <SOpenMenu onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+    return (
+      <div>
+        <SOpenMenu 
+          onMouseEnter={this.handleMouseEnter} 
+          onMouseLeave={this.handleMouseLeave}
+          style={{display: open ? 'block' : 'none'}}
+        >
           {this.renderHeader()}
           <TypographyTable 
             toggleVisible={this.props.toggleVisible}
@@ -109,9 +117,13 @@ class Menu extends React.Component {
             visible={this.props.visible}
           />
         </SOpenMenu>
-      : <SClosedMenu onClick={() => this.setState({open: true})}>
+        <SClosedMenu 
+          onClick={() => this.setState({open: true})}
+          style={{ display: open ? 'none' : 'block' }}
+        >
           <img src="https://icon.now.sh/grid" />
         </SClosedMenu>
+      </div>
     )
   }
 }

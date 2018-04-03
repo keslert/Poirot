@@ -77,7 +77,7 @@ class Page extends React.Component {
     const generic = {
       [this.selector('.dsxray-no-scroll', true)]: { overflow: 'hidden !important' },
       '.dsxray-contenteditable:focus, .dsxray-contenteditable:active': { outline: 'none' },
-      '.dsxray-contenteditable::selection': { background: 'rgba(0,0,0,.1)'},
+      '.dsxray-contenteditable::selection': { background: 'rgba(122,122,122,.15)'},
     }
 
 
@@ -88,6 +88,16 @@ class Page extends React.Component {
         <Style css={overwrites} />
         <Style css={visible} />
         <Style css={spacing} />
+        <style>
+          {`@keyframes dsxray-fade {
+            0% {
+              opacity: 1;
+            }
+            100% {
+              opacity: 0;
+            }
+          }`}
+        </style>
       </div>
     );
   }

@@ -13,8 +13,13 @@ import {
 const SFrame = Box.extend`
   position: absolute;
   ${props => `
+    color: ${props.color};
     background: ${props.color}08;
     border: 1px solid ${props.color}99;
+    ${props.fade && `
+      animation: dsxray-fade 1s forwards;
+      animation-delay: 2s;
+    `}
   `}
   z-index: 2147483646;
   pointer-events: none;
@@ -24,10 +29,18 @@ const SFrame = Box.extend`
 const SToolbar = Box.extend`
   position: absolute;
   height: 30px;
-  top: -32px;
-  left: -2px;
+  top: -34px;
+  left: 0px;
   background: #00beef;
   width: 400px;
+`
+
+const SDescriptor = Box.extend`
+  position: absolute;
+  top: -16px;
+  left: 0px;
+  font-weight: bold;
+  font-size: 12px;
 `
 
 
@@ -89,41 +102,40 @@ class ElementInspector extends React.Component {
 
 
   handleClick = (e) => {
-    if(!e.isTrusted) // return if this is a simulated click
+    const el = e.target;
+    
+    if(!e.isTrusted || hasParentWithUid(el, 'dsxray')) // isTrusted is false for simulated clicks
       return;
 
-    const el = e.target;
+    
     const elData = getElementData(el);
     const selected = this.props.selected[0];
     const { editingElement, lastClick } = this.state;
 
     if(editingElement && editingElement !== elData.uid) {
       const el_ = document.querySelector(`.${editingElement}`);
-      el_.setAttribute('contenteditable', 'false');
-      el_.classList.remove('dsxray-contenteditable');
+      if(el_) {
+        el_.setAttribute('contenteditable', 'false');
+        el_.classList.remove('dsxray-contenteditable');
+      }
       this.setState({editingElement: null});
     }
-
     
     const time = new Date();
     const isDblClick = (time - lastClick) < DBL_CLICK_MS;
     const isSameElement = elData.uid === selected.uid;
-    if(isDblClick && isSameElement) {
+    if(isDblClick && isSameElement && (elData.isTextNode || elData.isImageNode)) {
       if(elData.isTextNode) {
         el.setAttribute('contenteditable', 'true');
+        el.focus();
       } else if(elData.isImageNode) {
         this.inputFile.click();
       }
       el.classList.add('dsxray-contenteditable');
       this.setState({editingElement: elData.uid});
-      el.focus();
     }
-    
     this.setState({lastClick: time});
-    
-    if (!hasParentWithUid(el, 'dsxray')) {
-      this.props.setSelectedElements([elData]);
-    }
+    this.props.setSelectedElements([elData]);
 
     return e.shiftKey;
   }
@@ -131,7 +143,7 @@ class ElementInspector extends React.Component {
   handleMouseOver = (e) => {
     const el = e.target;
     if(!hasParentWithUid(el, 'dsxray')) {
-      this.setBB('hoverBB', el.getBoundingClientRect());
+      this.setBB('hoverBB', getElementData(el));
     }
   }
 
@@ -140,12 +152,7 @@ class ElementInspector extends React.Component {
   }
   
   setBB = (key, bb) => {
-    this.setState({[key]: {
-      width: bb.width,
-      height: bb.height,
-      top: bb.top + window.scrollY,
-      left: bb.left + window.scrollX,
-    }})
+    this.setState({[key]: bb})
   }
 
   handleFile = (e) => {
@@ -173,7 +180,7 @@ class ElementInspector extends React.Component {
       <input 
         type="file"
         id="dsxray-file-import"
-        onChange={this.handleFile} style={{top: '-100em'}} 
+        onChange={this.handleFile} style={{position: 'absolute', top: '-100em'}} 
         ref={ref => this.inputFile = ref}
       />
     )
@@ -181,13 +188,21 @@ class ElementInspector extends React.Component {
 
   render() {
     const { selected } = this.props;
+    const { hoverBB } = this.state;
     return (
       <div>
-        <SFrame color="#888888" style={this.state.hoverBB} />,
+        <SFrame color="#888888" style={this.state.hoverBB}>
+          <SDescriptor>{hoverBB.nodeName}</SDescriptor>
+        </SFrame>
         {selected.map(bb => 
-          <SFrame color={bb.uid === this.state.editingElement ? "#e91e63" : "#00beef"} style={bb} key={bb.uid}>
-            {false && <SToolbar />}
-          </SFrame>,
+          <SFrame 
+            color={bb.uid === this.state.editingElement ? "#e91e63" : "#00beef"} 
+            style={bb} 
+            key={bb.uid}
+            fade={bb.uid !== this.state.editingElement}
+          >
+            <SDescriptor>{bb.nodeName}</SDescriptor>
+          </SFrame>
         )}
         {this.renderHiddenFileInput()}
       </div>
@@ -214,6 +229,7 @@ function getElementData(el, bb_) {
     uid: el.dataset.uid,
     isTextNode: el.dataset.textNode,
     isImageNode: el.dataset.imageNode,
+    nodeName: el.nodeName.toLowerCase(),
     width: bb.width,
     height: bb.height,
     top: bb.top + window.scrollY,
