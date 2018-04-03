@@ -22,6 +22,13 @@ export function setSelectedElements(keys) {
   }
 }
 
+export function setEditingElements(editing) {
+  return {
+    type: types.SET_EDITING_ELEMENT,
+    payload: editing,
+  }
+}
+
 export function toggleShowSpacing() {
   return {
     type: types.TOGGLE_SHOW_SPACING,

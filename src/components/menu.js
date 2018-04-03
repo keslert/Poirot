@@ -52,10 +52,10 @@ class Menu extends React.Component {
 
   handleSnapshot = () => {
     this.props.selected.forEach(({uid}) => {
-      domtoimage.toPng(document.querySelector(`.${uid}`), { quality: 0.95 })
+      domtoimage.toJpeg(document.querySelector(`.${uid}`), { quality: 0.95, bgcolor: '#fff', })
         .then(function (dataUrl) {
           var link = document.createElement('a');
-          link.download = `${uid}.png`;
+          link.download = `${uid}.jpg`;
           link.href = dataUrl;
           link.click();
         });

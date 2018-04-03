@@ -72,6 +72,8 @@ export function parseAndTagPage() {
     node.typographyGroup = getTypographyGroupKey(node.style);
     node.textContent = domNode.textContent;
     domNode.classList.add(node.typographyGroup);
+    domNode.setAttribute('data-text-node', true);
+    // domNode.setAttribute('contenteditable', 'true');
   })
   
   return {

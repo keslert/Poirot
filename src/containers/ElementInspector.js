@@ -7,17 +7,27 @@ import {
   setSelectedElements,
   toggleSelectedElements, 
   toggleShowSpacing,
+  setEditingElements,
 } from '../core/models/ui/actions';
 
 const SFrame = Box.extend`
   position: absolute;
   ${props => `
     background: ${props.color}08;
-    border: 2px solid ${props.color}99;
+    border: 1px solid ${props.color}99;
   `}
   z-index: 2147483646;
   pointer-events: none;
   transition: all 200ms;
+`
+
+const SToolbar = Box.extend`
+  position: absolute;
+  height: 30px;
+  top: -32px;
+  left: -2px;
+  background: #00beef;
+  width: 400px;
 `
 
 
@@ -30,6 +40,7 @@ const keyCodes = {
   m: 77,
 }
 const resetBB = {top: 0, left: 0, width: 0, height: 0}
+const DBL_CLICK_MS = 200;
 class ElementInspector extends React.Component {
 
   state = {
@@ -50,7 +61,7 @@ class ElementInspector extends React.Component {
   }
 
   handleKeyDown = (e) => {
-    if(this.props.selected.length !== 1)
+    if (this.props.selected.length !== 1 || e.target.isContentEditable)
       return;
 
     if(e.which === keyCodes.m) {
@@ -76,10 +87,35 @@ class ElementInspector extends React.Component {
     }
   }
 
+
   handleClick = (e) => {
     const el = e.target;
+    const elData = getElementData(el);
+    const selected = this.props.selected[0];
+    const { editingElement, lastClick } = this.state;
+
+    if(editingElement && editingElement !== elData.uid) {
+      const el_ = document.querySelector(`.${editingElement}`);
+      el_.setAttribute('contenteditable', 'false');
+      el_.classList.remove('dsxray-contenteditable');
+      this.setState({editingElement: null});
+    }
+
+    
+    const time = new Date();
+    const isDblClick = (time - lastClick) < DBL_CLICK_MS;
+    const isSameElement = elData.uid === selected.uid;
+    if(isDblClick && isSameElement && elData.isTextNode) {
+      el.setAttribute('contenteditable', 'true');
+      el.classList.add('dsxray-contenteditable');
+      this.setState({editingElement: elData.uid});
+      el.focus();
+    }
+    
+    this.setState({lastClick: time});
+    
     if (!hasParentWithUid(el, 'dsxray')) {
-      this.props.setSelectedElements([getElementData(el)]);
+      this.props.setSelectedElements([elData]);
     }
     return e.shiftKey;
   }
@@ -110,7 +146,9 @@ class ElementInspector extends React.Component {
       <div>
         <SFrame color="#888888" style={this.state.hoverBB} />,
         {selected.map(bb => 
-          <SFrame color="#00beef" style={bb} key={bb.uid} />,
+          <SFrame color={bb.uid === this.state.editingElement ? "#e91e63" : "#00beef"} style={bb} key={bb.uid}>
+            {false && <SToolbar />}
+          </SFrame>,
         )}
       </div>
     );
@@ -123,6 +161,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   setSelectedElements,
+  setEditingElements,
   toggleSelectedElements,
   toggleShowSpacing,
 }
@@ -133,6 +172,7 @@ function getElementData(el, bb_) {
   const bb = bb_ || el.getBoundingClientRect();
   return {
     uid: el.dataset.uid,
+    isTextNode: el.dataset.textNode,
     width: bb.width,
     height: bb.height,
     top: bb.top + window.scrollY,

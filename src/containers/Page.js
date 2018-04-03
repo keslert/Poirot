@@ -74,9 +74,17 @@ class Page extends React.Component {
       }
     ]).fromPairs().value();
 
+    const generic = {
+      [this.selector('.dsxray-no-scroll', true)]: { overflow: 'hidden !important' },
+      '.dsxray-contenteditable:focus, .dsxray-contenteditable:active': { outline: 'none' },
+      '.dsxray-contenteditable::selection': { background: 'rgba(0,0,0,.1)'},
+    }
+
+
+
     return (
       <div>
-        <Style css={{ [this.selector('.dsxray-no-scroll', true)]: { overflow: 'hidden !important' } }} />
+        <Style css={generic} />
         <Style css={overwrites} />
         <Style css={visible} />
         <Style css={spacing} />
