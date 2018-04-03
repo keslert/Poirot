@@ -39,6 +39,7 @@ export function parseAndTagPage() {
         color: style.color,
         backgroundColor: style.backgroundColor,
         boxShadow: style.boxShadow,
+        backgroundImage: style.backgroundImage,
       }
     }
   })
@@ -74,6 +75,12 @@ export function parseAndTagPage() {
     domNode.classList.add(node.typographyGroup);
     domNode.setAttribute('data-text-node', true);
     // domNode.setAttribute('contenteditable', 'true');
+  })
+
+  const imageNodes = nodes.filter((node) => node.nodeName === 'img' || node.style.backgroundImage !== 'none')
+  imageNodes.forEach(node => {
+    const domNode = uidToDOMNode[node.uid];
+    domNode.setAttribute('data-image-node', true);
   })
   
   return {

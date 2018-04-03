@@ -40,7 +40,7 @@ const keyCodes = {
   m: 77,
 }
 const resetBB = {top: 0, left: 0, width: 0, height: 0}
-const DBL_CLICK_MS = 200;
+const DBL_CLICK_MS = 300;
 class ElementInspector extends React.Component {
 
   state = {
@@ -89,6 +89,9 @@ class ElementInspector extends React.Component {
 
 
   handleClick = (e) => {
+    if(!e.isTrusted) // return if this is a simulated click
+      return;
+
     const el = e.target;
     const elData = getElementData(el);
     const selected = this.props.selected[0];
@@ -105,8 +108,12 @@ class ElementInspector extends React.Component {
     const time = new Date();
     const isDblClick = (time - lastClick) < DBL_CLICK_MS;
     const isSameElement = elData.uid === selected.uid;
-    if(isDblClick && isSameElement && elData.isTextNode) {
-      el.setAttribute('contenteditable', 'true');
+    if(isDblClick && isSameElement) {
+      if(elData.isTextNode) {
+        el.setAttribute('contenteditable', 'true');
+      } else if(elData.isImageNode) {
+        this.inputFile.click();
+      }
       el.classList.add('dsxray-contenteditable');
       this.setState({editingElement: elData.uid});
       el.focus();
@@ -117,6 +124,7 @@ class ElementInspector extends React.Component {
     if (!hasParentWithUid(el, 'dsxray')) {
       this.props.setSelectedElements([elData]);
     }
+
     return e.shiftKey;
   }
 
@@ -140,6 +148,37 @@ class ElementInspector extends React.Component {
     }})
   }
 
+  handleFile = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    e.target.value = null;
+    const { editingElement } = this.state;
+    reader.onload = () => {
+      const el = document.querySelector(`.${editingElement}`);
+      if(el.nodeName.toLowerCase() === 'img') {
+        el.src = reader.result;
+        el.srcset = reader.result;
+      } else {
+        el.style.backgroundImage = `url(${reader.result})`;
+      }
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }
+
+  renderHiddenFileInput() {
+    return (
+      <input 
+        type="file"
+        id="dsxray-file-import"
+        onChange={this.handleFile} style={{top: '-100em'}} 
+        ref={ref => this.inputFile = ref}
+      />
+    )
+  }
+
   render() {
     const { selected } = this.props;
     return (
@@ -150,6 +189,7 @@ class ElementInspector extends React.Component {
             {false && <SToolbar />}
           </SFrame>,
         )}
+        {this.renderHiddenFileInput()}
       </div>
     );
   }
@@ -173,6 +213,7 @@ function getElementData(el, bb_) {
   return {
     uid: el.dataset.uid,
     isTextNode: el.dataset.textNode,
+    isImageNode: el.dataset.imageNode,
     width: bb.width,
     height: bb.height,
     top: bb.top + window.scrollY,
