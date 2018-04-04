@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Flex, Box, Text } from 'rebass';
-import { getTypographyCategories } from '../core/models/page/selectors';
+import { getTypographyCategories } from '../core/models/ds/selectors';
 import { toggleVisible } from '../core/models/ui/actions';
-import { getVisible, getSelectedElements } from '../core/models/ui/selectors';
+import { getVisible, getSelectedNode } from '../core/models/ui/selectors';
 import { updateDSTypography } from '../core/models/ds/actions';
 import MenuItem from './menu-item';
 import TypographyTable from './typography-table';
@@ -56,15 +56,14 @@ class Menu extends React.Component {
   }
 
   handleSnapshot = () => {
-    this.props.selected.forEach(({uid}) => {
-      domtoimage.toJpeg(document.querySelector(`.${uid}`), { quality: 0.95, bgcolor: '#fff', })
-        .then(function (dataUrl) {
-          var link = document.createElement('a');
-          link.download = `${uid}.jpg`;
-          link.href = dataUrl;
-          link.click();
-        });
-    })
+    const uid = this.props.selected.uid;
+    domtoimage.toJpeg(document.querySelector(`.${uid}`), { quality: 0.95, bgcolor: '#fff', })
+      .then(function (dataUrl) {
+        var link = document.createElement('a');
+        link.download = `${uid}.jpg`;
+        link.href = dataUrl;
+        link.click();
+      });
   }
 
   renderHeader = (str) => {
@@ -146,7 +145,7 @@ class Menu extends React.Component {
 const mapStateToProps = state => ({
   visible: getVisible(state),
   typography: getTypographyCategories(state),
-  selected: getSelectedElements(state),
+  selected: getSelectedNode(state),
 })
 
 const mapDispatchToProps = {

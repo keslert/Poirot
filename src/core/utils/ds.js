@@ -48,6 +48,14 @@ export function parseAndTagPage() {
     domNode.classList.add(node.uid)
     domNode.setAttribute('data-uid', node.uid);
     
+    const bb = domNode.getBoundingClientRect();
+    node.bb = {
+      width: bb.width,
+      height: bb.height,
+      top: bb.top + window.scrollY,
+      left: bb.left + window.scrollX,
+    }
+
     node.parents = [];
     let el = domNode.parentElement;
     while(el) {
@@ -66,27 +74,26 @@ export function parseAndTagPage() {
   });
   document.getElementById('dsxray').setAttribute('data-uid', 'dsxray');
 
-
   const textNodes = nodes.filter(({uid}) => isTextNode(uidToDOMNode[uid]));
   textNodes.forEach(node => {
     const domNode = uidToDOMNode[node.uid];
     node.typographyGroup = getTypographyGroupKey(node.style);
     node.textContent = domNode.textContent;
+    node.isTextNode = true;
     domNode.classList.add(node.typographyGroup);
     domNode.setAttribute('data-text-node', true);
-    // domNode.setAttribute('contenteditable', 'true');
   })
 
   const imageNodes = nodes.filter((node) => node.nodeName === 'img' || node.style.backgroundImage !== 'none')
   imageNodes.forEach(node => {
     const domNode = uidToDOMNode[node.uid];
+    node.isImageNode = true;
     domNode.setAttribute('data-image-node', true);
   })
   
   return {
     hostname,
     pathname,
-    nodes,
-    textNodes,
+    nodes: _.keyBy(nodes, 'uid'),
   }
 }

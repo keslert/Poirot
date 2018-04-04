@@ -3,8 +3,8 @@ import uniq from 'lodash/uniq';
 
 const uiState = () => ({
   visible: [],
-  selectedElements: [],
-  editingElement: false,
+  selectedNode: null,
+  editingNode: false,
   showSpacing: false,
 });
 
@@ -18,18 +18,11 @@ export function uiReducer(state = uiState(), { payload, type }) {
         )
       });
     
-    case types.TOGGLE_SELECTED_ELEMENTS:
-      return Object.assign({}, state, {
-        selectedElements: uniq([...state.selectedElements, ...payload]).filter(item =>
-          !state.selectedElements.includes(item) || !payload.includes(item)
-        )
-      });
-    
-    case types.SET_EDITING_ELEMENT:
-      return Object.assign({}, state, { editingElement: payload })
+    case types.SET_EDITING_NODE:
+      return Object.assign({}, state, {editingNode: payload})
 
-    case types.SET_SELECTED_ELEMENTS:
-      return Object.assign({}, state, {selectedElements: payload})
+    case types.SET_SELECTED_NODE:
+      return Object.assign({}, state, {selectedNode: payload})
 
     case types.TOGGLE_SHOW_SPACING:
       return Object.assign({}, state, {showSpacing: !state.showSpacing})

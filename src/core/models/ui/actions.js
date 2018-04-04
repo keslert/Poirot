@@ -8,23 +8,16 @@ export function toggleVisible(keys) {
   }
 }
 
-export function toggleSelectedElements(keys) {
+export function setSelectedNode(uid) {
   return {
-    type: types.TOGGLE_SELECTED_ELEMENTS,
-    payload: keys,
+    type: types.SET_SELECTED_NODE,
+    payload: uid,
   }
 }
 
-export function setSelectedElements(keys) {
+export function setEditingNode(editing) {
   return {
-    type: types.SET_SELECTED_ELEMENTS,
-    payload: keys,
-  }
-}
-
-export function setEditingElements(editing) {
-  return {
-    type: types.SET_EDITING_ELEMENT,
+    type: types.SET_EDITING_NODE,
     payload: editing,
   }
 }

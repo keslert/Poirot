@@ -2,12 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Box } from 'rebass';
 import { hasParentWithUid } from '../core/utils/html';
-import { getSelectedElements } from '../core/models/ui/selectors';
+import { getSelectedNode } from '../core/models/ui/selectors';
+import { getNodes } from '../core/models/page/selectors';
 import { 
-  setSelectedElements,
-  toggleSelectedElements, 
+  setSelectedNode,
   toggleShowSpacing,
-  setEditingElements,
 } from '../core/models/ui/actions';
 import theme from '../styles/rebass-theme';
 
@@ -55,11 +54,13 @@ const keyCodes = {
 }
 const resetBB = {top: 0, left: 0, width: 0, height: 0}
 const DBL_CLICK_MS = 300;
-class ElementInspector extends React.Component {
+class DOMInspector extends React.Component {
 
   state = {
     hoverBB: resetBB,
     selectedBB: resetBB,
+    editingElement: null,
+    lastClick: 0,
   }
 
   componentDidMount() {
@@ -75,14 +76,14 @@ class ElementInspector extends React.Component {
   }
 
   handleKeyDown = (e) => {
-    if (this.props.selected.length !== 1 || e.target.isContentEditable)
+    if(!this.props.selected || e.target.isContentEditable)
       return;
 
     if(e.which === keyCodes.m) {
       this.props.toggleShowSpacing();
     }
 
-    const el = document.querySelector(`.${this.props.selected[0].uid}`) || {};
+    const el = document.querySelector(`.${this.props.selected.uid}`) || {};
     let nextEl;
     if(e.which === keyCodes.left && el.previousElementSibling) {
       nextEl = el.previousElementSibling;
@@ -96,7 +97,7 @@ class ElementInspector extends React.Component {
     }
     
     if(nextEl) {
-      this.props.setSelectedElements([getElementData(nextEl)]);
+      this.props.setSelectedNode(this.props.nodes[nextEl.dataset.uid]);
       e.preventDefault();
     }
   }
@@ -104,16 +105,16 @@ class ElementInspector extends React.Component {
 
   handleClick = (e) => {
     const el = e.target;
-    
     if(!e.isTrusted || hasParentWithUid(el, 'dsxray')) // isTrusted is false for simulated clicks
       return;
-
     
-    const elData = getElementData(el);
-    const selected = this.props.selected[0];
+    const uid = el.dataset.uid;
+    const node = this.props.nodes[uid];
+
+    const { selected } = this.props;
     const { editingElement, lastClick } = this.state;
 
-    if(editingElement && editingElement !== elData.uid) {
+    if(editingElement !== node.uid) {
       const el_ = document.querySelector(`.${editingElement}`);
       if(el_) {
         el_.setAttribute('contenteditable', 'false');
@@ -124,19 +125,19 @@ class ElementInspector extends React.Component {
     
     const time = new Date();
     const isDblClick = (time - lastClick) < DBL_CLICK_MS;
-    const isSameElement = selected && selected.uid === elData.uid;
-    if(isDblClick && isSameElement && (elData.isTextNode || elData.isImageNode)) {
-      if(elData.isTextNode) {
+    const isSameElement = selected && selected.uid === node.uid;
+    if(isDblClick && isSameElement && (node.isTextNode || node.isImageNode)) {
+      if(node.isTextNode) {
         el.setAttribute('contenteditable', 'true');
         el.focus();
-      } else if(elData.isImageNode) {
+      } else if(node.isImageNode) {
         this.inputFile.click();
       }
       el.classList.add('dsxray-contenteditable');
-      this.setState({editingElement: elData.uid});
+      this.setState({editingElement: node.uid});
     }
     this.setState({lastClick: time});
-    this.props.setSelectedElements([elData]);
+    this.props.setSelectedNode(node);
 
     return e.shiftKey;
   }
@@ -144,26 +145,24 @@ class ElementInspector extends React.Component {
   handleMouseOver = (e) => {
     const el = e.target;
     if(!hasParentWithUid(el, 'dsxray')) {
-      this.setBB('hoverBB', getElementData(el));
+      this.setState({hoverBB: getBB(el)})
     }
   }
 
   handleMouseOut = (e) => {
-    this.setBB('hoverBB', resetBB)
-  }
-  
-  setBB = (key, bb) => {
-    this.setState({[key]: bb})
+    this.setState({hoverBB: resetBB})
   }
 
   handleFile = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     e.target.value = null;
-    const { editingElement } = this.state;
+
+    const { selected } = this.props;
     reader.onload = () => {
-      const el = document.querySelector(`.${editingElement}`);
-      if(el.nodeName.toLowerCase() === 'img') {
+      // TODO: Handle Override Externally
+      const el = document.querySelector(`.${selected.uid}`);
+      if(selected.nodeName === 'img') {
         el.src = reader.result;
         el.srcset = reader.result;
       } else {
@@ -195,16 +194,17 @@ class ElementInspector extends React.Component {
         <SFrame color="#888888" style={this.state.hoverBB}>
           <SDescriptor>{hoverBB.nodeName}</SDescriptor>
         </SFrame>
-        {selected.map(bb => 
+        
+        {selected && 
           <SFrame 
-            color={theme.colors[bb.uid === this.state.editingElement ? 'red' : 'blue']} 
-            style={bb} 
-            key={bb.uid}
-            fade={bb.uid !== this.state.editingElement}
+            color={theme.colors[this.state.editingElement === selected.uid ? 'red' : 'blue']} 
+            style={selected.bb}
+            key={selected.uid}
+            fade={this.state.editingElement !== selected.uid}
           >
-            <SDescriptor>{bb.nodeName}</SDescriptor>
+            <SDescriptor>{selected.nodeName}</SDescriptor>
           </SFrame>
-        )}
+        }
         {this.renderHiddenFileInput()}
       </div>
     );
@@ -212,24 +212,20 @@ class ElementInspector extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  selected: getSelectedElements(state),
+  selected: getSelectedNode(state),
+  nodes: getNodes(state),
 })
 
 const mapDispatchToProps = {
-  setSelectedElements,
-  setEditingElements,
-  toggleSelectedElements,
+  setSelectedNode,
   toggleShowSpacing,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ElementInspector);
+export default connect(mapStateToProps, mapDispatchToProps)(DOMInspector);
 
-function getElementData(el, bb_) {
-  const bb = bb_ || el.getBoundingClientRect();
+function getBB(el) {
+  const bb = el.getBoundingClientRect();
   return {
-    uid: el.dataset.uid,
-    isTextNode: el.dataset.textNode,
-    isImageNode: el.dataset.imageNode,
     nodeName: el.nodeName.toLowerCase(),
     width: bb.width,
     height: bb.height,

@@ -6,13 +6,13 @@ import theme from '../styles/rebass-theme';
 import { 
   getVisible,
   getShowSpacing,
+  getSelectedNode,
+  getSelectedChildNodes,
 } from '../core/models/ui/selectors';
 
 import { 
   getTypographyCategories, 
-  getSelectedNodes,
-  getSelectedChildNodes,
-} from '../core/models/page/selectors';
+} from '../core/models/ds/selectors';
 
 import { addPage } from '../core/models/page/actions';
 import { parseAndTagPage } from '../core/utils/ds';
@@ -35,7 +35,7 @@ class Page extends React.Component {
   }
 
   render() {
-    const { selectedNodes, selectedChildNodes, showSpacing } = this.props;
+    const { selectedNode, selectedChildNodes, showSpacing } = this.props;
 
     const overwrites = _.chain(this.props.typography.overwrites).map((style, key) => [
       this.selector(`.${key}`), cleanCSS(style)
@@ -45,7 +45,7 @@ class Page extends React.Component {
       this.selector(`.${key}`), {background: '#aaeeaaaa !important'}
     ]).fromPairs().value();
 
-    const nodes = showSpacing ? [...selectedNodes, ...selectedChildNodes] : [];
+    const nodes = showSpacing ? [selectedNode, ...selectedChildNodes] : [];
     const spacing = _.chain(nodes).map(node => [
       this.selector(`.${node.uid}`), {
         'box-shadow': `
@@ -88,7 +88,7 @@ class Page extends React.Component {
 
 const mapStateToProps = state => ({
   visible: getVisible(state),
-  selectedNodes: getSelectedNodes(state),
+  selectedNode: getSelectedNode(state),
   selectedChildNodes: getSelectedChildNodes(state),
   showSpacing: getShowSpacing(state),
   typography: getTypographyCategories(state),
