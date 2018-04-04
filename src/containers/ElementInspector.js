@@ -9,6 +9,7 @@ import {
   toggleShowSpacing,
   setEditingElements,
 } from '../core/models/ui/actions';
+import theme from '../styles/rebass-theme';
 
 const SFrame = Box.extend`
   position: absolute;
@@ -123,7 +124,7 @@ class ElementInspector extends React.Component {
     
     const time = new Date();
     const isDblClick = (time - lastClick) < DBL_CLICK_MS;
-    const isSameElement = elData.uid === selected.uid;
+    const isSameElement = selected && selected.uid === elData.uid;
     if(isDblClick && isSameElement && (elData.isTextNode || elData.isImageNode)) {
       if(elData.isTextNode) {
         el.setAttribute('contenteditable', 'true');
@@ -196,7 +197,7 @@ class ElementInspector extends React.Component {
         </SFrame>
         {selected.map(bb => 
           <SFrame 
-            color={bb.uid === this.state.editingElement ? "#e91e63" : "#00beef"} 
+            color={theme.colors[bb.uid === this.state.editingElement ? 'red' : 'blue']} 
             style={bb} 
             key={bb.uid}
             fade={bb.uid !== this.state.editingElement}

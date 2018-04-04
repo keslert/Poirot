@@ -1,8 +1,9 @@
 import { parsePage } from '../../../src/core/utils/ds';
 import { addPage } from '../../../src/core/models/ds/actions';
 
-const arrowURLs = ['^http://keslertanner\\.com', '^https://www.wework\\.com', '^https://www.landay\\.org', '^https://workona.com/', '^https://compositor.io/', '^https://fiftythree.com/', '^https://bookroo.com/',
-'^https://www.airbnb.com/'];
+const arrowURLs = ['^http://keslertanner\\.com', '^https://www.wework\\.com', '^https://www.landay\\.org',    
+  '^https://workona.com/', '^https://compositor.io/', '^https://fiftythree.com/', '^https://bookroo.com/',
+  '^https://www.airbnb.com/', '^https://stripe.com/'];
 export function listen(store) {
 
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {

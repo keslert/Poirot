@@ -8,6 +8,7 @@ import { getVisible, getSelectedElements } from '../core/models/ui/selectors';
 import { updateDSTypography } from '../core/models/ds/actions';
 import MenuItem from './menu-item';
 import TypographyTable from './typography-table';
+import StyleMenu from './style-menu';
 import domtoimage from 'dom-to-image';
 
 
@@ -22,6 +23,7 @@ const SOpenMenu = Box.extend`
   background-color: #fff;
   border-radius: 4px;
   font-size: 14px;
+  min-width: 350px;
 `;
 
 const SClosedMenu = Box.extend`
@@ -45,7 +47,7 @@ class Menu extends React.Component {
 
   state = {
     open: true,
-    menu: 'Typography',
+    menu: 'Style',
   }
 
   handleRefresh = () => {
@@ -67,7 +69,7 @@ class Menu extends React.Component {
 
   renderHeader = (str) => {
     return (
-      <Flex p="12px" pt={2}>
+      <Flex p={2}>
         <Box flex={1}>
           <Text is="span" bold children="Designer Tools" />
         </Box>
@@ -100,6 +102,24 @@ class Menu extends React.Component {
     document.body.classList.remove('dsxray-no-scroll');
   }
 
+  renderMenu() {
+    switch(this.state.menu) {
+      case 'Style':
+        return <StyleMenu 
+          typography={this.props.typography}
+        />
+      case 'Typography':
+        return <TypographyTable
+          toggleVisible={this.props.toggleVisible}
+          typography={this.props.typography}
+          updateTypography={this.props.updateDSTypography}
+          visible={this.props.visible}
+        />
+      default:
+        return <div>Not a menu...</div>
+    }
+  }
+
   render() {
     const { open } = this.state;
     return (
@@ -110,12 +130,7 @@ class Menu extends React.Component {
           style={{display: open ? 'block' : 'none'}}
         >
           {this.renderHeader()}
-          <TypographyTable 
-            toggleVisible={this.props.toggleVisible}
-            typography={this.props.typography} 
-            updateTypography={this.props.updateDSTypography}
-            visible={this.props.visible}
-          />
+          {this.renderMenu()}
         </SOpenMenu>
         <SClosedMenu 
           onClick={() => this.setState({open: true})}
