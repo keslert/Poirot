@@ -14,8 +14,13 @@ import {
   getTypographyCategories, 
 } from '../core/models/ds/selectors';
 
-import { addPage } from '../core/models/page/actions';
-import { parseAndTagPage } from '../core/utils/ds';
+import { 
+  getImageNodes,
+  getOverwrites,
+} from '../core/models/page/selectors';
+import { 
+  _updateNode,
+} from '../core/models/page/actions';
 
 class Page extends React.Component {
 
@@ -25,9 +30,22 @@ class Page extends React.Component {
     // Some sites like to use !important liberally, so let's try and win
     // this specificity battle with 10 chained ids _and_ !important :)
     this.superSpecificHammerTime = `#${id}`.repeat(10);
+  }
 
-    const page = parseAndTagPage();
-    this.props.addPage(page);
+  componentWillReceiveProps(props) {
+    props.imageNodes.forEach(node => {
+      const overwrites = props.overwrites[node.uid] || {};
+
+      // Image src can't be overwritten in stylesheets so we have to manually override it.
+      // We store src in _src so we can do reduce querySelectors.
+      if(overwrites.src !== node._src) { 
+        const src = overwrites.src || node.src;
+        const el = document.querySelector(`.${node.uid}`);
+        el.src = src;
+        el.srcset = src;
+        this.props._updateNode(node, {_src: src});
+      }
+    })
   }
 
   selector(selector, noSpace) {
@@ -37,7 +55,11 @@ class Page extends React.Component {
   render() {
     const { selectedNode, selectedChildNodes, showSpacing } = this.props;
 
-    const overwrites = _.chain(this.props.typography.overwrites).map((style, key) => [
+    // const overwrites = _.chain(this.props.typography.overwrites).map((style, key) => [
+    //   this.selector(`.${key}`), cleanCSS(style)
+    // ]).fromPairs().value();
+
+    const overwrites = _.chain(this.props.overwrites).map((style, key) => [
       this.selector(`.${key}`), cleanCSS(style)
     ]).fromPairs().value();
 
@@ -88,20 +110,22 @@ class Page extends React.Component {
 
 const mapStateToProps = state => ({
   visible: getVisible(state),
+  imageNodes: getImageNodes(state),
   selectedNode: getSelectedNode(state),
   selectedChildNodes: getSelectedChildNodes(state),
   showSpacing: getShowSpacing(state),
   typography: getTypographyCategories(state),
+  overwrites: getOverwrites(state),
 })
 
 const mapDispatchToProps = {
-  addPage,
+  _updateNode,
 }
 
 function cleanCSS(style) {
   return _.chain(style).map((value, key) => [
     camelcaseToHyphenated(key),
-    key === 'fontFamily' ? `'${value}'` : value
+    key === 'fontFamily' ? `'${value}' !important` : `${value} !important`,
   ]).fromPairs().value();
 }
 

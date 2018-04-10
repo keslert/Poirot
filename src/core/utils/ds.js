@@ -40,6 +40,7 @@ export function parseAndTagPage() {
         backgroundColor: style.backgroundColor,
         boxShadow: style.boxShadow,
         backgroundImage: style.backgroundImage,
+        overwrites: {},
       }
     }
   })
@@ -88,6 +89,7 @@ export function parseAndTagPage() {
   imageNodes.forEach(node => {
     const domNode = uidToDOMNode[node.uid];
     node.isImageNode = true;
+    node.src = node.src;
     domNode.setAttribute('data-image-node', true);
   })
   

@@ -1,1 +1,3 @@
 export const ADD_PAGE = 'ADD_PAGE';
+export const UPDATE_OVERWRITES = 'UPDATE_OVERWRITES';
+export const UPDATE_NODE = 'UPDATE_NODE';

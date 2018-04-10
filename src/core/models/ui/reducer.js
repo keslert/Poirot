@@ -6,6 +6,7 @@ const uiState = () => ({
   selectedNode: null,
   editingNode: false,
   showSpacing: false,
+  showChanges: true,
 });
 
 export function uiReducer(state = uiState(), { payload, type }) {

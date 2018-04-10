@@ -2,17 +2,16 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Flex, Box, Text } from 'rebass';
-import { getTypographyCategories } from '../core/models/ds/selectors';
-import { toggleVisible } from '../core/models/ui/actions';
-import { getVisible, getSelectedNode } from '../core/models/ui/selectors';
 import { updateDSTypography } from '../core/models/ds/actions';
+import { addPage, updateOverwrites } from '../core/models/page/actions';
+import { toggleVisible } from '../core/models/ui/actions';
+import { getTypographyCategories } from '../core/models/ds/selectors';
+import { getOverwrites } from '../core/models/page/selectors';
+import { getVisible, getSelectedNode } from '../core/models/ui/selectors';
 import MenuItem from './menu-item';
 import TypographyTable from './typography-table';
 import StyleMenu from './style-menu';
 import domtoimage from 'dom-to-image';
-
-
-import { addPage } from '../core/models/page/actions';
 import { parseAndTagPage } from '../core/utils/ds';
 
 const SOpenMenu = Box.extend`
@@ -48,6 +47,10 @@ class Menu extends React.Component {
   state = {
     open: true,
     menu: 'Style',
+  }
+
+  componentDidMount() {
+    this.handleRefresh();
   }
 
   handleRefresh = () => {
@@ -105,7 +108,10 @@ class Menu extends React.Component {
     switch(this.state.menu) {
       case 'Style':
         return <StyleMenu 
+          selected={this.props.selected}
           typography={this.props.typography}
+          updateOverwrites={this.props.updateOverwrites}
+          overwrites={this.props.overwrites}
         />
       case 'Typography':
         return <TypographyTable
@@ -146,12 +152,14 @@ const mapStateToProps = state => ({
   visible: getVisible(state),
   typography: getTypographyCategories(state),
   selected: getSelectedNode(state),
+  overwrites: getOverwrites(state),
 })
 
 const mapDispatchToProps = {
   toggleVisible,
   updateDSTypography,
   addPage,
+  updateOverwrites,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

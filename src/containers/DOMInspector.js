@@ -5,6 +5,10 @@ import { hasParentWithUid } from '../core/utils/html';
 import { getSelectedNode } from '../core/models/ui/selectors';
 import { getNodes } from '../core/models/page/selectors';
 import { 
+  updateNode, 
+  updateOverwrites,
+} from '../core/models/page/actions';
+import { 
   setSelectedNode,
   toggleShowSpacing,
 } from '../core/models/ui/actions';
@@ -50,6 +54,7 @@ const keyCodes = {
   down: 40,
   up: 38,
   shift: 65,
+  enter: 13,
   m: 77,
 }
 const resetBB = {top: 0, left: 0, width: 0, height: 0}
@@ -75,9 +80,44 @@ class DOMInspector extends React.Component {
     document.onkeydown = null;
   }
 
+  componentWillUpdate(props) {
+    const { selected } = this.props;
+
+    if(props.selected && (!selected || props.selected.uid !== selected.uid)) {
+      const el = document.querySelector(`.${props.selected.uid}`);
+      this.setState({selectedBB: getBB(el)});
+    }
+  }
+
+  updateSelected = changes => {
+    const { selected, updateOverwrites } = this.props;
+    this.props.updateOverwrites({[selected.uid]: changes})
+  }
+
+  handleDeselect() {
+    const node = this.props.selected;
+    const changes = {};
+    const el = document.querySelector(`.${node.uid}`);
+    
+    if(node.isTextNode && node.textContent !== el.textContent) {
+      this.props.updateNode(node, {
+        _textContent: el.textContent,
+      });
+    }
+    
+    this.props.setSelectedNode(null);
+  }
+
   handleKeyDown = (e) => {
-    if(!this.props.selected || e.target.isContentEditable)
+    if(!this.props.selected || e.target.isContentEditable) {
+      if (e.which === keyCodes.enter && !e.shiftKey) {
+        this.handleDeselect();
+        e.preventDefault();
+        // TODO: Handle the possibility of new element creation.
+      }
       return;
+    }
+      
 
     if(e.which === keyCodes.m) {
       this.props.toggleShowSpacing();
@@ -102,14 +142,13 @@ class DOMInspector extends React.Component {
     }
   }
 
-
   handleClick = (e) => {
     const el = e.target;
-    if(!e.isTrusted || hasParentWithUid(el, 'dsxray')) // isTrusted is false for simulated clicks
-      return;
-    
     const uid = el.dataset.uid;
     const node = this.props.nodes[uid];
+    // isTrusted is false for simulated clicks
+    if(!e.isTrusted || hasParentWithUid(el, 'dsxray') || !node) 
+      return;
 
     const { selected } = this.props;
     const { editingElement, lastClick } = this.state;
@@ -160,17 +199,14 @@ class DOMInspector extends React.Component {
 
     const { selected } = this.props;
     reader.onload = () => {
-      // TODO: Handle Override Externally
-      const el = document.querySelector(`.${selected.uid}`);
       if(selected.nodeName === 'img') {
-        el.src = reader.result;
-        el.srcset = reader.result;
+        this.updateSelected({src: reader.result})
       } else {
-        el.style.backgroundImage = `url(${reader.result})`;
+        this.updateSelected({backgroundImage: `url(${reader.result})`})
       }
     };
 
-    if (file) {
+    if(file) {
       reader.readAsDataURL(file);
     }
   }
@@ -188,7 +224,7 @@ class DOMInspector extends React.Component {
 
   render() {
     const { selected } = this.props;
-    const { hoverBB } = this.state;
+    const { hoverBB, selectedBB } = this.state;
     return (
       <div>
         <SFrame color="#888888" style={this.state.hoverBB}>
@@ -198,7 +234,7 @@ class DOMInspector extends React.Component {
         {selected && 
           <SFrame 
             color={theme.colors[this.state.editingElement === selected.uid ? 'red' : 'blue']} 
-            style={selected.bb}
+            style={selectedBB}
             key={selected.uid}
             fade={this.state.editingElement !== selected.uid}
           >
@@ -219,6 +255,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   setSelectedNode,
   toggleShowSpacing,
+  updateNode,
+  updateOverwrites,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DOMInspector);

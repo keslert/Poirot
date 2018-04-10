@@ -6,3 +6,17 @@ export function addPage(page) {
     payload: page,
   }
 }
+
+export function updateOverwrites(overwrites) {
+  return {
+    type: types.UPDATE_OVERWRITES,
+    payload: overwrites
+  }
+}
+
+export function _updateNode(node, changes) {
+  return {
+    type: types.UPDATE_NODE,
+    payload: {node, changes},
+  }
+}

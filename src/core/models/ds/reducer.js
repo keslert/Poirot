@@ -14,11 +14,9 @@ export function dsReducer(state = dsState(), { payload, type }) {
         ...payload.keys.map(key => ({[key]: payload.changeset})),
       )
 
-      const newState = Object.assign({}, state, {
+      return Object.assign({}, state, {
         typography: {...state.typography, overwrites}
       })
-      console.log('UPDATE_DS_TYPOGRAPHY', newState)
-      return newState;
     
 
     default:

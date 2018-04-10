@@ -24,4 +24,3 @@ class FontPicker extends React.Component {
   }
 }
 export default FontPicker;
-// loadOptions={(input, cb) => cb(null, {options: fonts})}
