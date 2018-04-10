@@ -62,3 +62,14 @@ export function hasParentWithUid(node, uid) {
   }
   return false;
 }
+
+export function getBB(el) {
+  const bb = el.getBoundingClientRect();
+  return {
+    uid: el.dataset.uid,
+    width: bb.width,
+    height: bb.height,
+    top: bb.top + window.scrollY,
+    left: bb.left + window.scrollX,
+  }
+}

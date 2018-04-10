@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Box } from 'rebass';
-import { hasParentWithUid } from '../core/utils/html';
+import { Box, Text } from 'rebass';
+import { getBB } from '../core/utils/html';
 import { getSelectedNode } from '../core/models/ui/selectors';
 import { getNodes } from '../core/models/page/selectors';
 import { 
@@ -45,6 +45,8 @@ const SDescriptor = Box.extend`
   left: 0px;
   font-weight: bold;
   font-size: 12px;
+  background: rgba(255,255,255,.8);
+  white-space: nowrap;
 `
 
 
@@ -147,7 +149,7 @@ class DOMInspector extends React.Component {
     const uid = el.dataset.uid;
     const node = this.props.nodes[uid];
     // isTrusted is false for simulated clicks
-    if(!e.isTrusted || hasParentWithUid(el, 'dsxray') || !node) 
+    if(!e.isTrusted || !node) 
       return;
 
     const { selected } = this.props;
@@ -183,7 +185,8 @@ class DOMInspector extends React.Component {
 
   handleMouseOver = (e) => {
     const el = e.target;
-    if(!hasParentWithUid(el, 'dsxray')) {
+    const node = this.props.nodes[el.dataset.uid];
+    if(node) {
       this.setState({hoverBB: getBB(el)})
     }
   }
@@ -223,22 +226,43 @@ class DOMInspector extends React.Component {
   }
 
   render() {
-    const { selected } = this.props;
+    const { selected, nodes } = this.props;
     const { hoverBB, selectedBB } = this.state;
+    const hNode = nodes[hoverBB.uid]
     return (
       <div>
-        <SFrame color="#888888" style={this.state.hoverBB}>
-          <SDescriptor>{hoverBB.nodeName}</SDescriptor>
-        </SFrame>
+        {hNode && 
+          <SFrame color="#888888" style={this.state.hoverBB}>
+            <SDescriptor>
+              {hNode.nodeName}
+              {hNode.isTextNode &&
+                <Text
+                  is="span"
+                  ml={1}
+                  children={`${hNode.style.fontFamily} ${hNode.style.fontWeight} ${hNode.style.fontSize}`}
+                />
+              }
+            </SDescriptor>
+          </SFrame>
+        }
         
         {selected && 
           <SFrame 
-            color={theme.colors[this.state.editingElement === selected.uid ? 'red' : 'blue']} 
+            color={theme.colors[this.state.editingElement === selected.uid ? 'green' : 'blue']} 
             style={selectedBB}
             key={selected.uid}
             fade={this.state.editingElement !== selected.uid}
           >
-            <SDescriptor>{selected.nodeName}</SDescriptor>
+            <SDescriptor>
+              {selected.nodeName} 
+              {selected.isTextNode && 
+                <Text 
+                  is="span" 
+                  ml={1} 
+                  children={`${selected.style.fontFamily} ${selected.style.fontWeight} ${selected.style.fontSize}`} 
+                />
+              }
+            </SDescriptor>
           </SFrame>
         }
         {this.renderHiddenFileInput()}
@@ -260,14 +284,3 @@ const mapDispatchToProps = {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DOMInspector);
-
-function getBB(el) {
-  const bb = el.getBoundingClientRect();
-  return {
-    nodeName: el.nodeName.toLowerCase(),
-    width: bb.width,
-    height: bb.height,
-    top: bb.top + window.scrollY,
-    left: bb.left + window.scrollX,
-  }
-}

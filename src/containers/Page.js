@@ -2,12 +2,38 @@ import React from 'react';
 import Style from '../components/style';
 import { connect } from 'react-redux';
 import theme from '../styles/rebass-theme';
+import { Box } from 'rebass';
+import isEqual from 'lodash/isEqual';
+import map from 'lodash/map';
+import filter from 'lodash/filter';
+import { getBB } from '../core/utils/html';
+
+const SRedline = Box.extend`
+  position: absolute;
+  pointer-events: none;
+  ${props => `
+    background: ${props.theme.colors.red}08;
+    border: 1px solid ${props.theme.colors.red};
+    &:after {
+      content: "${props.text}";
+      position: absolute;
+      top: -18px;
+      left: 0;
+      color: ${props.theme.colors.red};
+      font-size: 10px;
+      background: rgba(255,255,255,0.8);
+      white-space: nowrap;
+    }
+  `}
+`
 
 import { 
   getVisible,
   getShowSpacing,
   getSelectedNode,
   getSelectedChildNodes,
+  getHideChanges,
+  getShowRedline,
 } from '../core/models/ui/selectors';
 
 import { 
@@ -24,28 +50,56 @@ import {
 
 class Page extends React.Component {
 
-  componentWillMount() {
+  state = {
+    redlines: [],
+  }
+
+  componentDidMount() {
     const id = document.body.id || 'dsxray-body'
     document.body.id = id;
     // Some sites like to use !important liberally, so let's try and win
     // this specificity battle with 10 chained ids _and_ !important :)
     this.superSpecificHammerTime = `#${id}`.repeat(10);
+    this.updateImages(this.props);
+    this.updateRedlines(this.props);
   }
 
   componentWillReceiveProps(props) {
+    this.updateImages(props);
+    if (!isEqual(props.overwrites, this.props.overwrites)) {
+      this.updateRedlines(props);
+    }
+  }
+
+  updateImages(props) {
     props.imageNodes.forEach(node => {
       const overwrites = props.overwrites[node.uid] || {};
-
       // Image src can't be overwritten in stylesheets so we have to manually override it.
       // We store src in _src so we can do reduce querySelectors.
-      if(overwrites.src !== node._src) { 
-        const src = overwrites.src || node.src;
+      const src = props.hideChanges ? node.src : overwrites.src;
+
+      if (src !== node._src) {
+        const _src = src || node.src;
         const el = document.querySelector(`.${node.uid}`);
-        el.src = src;
-        el.srcset = src;
-        this.props._updateNode(node, {_src: src});
+        el.src = _src;
+        el.srcset = _src;
+        this.props._updateNode(node, { _src });
       }
     })
+  }
+
+  updateRedlines(props) {
+    // We need to update the stylesheets before we know the new bounding boxes
+    setTimeout(() => {
+      const redlines = map(props.overwrites, (style, selector) => {
+        const el = document.querySelector(`.${selector}`);
+        return {
+          ...getBB(el),
+          text: map(style, (v, k) => `${camelcaseToHyphenated(k)}: ${v}`).join(', '),
+        }
+      })
+      this.setState({ redlines });
+    }, 1)
   }
 
   selector(selector, noSpace) {
@@ -53,13 +107,13 @@ class Page extends React.Component {
   }
 
   render() {
-    const { selectedNode, selectedChildNodes, showSpacing } = this.props;
+    const { selectedNode, selectedChildNodes, showSpacing, showRedline, hideChanges } = this.props;
 
     // const overwrites = _.chain(this.props.typography.overwrites).map((style, key) => [
     //   this.selector(`.${key}`), cleanCSS(style)
     // ]).fromPairs().value();
 
-    const overwrites = _.chain(this.props.overwrites).map((style, key) => [
+    const overwrites = _.chain(hideChanges ? {} : this.props.overwrites).map((style, key) => [
       this.selector(`.${key}`), cleanCSS(style)
     ]).fromPairs().value();
 
@@ -103,6 +157,10 @@ class Page extends React.Component {
         <Style css={overwrites} />
         <Style css={visible} />
         <Style css={spacing} />
+
+        {showRedline && this.state.redlines.map((r, i) => 
+          <SRedline key={r.uid} text={r.text} style={r} />
+        )}
       </div>
     );
   }
@@ -114,6 +172,8 @@ const mapStateToProps = state => ({
   selectedNode: getSelectedNode(state),
   selectedChildNodes: getSelectedChildNodes(state),
   showSpacing: getShowSpacing(state),
+  showRedline: getShowRedline(state),
+  hideChanges: getHideChanges(state),
   typography: getTypographyCategories(state),
   overwrites: getOverwrites(state),
 })

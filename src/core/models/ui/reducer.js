@@ -6,7 +6,8 @@ const uiState = () => ({
   selectedNode: null,
   editingNode: false,
   showSpacing: false,
-  showChanges: true,
+  showRedline: false,
+  hideChanges: false,
 });
 
 export function uiReducer(state = uiState(), { payload, type }) {
@@ -27,6 +28,12 @@ export function uiReducer(state = uiState(), { payload, type }) {
 
     case types.TOGGLE_SHOW_SPACING:
       return Object.assign({}, state, {showSpacing: !state.showSpacing})
+
+    case types.TOGGLE_HIDE_CHANGES:
+      return Object.assign({}, state, { hideChanges: !state.hideChanges })
+
+    case types.TOGGLE_SHOW_REDLINE:
+      return Object.assign({}, state, { showRedline: !state.showRedline })
 
     default:
       return state;

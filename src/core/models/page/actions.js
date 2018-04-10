@@ -10,7 +10,7 @@ export function addPage(page) {
 export function updateOverwrites(overwrites) {
   return {
     type: types.UPDATE_OVERWRITES,
-    payload: overwrites
+    payload: overwrites,
   }
 }
 

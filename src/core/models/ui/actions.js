@@ -27,3 +27,15 @@ export function toggleShowSpacing() {
     type: types.TOGGLE_SHOW_SPACING,
   }
 }
+
+export function toggleShowRedline() {
+  return {
+    type: types.TOGGLE_SHOW_REDLINE,
+  }
+}
+
+export function toggleHideChanges() {
+  return {
+    type: types.TOGGLE_HIDE_CHANGES,
+  }
+}

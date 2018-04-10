@@ -1,6 +1,7 @@
 import * as types from './action-types';
 import mergeWith from 'lodash/mergeWith';
-import pickBy from 'lodash/pickBy'
+import pickBy from 'lodash/pickBy';
+import isEmpty from 'lodash/isEmpty';
 
 const pageState = () => ({
   nodes: [],
@@ -27,9 +28,9 @@ export function pageReducer(state = pageState(), { payload, type }) {
         )
       })
 
-    case types.UPDATE_OVERWRITES:
+    case types.ALIAS_UPDATE_OVERWRITES:
       const newState = Object.assign({}, state, {
-        overwrites: mergeWith({}, state.overwrites, payload, customMerge)
+        overwrites: pickBy(mergeWith({}, state.overwrites, payload, customMerge), i => !isEmpty(i))
       })
       console.log(newState);
       return newState;

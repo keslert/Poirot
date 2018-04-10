@@ -4,7 +4,7 @@ import { Checkboard } from 'react-color/lib/components/common';
 
 const Swatch = Box.extend`
   position: relative;
-  width: 24px;
+  // width: 24px;
   height: 24px;
   border: 1px solid #eaeaea;
   border-radius: 2px;

@@ -31,8 +31,11 @@ export default {
     700
   ],
   colors: {
+    black: '#01010a',
     blue: '#00beef',
     red: '#e91e63',
+    purple: '#673ab7',
+    green: '#9de04f',
     marginTL: '#f7b1b6',
     marginBR: '#fad2b6',
     paddingTL: '#a2d091',

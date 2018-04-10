@@ -18,7 +18,7 @@ class ColorPicker extends React.Component {
   }
 
   handleChange = (color) => {
-    this.props.onChange(color.hex)
+    this.props.onChange(color.hex);
   }
 
   renderPicker() {

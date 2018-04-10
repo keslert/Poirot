@@ -76,7 +76,9 @@ class StyleMenu extends React.Component {
           <Flex mb={2} direction="column">
             <Flex>
               <SLabel children="Text" />
-              <SReset children="reset" onClick={this.handleResetTypography} />
+              {(selected.style.fontFamily !== style.fontFamily || selected.style.fontWeight !== style.fontWeight || selected.style.fontSize !== style.fontSize) && 
+                <SReset children="reset" onClick={this.handleResetTypography} />
+              }
               <SCustom children="custom" />
             </Flex>
             <Box flex={1}>
@@ -93,7 +95,9 @@ class StyleMenu extends React.Component {
           <Flex mb={2} direction="column">
             <Flex>
               <SLabel children="Text Color" />
-              <SReset children="reset" onClick={this.handleResetColor} />
+              {selected.style.color !== style.color && 
+                <SReset children="reset" onClick={this.handleResetColor} />
+              }
               <SCustom children="custom" />
             </Flex>
             <ColorPicker colors={colors} color={style.color} onChange={this.handleSetColor}>
@@ -102,16 +106,20 @@ class StyleMenu extends React.Component {
           </Flex>
         }
 
-        <Flex mb={2} direction="column">
-          <Flex>
-            <SLabel children="Background" />
-            <SReset children="reset" onClick={this.handleResetBackground} />
-            <SCustom children="custom" />
+        {!selected.isImageNode && 
+          <Flex mb={2} direction="column">
+            <Flex>
+              <SLabel children="Background" />
+              {selected.style.backgroundColor !== style.backgroundColor && 
+                <SReset children="reset" onClick={this.handleResetBackground} />
+              }
+              <SCustom children="custom" />
+            </Flex>
+            <ColorPicker colors={colors} color={style.backgroundColor} onChange={this.handleSetBackground}>
+              <ColorSwatch color={style.backgroundColor} />
+            </ColorPicker>
           </Flex>
-          <ColorPicker colors={colors} color={style.backgroundColor} onChange={this.handleSetBackground}>
-            <ColorSwatch color={style.backgroundColor} />
-          </ColorPicker>
-        </Flex>
+        }
         
       </Flex>
     )

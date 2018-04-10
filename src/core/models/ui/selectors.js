@@ -14,6 +14,14 @@ export function getShowSpacing(state) {
   return getUI(state).showSpacing;
 }
 
+export function getShowRedline(state) {
+  return getUI(state).showRedline;
+}
+
+export function getHideChanges(state) {
+  return getUI(state).hideChanges;
+}
+
 export function getSelectedNode(state) {
   return getUI(state).selectedNode;
 }

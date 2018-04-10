@@ -4,15 +4,25 @@ import { createSelector } from 'reselect';
 import { Flex, Box, Text } from 'rebass';
 import { updateDSTypography } from '../core/models/ds/actions';
 import { addPage, updateOverwrites } from '../core/models/page/actions';
-import { toggleVisible } from '../core/models/ui/actions';
+import { 
+  toggleVisible,
+  toggleHideChanges,
+  toggleShowRedline,
+} from '../core/models/ui/actions';
 import { getTypographyCategories } from '../core/models/ds/selectors';
 import { getOverwrites } from '../core/models/page/selectors';
-import { getVisible, getSelectedNode } from '../core/models/ui/selectors';
+import { 
+  getVisible, 
+  getSelectedNode,
+  getHideChanges,
+  getShowRedline,
+} from '../core/models/ui/selectors';
 import MenuItem from './menu-item';
 import TypographyTable from './typography-table';
 import StyleMenu from './style-menu';
 import domtoimage from 'dom-to-image';
 import { parseAndTagPage } from '../core/utils/ds';
+import Icon from './icon';
 
 const SOpenMenu = Box.extend`
   display: flex;
@@ -69,22 +79,32 @@ class Menu extends React.Component {
       });
   }
 
+  handleGenerateReport = () => {
+
+  }
+
   renderHeader = (str) => {
     return (
       <Flex p={2}>
-        <Box flex={1}>
-          <Text is="span" bold children="Designer Tools" />
-        </Box>
-        <Text center bold>{this.state.menu} <Text is="span" f="8px" children="▼" /></Text>
+        <Text center bold>{this.state.menu} <Text is="span" f="6px" children="▼" style={{position:'relative', top: -1}} /></Text>
         <Flex flex={1} justify="flex-end" m={-1}>
+          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
+            <Icon name="file_download" />
+          </Box>
+          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleHideChanges}>
+            <Icon name="visibility_off" selected={this.props.hideChanges} />
+          </Box>
+          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowRedline}>
+            <Icon name="brush" selected={this.props.showRedline} />
+          </Box>
           <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleSnapshot}>
-            <img src="https://icon.now.sh/photo_camera/18" />
+            <Icon name="photo_camera" />
           </Box>
           <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
-            <img src="https://icon.now.sh/refresh/18" />
+            <Icon name="refresh" />
           </Box>
           <Box p={1} style={{ cursor: 'pointer' }} onClick={() => (this.setState({ open: false }), this.handleMouseLeave())}>
-            <img src="https://icon.now.sh/x/12" />
+            <Icon name="x" size="12" />
           </Box>
         </Flex>
       </Flex>
@@ -153,6 +173,8 @@ const mapStateToProps = state => ({
   typography: getTypographyCategories(state),
   selected: getSelectedNode(state),
   overwrites: getOverwrites(state),
+  hideChanges: getHideChanges(state),
+  showRedline: getShowRedline(state),
 })
 
 const mapDispatchToProps = {
@@ -160,6 +182,8 @@ const mapDispatchToProps = {
   updateDSTypography,
   addPage,
   updateOverwrites,
+  toggleHideChanges,
+  toggleShowRedline,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

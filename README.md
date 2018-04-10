@@ -1,10 +1,8 @@
 # Design System Xray
 
 ## TODO
-- Override Style
 - Group similar items
   - Page segmentation
 - Generate Changelog
-
-
-
+- Show Redlines
+- Remove override if it's the same as original
