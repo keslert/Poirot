@@ -54,6 +54,10 @@ class StyleMenu extends React.Component {
     this.updateSelected({ backgroundColor });
   }
 
+  handleSetMarginPadding = (changes) => {
+    this.updateSelected(changes);
+  }
+
   render() {
     const { typography, selected, overwrites } = this.props;
     if(!selected) {
@@ -68,6 +72,7 @@ class StyleMenu extends React.Component {
       <Flex p={2} direction="column">
         <Flex justify="center">
           <MarginPaddingUI 
+            onChange={this.handleSetMarginPadding}
             style={style}
           />
         </Flex>

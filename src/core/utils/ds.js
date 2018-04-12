@@ -80,6 +80,8 @@ export function parseAndTagPage() {
     const domNode = uidToDOMNode[node.uid];
     node.typographyGroup = getTypographyGroupKey(node.style);
     node.textContent = domNode.textContent;
+    node.innerHTML = domNode.innerHTML;
+    node._innerHTML = domNode.innerHTML;
     node.isTextNode = true;
     domNode.classList.add(node.typographyGroup);
     domNode.setAttribute('data-text-node', true);
@@ -90,6 +92,7 @@ export function parseAndTagPage() {
     const domNode = uidToDOMNode[node.uid];
     node.isImageNode = true;
     node.src = domNode.src;
+    node._src = domNode.src;
     domNode.setAttribute('data-image-node', true);
   })
   

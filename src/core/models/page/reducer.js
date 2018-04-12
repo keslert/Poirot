@@ -1,15 +1,13 @@
 import * as types from './action-types';
-import mergeWith from 'lodash/mergeWith';
-import pickBy from 'lodash/pickBy';
-import isEmpty from 'lodash/isEmpty';
+import _ from 'lodash';
 
 const pageState = () => ({
-  nodes: [],
+  nodes: {},
   overwrites: {},
 });
 
 const customMerge = (objV, srcV) => {
-  return !objV ? srcV : pickBy({...objV, ...srcV}, v => v !== null)
+  return _.pickBy(!objV ? srcV : {...objV, ...srcV}, v => v !== null)
 }
 
 export function pageReducer(state = pageState(), { payload, type }) {
@@ -22,18 +20,16 @@ export function pageReducer(state = pageState(), { payload, type }) {
 
     case types.UPDATE_NODE:
       return Object.assign({}, state, {
-        nodes: state.nodes.map(node => node.uid === payload.node.uid
-          ? {...state.node, ...payload.changes}
+        nodes: _.mapValues(state.nodes, node => node.uid === payload.node.uid
+          ? {...node, ...payload.changes}
           : node
         )
       })
 
     case types.ALIAS_UPDATE_OVERWRITES:
-      const newState = Object.assign({}, state, {
-        overwrites: pickBy(mergeWith({}, state.overwrites, payload, customMerge), i => !isEmpty(i))
+      return Object.assign({}, state, {
+        overwrites: _.pickBy(_.mergeWith({}, state.overwrites, payload, customMerge), i => !_.isEmpty(i))
       })
-      console.log(newState);
-      return newState;
 
     default:
       return state;

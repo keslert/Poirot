@@ -5,7 +5,6 @@ import { getBB } from '../core/utils/html';
 import { getSelectedNode } from '../core/models/ui/selectors';
 import { getNodes } from '../core/models/page/selectors';
 import { 
-  updateNode, 
   updateOverwrites,
 } from '../core/models/page/actions';
 import { 
@@ -96,17 +95,21 @@ class DOMInspector extends React.Component {
     this.props.updateOverwrites({[selected.uid]: changes})
   }
 
-  handleDeselect() {
-    const node = this.props.selected;
-    const changes = {};
-    const el = document.querySelector(`.${node.uid}`);
+  handleDeselect = () => {
+    const { selected } = this.props;
+    const { editingElement } = this.state;
     
-    if(node.isTextNode && node.textContent !== el.textContent) {
-      this.props.updateNode(node, {
-        _textContent: el.textContent,
-      });
+    const el = document.querySelector(`.${selected.uid}`);
+    
+    if(editingElement === selected.uid) {
+      el.setAttribute('contenteditable', 'false');
+      el.classList.remove('dsxray-contenteditable');
+      this.setState({ editingElement: null });
+
+      if(selected.isTextNode && selected.innerHTML !== el.innerHTML) {
+        this.updateSelected({ innerHTML: el.innerHTML });
+      }
     }
-    
     this.props.setSelectedNode(null);
   }
 
@@ -115,27 +118,22 @@ class DOMInspector extends React.Component {
       if (e.which === keyCodes.enter && !e.shiftKey) {
         this.handleDeselect();
         e.preventDefault();
-        // TODO: Handle the possibility of new element creation.
       }
       return;
     }
       
-
-    if(e.which === keyCodes.m) {
-      this.props.toggleShowSpacing();
-    }
-
     const el = document.querySelector(`.${this.props.selected.uid}`) || {};
     let nextEl;
     if(e.which === keyCodes.left && el.previousElementSibling) {
       nextEl = el.previousElementSibling;
-      
     } else if(e.which === keyCodes.right && el.nextElementSibling) {
       nextEl = el.nextElementSibling;
     } else if(e.which === keyCodes.up && el.parentElement) {
       nextEl = el.parentElement;
     } else if(e.which === keyCodes.down && el.firstElementChild) {
       nextEl = el.firstElementChild;
+    } else if (e.which === keyCodes.m) {
+      this.props.toggleShowSpacing();
     }
     
     if(nextEl) {
@@ -146,28 +144,20 @@ class DOMInspector extends React.Component {
 
   handleClick = (e) => {
     const el = e.target;
-    const uid = el.dataset.uid;
-    const node = this.props.nodes[uid];
+    const node = this.props.nodes[el.dataset.uid];
     // isTrusted is false for simulated clicks
     if(!e.isTrusted || !node) 
       return;
 
     const { selected } = this.props;
-    const { editingElement, lastClick } = this.state;
-
-    if(editingElement !== node.uid) {
-      const el_ = document.querySelector(`.${editingElement}`);
-      if(el_) {
-        el_.setAttribute('contenteditable', 'false');
-        el_.classList.remove('dsxray-contenteditable');
-      }
-      this.setState({editingElement: null});
-    }
+    const { lastClick } = this.state;
     
     const time = new Date();
     const isDblClick = (time - lastClick) < DBL_CLICK_MS;
     const isSameElement = selected && selected.uid === node.uid;
-    if(isDblClick && isSameElement && (node.isTextNode || node.isImageNode)) {
+    if(selected && !isSameElement) {
+      this.handleDeselect();
+    } else if(isDblClick && isSameElement && (node.isTextNode || node.isImageNode)) {
       if(node.isTextNode) {
         el.setAttribute('contenteditable', 'true');
         el.focus();
@@ -279,7 +269,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   setSelectedNode,
   toggleShowSpacing,
-  updateNode,
   updateOverwrites,
 }
 

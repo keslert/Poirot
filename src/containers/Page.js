@@ -3,9 +3,6 @@ import Style from '../components/style';
 import { connect } from 'react-redux';
 import theme from '../styles/rebass-theme';
 import { Box } from 'rebass';
-import isEqual from 'lodash/isEqual';
-import map from 'lodash/map';
-import filter from 'lodash/filter';
 import { getBB } from '../core/utils/html';
 
 const SRedline = Box.extend`
@@ -43,6 +40,7 @@ import {
 import { 
   getImageNodes,
   getOverwrites,
+  getTextNodes,
 } from '../core/models/page/selectors';
 import { 
   _updateNode,
@@ -60,42 +58,60 @@ class Page extends React.Component {
     // Some sites like to use !important liberally, so let's try and win
     // this specificity battle with 10 chained ids _and_ !important :)
     this.superSpecificHammerTime = `#${id}`.repeat(10);
+    this.updateText(this.props);
     this.updateImages(this.props);
     this.updateRedlines(this.props);
   }
 
   componentWillReceiveProps(props) {
+    this.updateText(props);
     this.updateImages(props);
-    if (!isEqual(props.overwrites, this.props.overwrites)) {
+    if (!_.isEqual(props.overwrites, this.props.overwrites)) {
       this.updateRedlines(props);
     }
   }
 
-  updateImages(props) {
-    props.imageNodes.forEach(node => {
+  updateText = props => {
+    props.textNodes.forEach(node => {
       const overwrites = props.overwrites[node.uid] || {};
-      // Image src can't be overwritten in stylesheets so we have to manually override it.
-      // We store src in _src so we can do reduce querySelectors.
-      const src = props.hideChanges ? node.src : overwrites.src;
-
-      if (src !== node._src) {
-        const _src = src || node.src;
+      const innerHTML = props.hideChanges ? node.innerHTML : (overwrites.innerHTML || node.innerHTML);
+      if(innerHTML !== node._innerHTML) {
         const el = document.querySelector(`.${node.uid}`);
-        el.src = _src;
-        el.srcset = _src;
-        this.props._updateNode(node, { _src });
+        el.innerHTML = innerHTML;
+        this.props._updateNode(node, { _innerHTML: innerHTML });
       }
     })
   }
 
-  updateRedlines(props) {
-    // We need to update the stylesheets before we know the new bounding boxes
+  updateImages = props => {
+    props.imageNodes.forEach(node => {
+      const overwrites = props.overwrites[node.uid] || {};
+      // Image src can't be overwritten in stylesheets so we have to manually override it.
+      // We store src in _src so we can do reduce querySelectors.
+      const src = props.hideChanges ? node.src : (overwrites.src || node.src);
+
+      if (src !== node._src) {
+        const el = document.querySelector(`.${node.uid}`);
+        el.src = src;
+        el.srcset = src;
+        this.props._updateNode(node, { _src: src });
+      }
+    })
+  }
+
+  updateRedlines = props => {
+    // Let the stylesheets update first so we know the new bounding boxes
     setTimeout(() => {
-      const redlines = map(props.overwrites, (style, selector) => {
+      const redlines = _.map(props.overwrites, (style, selector) => {
+        const _style = _.pickBy({
+          ..._.omit(style, ['backgroundImage', 'src', 'innerHTML']),
+          image: (style.src || style.backgroundImage) ? 'updated' : undefined,
+          text: (style.innerHTML) ? 'updated' : undefined,
+        }, i => i);
         const el = document.querySelector(`.${selector}`);
         return {
           ...getBB(el),
-          text: map(style, (v, k) => `${camelcaseToHyphenated(k)}: ${v}`).join(', '),
+          text: _.map(_style, (v, k) => `${camelcaseToHyphenated(k)}: ${v}`).join(', '),
         }
       })
       this.setState({ redlines });
@@ -169,6 +185,7 @@ class Page extends React.Component {
 const mapStateToProps = state => ({
   visible: getVisible(state),
   imageNodes: getImageNodes(state),
+  textNodes: getTextNodes(state),
   selectedNode: getSelectedNode(state),
   selectedChildNodes: getSelectedChildNodes(state),
   showSpacing: getShowSpacing(state),
