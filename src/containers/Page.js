@@ -138,23 +138,26 @@ class Page extends React.Component {
     ]).fromPairs().value();
 
     const nodes = showSpacing ? [selectedNode, ...selectedChildNodes] : [];
-    const spacing = _.chain(nodes).map(node => [
-      this.selector(`.${node.uid}`), {
-        'box-shadow': `
-          ${node.style.boxShadow === 'none' ? '' : `${node.style.boxShadow},`}
-          
-          ${node.style.marginTop !== "0px" ? `0 -${node.style.marginTop} 0 0 ${theme.colors.marginTL}99,` : ''}
-          ${node.style.marginBottom !== "0px" ? `0 ${node.style.marginBottom} 0 0 ${theme.colors.marginBR}99,` : ''}
-          ${node.style.marginLeft !== "0px" ? `-${node.style.marginLeft} 0 0 0 ${theme.colors.marginTL}99,` : ''}
-          ${node.style.marginRight !== "0px" ? `${node.style.marginRight} 0 0 0 ${theme.colors.marginBR}99,` : ''}
+    const spacing = _.chain(nodes).map(node => {
+      const style = {...node.style, ...(this.props.overwrites[node.uid] || {})}
+      return [
+        this.selector(`.${node.uid}`), {
+          'box-shadow': `
+            ${style.boxShadow === 'none' ? '' : `${style.boxShadow},`}
+            
+            ${style.marginTop !== "0px" ? `0 -${style.marginTop} 0 0 ${theme.colors.marginTL}99,` : ''}
+            ${style.marginBottom !== "0px" ? `0 ${style.marginBottom} 0 0 ${theme.colors.marginBR}99,` : ''}
+            ${style.marginLeft !== "0px" ? `-${style.marginLeft} 0 0 0 ${theme.colors.marginTL}99,` : ''}
+            ${style.marginRight !== "0px" ? `${style.marginRight} 0 0 0 ${theme.colors.marginBR}99,` : ''}
 
-          ${node.style.paddingTop !== "0px" ? `inset 0 ${node.style.paddingTop} 0 0 ${theme.colors.paddingTL}99,` : ''}
-          ${node.style.paddingBottom !== "0px" ? `inset 0 -${node.style.paddingBottom} 0 0 ${theme.colors.paddingBR}99,` : ''}
-          ${node.style.paddingLeft !== "0px" ? `inset ${node.style.paddingLeft} 0 0 0 ${theme.colors.paddingTL}99,` : ''}
-          ${node.style.paddingRight !== "0px" ? `inset -${node.style.paddingRight} 0 0 0 ${theme.colors.paddingBR}99,` : ''}
-        `.trim().slice(0, -1)
-      }
-    ]).fromPairs().value();
+            ${style.paddingTop !== "0px" ? `inset 0 ${style.paddingTop} 0 0 ${theme.colors.paddingTL}99,` : ''}
+            ${style.paddingBottom !== "0px" ? `inset 0 -${style.paddingBottom} 0 0 ${theme.colors.paddingBR}99,` : ''}
+            ${style.paddingLeft !== "0px" ? `inset ${style.paddingLeft} 0 0 0 ${theme.colors.paddingTL}99,` : ''}
+            ${style.paddingRight !== "0px" ? `inset -${style.paddingRight} 0 0 0 ${theme.colors.paddingBR}99,` : ''}
+          `.trim().slice(0, -1)
+        }
+      ]
+    }).fromPairs().value();
 
     return (
       <div>

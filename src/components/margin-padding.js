@@ -58,8 +58,10 @@ class MarginPaddingUI extends React.Component {
         ? _.flatMap(sides, side => [side, opposites[side]])
         : sides
     
+    const absOffset = Math.abs(offset);
+    const closestOffset = _.sortBy(spacing, s => Math.abs(s - absOffset))[0]
     const changes = _.fromPairs(_sides.map(side => [
-      `${type}${_.capitalize(side)}`, `${offset}px`
+      `${type}${_.capitalize(side)}`, `${closestOffset}px`
     ]))
 
     this.props.onChange(changes)
@@ -189,3 +191,4 @@ export default MarginPaddingUI;
 
 const allSides = ['top', 'bottom', 'left', 'right'];
 const opposites = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' };
+const spacing = [0,2,4,8,16,32,64];
