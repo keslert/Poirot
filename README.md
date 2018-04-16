@@ -3,6 +3,11 @@
 ## TODO
 - Group similar items
   - Page segmentation
-- Generate Changelog
-- Show Redlines
-- Remove override if it's the same as original
+- Restrict styles to DS
+- Add shadows
+- Multiple Variations
+
+Page segmentation through Component mining
+Page segmentation through React
+
+Hijack mouse clicks

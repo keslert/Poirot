@@ -1,7 +1,10 @@
 import React from 'react';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
-import { Box } from 'rebass';
+import { Flex, Box } from 'rebass'; 
+import FontFamilyPicker from './font-family-picker';
+import FontWeightPicker from './font-weight-picker';
+import FontSizePicker from './font-size-picker';
 
 class TypographyPicker extends React.PureComponent {
 
@@ -9,17 +12,46 @@ class TypographyPicker extends React.PureComponent {
     return `${font.fontFamily} ${font.fontWeight} ${font.fontSize}`; 
   }
 
-  render() {
-    const { options, value, onChange } = this.props;
+  renderCustom() {
+    const { value, onChange } = this.props;
+
     return (
-      <Select
-        onChange={({ value }) => onChange(value)}
-        options={options.map(value => ({label: this.fontLabel(value), value}))}
-        optionComponent={() => <div>This</div>}
-        clearable={false}
-        value={{ label: this.fontLabel(value), value }}
-        scrollMenuIntoView={false}
-      />
+      <Flex>
+        <Box flex={2}>
+          <FontFamilyPicker 
+            value={value.fontFamily}
+            onChange={fontFamily => onChange({...value, fontFamily})}
+          />
+        </Box>
+        <Box flex={1}>
+          <FontWeightPicker
+            value={value.fontWeight}
+            onChange={fontWeight => onChange({ ...value, fontWeight })}
+          />
+        </Box>
+        <Box flex={1}>
+          <FontSizePicker
+            value={value.fontSize}
+            onChange={fontSize => onChange({ ...value, fontSize })}
+          />
+        </Box>
+      </Flex>
+    )
+  }
+
+  render() {
+    const { options, value, onChange, allowCustom } = this.props;
+    return (
+      allowCustom
+      ? this.renderCustom()
+      : <Select
+          onChange={({ value }) => onChange(value)}
+          options={options.map(value => ({label: this.fontLabel(value), value}))}
+          optionComponent={() => <div>This</div>}
+          clearable={false}
+          value={{ label: this.fontLabel(value), value }}
+          scrollMenuIntoView={false}
+        />
     )
   }
 }

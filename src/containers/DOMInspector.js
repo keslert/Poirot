@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Box, Text } from 'rebass';
 import { getBB } from '../core/utils/html';
-import { getSelectedNode } from '../core/models/ui/selectors';
+import { getSelectedNode, getPseudoSelectedNodes } from '../core/models/ui/selectors';
 import { getNodes } from '../core/models/page/selectors';
 import { 
   updateOverwrites,
@@ -65,6 +65,7 @@ class DOMInspector extends React.Component {
   state = {
     hoverBB: resetBB,
     selectedBB: resetBB,
+    pseudoBBs: [],
     editingElement: null,
     lastClick: 0,
   }
@@ -82,11 +83,18 @@ class DOMInspector extends React.Component {
   }
 
   componentWillUpdate(props) {
-    const { selected } = this.props;
+    const { selected, pseudoSelectedNodes } = this.props;
 
     if(props.selected && (!selected || props.selected.uid !== selected.uid)) {
       const el = document.querySelector(`.${props.selected.uid}`);
       this.setState({selectedBB: getBB(el)});
+    }
+    if(props.pseudoSelectedNodes !== pseudoSelectedNodes) {
+      const pseudoBBs = props.pseudoSelectedNodes.map(node => {
+        const el = document.querySelector(`.${node.uid}`);
+        return getBB(el);
+      })
+      this.setState({pseudoBBs});
     }
   }
 
@@ -217,7 +225,7 @@ class DOMInspector extends React.Component {
 
   render() {
     const { selected, nodes } = this.props;
-    const { hoverBB, selectedBB } = this.state;
+    const { hoverBB, selectedBB, pseudoBBs } = this.state;
     const hNode = nodes[hoverBB.uid]
     return (
       <div>
@@ -241,7 +249,7 @@ class DOMInspector extends React.Component {
             color={theme.colors[this.state.editingElement === selected.uid ? 'green' : 'blue']} 
             style={selectedBB}
             key={selected.uid}
-            fade={this.state.editingElement !== selected.uid}
+            fade={false && this.state.editingElement !== selected.uid}
           >
             <SDescriptor>
               {selected.nodeName} 
@@ -255,6 +263,9 @@ class DOMInspector extends React.Component {
             </SDescriptor>
           </SFrame>
         }
+        {pseudoBBs.map(bb => 
+          <SFrame color={theme.colors.purple} style={bb} key={bb.uid} />
+        )}
         {this.renderHiddenFileInput()}
       </div>
     );
@@ -264,6 +275,7 @@ class DOMInspector extends React.Component {
 const mapStateToProps = state => ({
   selected: getSelectedNode(state),
   nodes: getNodes(state),
+  pseudoSelectedNodes: getPseudoSelectedNodes(state),
 })
 
 const mapDispatchToProps = {

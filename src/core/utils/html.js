@@ -73,3 +73,18 @@ export function getBB(el) {
     left: bb.left + window.scrollX,
   }
 }
+
+export function generateList(_el, selector, field) {
+  let el = _el[selector];
+  const parents = [];
+  while (el) {
+    parents.push(_.get(el, field));
+    el = el[selector];
+  }
+  return parents;
+}
+
+export function generateTreeprint(el) {
+  return el.nodeName + [...el.children].map((child, i) => `${i}:${generateTreeprint(child)}`).join('')
+}
+

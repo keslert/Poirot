@@ -40,6 +40,7 @@ export default {
     marginBR: '#fad2b6',
     paddingTL: '#a2d091',
     paddingBR: '#abd5d4',
+    grey: '#aaa',
   },
   shadows: {
     basic: '0 1px 3px rgba(50,50,93,.06)',

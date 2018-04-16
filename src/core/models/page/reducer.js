@@ -16,6 +16,7 @@ export function pageReducer(state = pageState(), { payload, type }) {
     case types.ADD_PAGE:
       return Object.assign({}, state, {
         nodes: payload.nodes,
+        treeprints: payload.treeprints,
       });
 
     case types.UPDATE_NODE:

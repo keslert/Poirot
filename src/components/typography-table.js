@@ -6,7 +6,7 @@ import Table from './table';
 import Toggle from './toggle';
 import Input from './input';
 import difference from 'lodash/difference';
-import FontPicker from './font-picker';
+import FontFamilyPicker from './font-family-picker';
 import WebFont from 'webfontloader';
 
 class TypographyTable extends React.Component {
@@ -85,7 +85,7 @@ class TypographyTable extends React.Component {
           Body
         </td>
         <td>
-          <FontPicker
+          <FontFamilyPicker
             value={body.fontFamily}
             onChange={value => this.handleCategoryUpdate(key, 'fontFamily', value)}
           />
@@ -133,7 +133,7 @@ class TypographyTable extends React.Component {
           {category.label} <Text is="span" fontWeight={400}>{category.groups ? `(${category.groups.length})` : ''}</Text>
         </td>
         <td>
-          <FontPicker 
+          <FontFamilyPicker 
             value={category.fontFamily}
             onChange={value => this.handleCategoryUpdate(category, 'fontFamily', value)} 
           />
@@ -160,7 +160,7 @@ class TypographyTable extends React.Component {
           {group.label} <Text is="span" fontWeight={400}>{group.nodes ? `(${group.nodes.length})` : ''}</Text>
         </td>
         <td>
-          <FontPicker
+          <FontFamilyPicker
             value={group.fontFamily}
             onChange={value => this.handleGroupUpdate(group, 'fontFamily', value)}
           />

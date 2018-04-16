@@ -8,6 +8,7 @@ import {
   toggleVisible,
   toggleHideChanges,
   toggleShowRedline,
+  toggleCustomControl,
 } from '../core/models/ui/actions';
 import { getTypographyCategories } from '../core/models/ds/selectors';
 import { getOverwrites } from '../core/models/page/selectors';
@@ -16,12 +17,13 @@ import {
   getSelectedNode,
   getHideChanges,
   getShowRedline,
+  getCustomControl,
 } from '../core/models/ui/selectors';
 import MenuItem from './menu-item';
 import TypographyTable from './typography-table';
 import StyleMenu from './style-menu';
 import domtoimage from 'dom-to-image';
-import { parseAndTagPage } from '../core/utils/ds';
+import { parseAndTagPage } from '../core/utils/page';
 import Icon from './icon';
 
 const SOpenMenu = Box.extend`
@@ -128,10 +130,12 @@ class Menu extends React.Component {
     switch(this.state.menu) {
       case 'Style':
         return <StyleMenu 
+          customControl={this.props.customControl}
+          overwrites={this.props.overwrites}
           selected={this.props.selected}
           typography={this.props.typography}
+          toggleCustomControl={this.props.toggleCustomControl}
           updateOverwrites={this.props.updateOverwrites}
-          overwrites={this.props.overwrites}
         />
       case 'Typography':
         return <TypographyTable
@@ -175,6 +179,7 @@ const mapStateToProps = state => ({
   overwrites: getOverwrites(state),
   hideChanges: getHideChanges(state),
   showRedline: getShowRedline(state),
+  customControl: getCustomControl(state),
 })
 
 const mapDispatchToProps = {
@@ -184,6 +189,7 @@ const mapDispatchToProps = {
   updateOverwrites,
   toggleHideChanges,
   toggleShowRedline,
+  toggleCustomControl,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

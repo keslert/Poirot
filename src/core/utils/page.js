@@ -3,6 +3,8 @@ import {
   getVisibleNodes,
   isTextNode,
   getTypographyGroupKey,
+  generateList,
+  generateTreeprint,
 } from './html';
 
 export function parseAndTagPage() {
@@ -57,12 +59,11 @@ export function parseAndTagPage() {
       left: bb.left + window.scrollX,
     }
 
-    node.parents = [];
-    let el = domNode.parentElement;
-    while(el) {
-      node.parents.push(el.dataset.uid);
-      el = el.parentElement;
-    }
+    node.parentUids = generateList(domNode, 'parentElement', 'dataset.uid');
+    node.parentNodeNames = generateList(domNode, 'parentElement', 'nodeName');
+    node.treeprint = generateTreeprint(domNode);
+    node.prevElementNodeNames = generateList(domNode, 'previousElementSibling', 'nodeName');
+    node.nextElementNodeNames = generateList(domNode, 'nextElementSibling', 'nodeName');
 
     node.style.marginTop !== '0px' && domNode.classList.add(`dsxray-mt-${node.style.marginTop}`)
     node.style.marginRight !== '0px' && domNode.classList.add(`dsxray-mr-${node.style.marginRight}`)
@@ -95,10 +96,22 @@ export function parseAndTagPage() {
     node._src = domNode.src;
     domNode.setAttribute('data-image-node', true);
   })
+
+  const nodesObj = _.keyBy(nodes, 'uid');
+
+  const treeprints = _.chain(nodes)
+    .groupBy('treeprint')
+    .pickBy((group, key) => group.length > 1 && _.includes(key, ':'))
+    .value();
+  
+  const highTreeprints = _.pickBy(treeprints, (group, key) => (
+    _.every(group, node => _.every(node.parentUids, uid => !treeprints[nodesObj[uid].treeprint]))
+  ))
   
   return {
     hostname,
     pathname,
-    nodes: _.keyBy(nodes, 'uid'),
+    nodes: nodesObj,
+    treeprints: treeprints,
   }
 }

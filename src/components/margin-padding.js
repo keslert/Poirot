@@ -82,7 +82,7 @@ class MarginPaddingUI extends React.Component {
 
     const spacing = 2;
     const thickness = 18;
-    const vLength = thickness * 6;
+    const vLength = thickness * 5;
     const hLength = thickness * 8;
     const textOffset = thickness + 8;
     const width = hLength + thickness * 2 + spacing * 2;
@@ -191,4 +191,4 @@ export default MarginPaddingUI;
 
 const allSides = ['top', 'bottom', 'left', 'right'];
 const opposites = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' };
-const spacing = [0,2,4,8,16,32,64];
+const spacing = [0,2,4,8,16,32,64,128];

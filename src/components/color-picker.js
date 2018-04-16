@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { SketchPicker } from 'react-color';
+import { SketchPicker, SwatchesPicker } from 'react-color';
 import { Fixed, Absolute, Relative } from 'rebass';
 
 class ColorPicker extends React.Component {
@@ -22,18 +22,23 @@ class ColorPicker extends React.Component {
   }
 
   renderPicker() {
-    const { color, colors } = this.props;
-
+    const { color, swatches, allowCustom } = this.props;
     if (this.state.displayPicker) {
       return (
-        <Absolute style={{bottom: 0, left: 25, zIndex: 2147483647}}>
+        <Absolute style={{bottom: 20, right: 0, zIndex: 2147483647}}>
           <Fixed style={{ top: 0, left: 0, right: 0, bottom: 0 }} onClick={this.handleClose} />
-          <SketchPicker
-            color={color}
-            presetColors={colors}
-            onChange={this.handleChange}
-            width={150}
-            triangle="hide" />
+          {allowCustom 
+            ? <SketchPicker
+                color={color}
+                presetColors={_.flatten(swatches)}
+                onChange={this.handleChange}
+                triangle="hide" 
+              />
+            : <SwatchesPicker
+                colors={swatches}
+                onChange={this.handleChange}
+              />
+          }
         </Absolute>
       );
     }
@@ -53,7 +58,7 @@ class ColorPicker extends React.Component {
 
 ColorPicker.propTypes = {
   color: PropTypes.string.isRequired,
-  colors: PropTypes.array.isRequired,
+  swatches: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
   onChange: PropTypes.func.isRequired,
 };
 

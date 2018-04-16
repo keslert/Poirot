@@ -13,6 +13,10 @@ export function getOverwrites(state) {
   return getPage(state).overwrites;
 }
 
+export function getTreeprints(state) {
+  return getPage(state).treeprints;
+}
+
 export const getTextNodes = createSelector(
   getNodes,
   (nodes) => {

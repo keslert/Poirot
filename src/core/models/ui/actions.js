@@ -15,6 +15,13 @@ export function setSelectedNode(uid) {
   }
 }
 
+export function setSelectionMode(mode) {
+  return {
+    type: types.SET_SELECTION_MODE,
+    payload: mode,
+  }
+}
+
 export function setEditingNode(editing) {
   return {
     type: types.SET_EDITING_NODE,
@@ -37,5 +44,12 @@ export function toggleShowRedline() {
 export function toggleHideChanges() {
   return {
     type: types.TOGGLE_HIDE_CHANGES,
+  }
+}
+
+export function toggleCustomControl(key) {
+  return {
+    type: types.TOGGLE_CUSTOM_CONTROL,
+    payload: key,
   }
 }

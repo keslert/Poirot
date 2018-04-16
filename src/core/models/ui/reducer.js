@@ -8,6 +8,8 @@ const uiState = () => ({
   showSpacing: false,
   showRedline: false,
   hideChanges: false,
+  selectionMode: 'individual',
+  customControl: {},
 });
 
 export function uiReducer(state = uiState(), { payload, type }) {
@@ -23,6 +25,9 @@ export function uiReducer(state = uiState(), { payload, type }) {
     case types.SET_EDITING_NODE:
       return Object.assign({}, state, {editingNode: payload})
 
+    case types.SET_SELECTION_MODE:
+    return Object.assign({}, state, {selectionMode: payload})
+
     case types.SET_SELECTED_NODE:
       return Object.assign({}, state, {selectedNode: payload})
 
@@ -34,6 +39,13 @@ export function uiReducer(state = uiState(), { payload, type }) {
 
     case types.TOGGLE_SHOW_REDLINE:
       return Object.assign({}, state, { showRedline: !state.showRedline })
+
+    case types.TOGGLE_CUSTOM_CONTROL:
+      return Object.assign({}, state, { customControl: {
+        ...state.customControl,
+        [payload]: !state.customControl[payload],
+      }})
+
 
     default:
       return state;
