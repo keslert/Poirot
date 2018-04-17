@@ -5,12 +5,15 @@ import { Flex, Box, Text } from 'rebass';
 import { updateDSTypography } from '../core/models/ds/actions';
 import { addPage, updateOverwrites } from '../core/models/page/actions';
 import { 
+  setSelectedControl,
+  setMouseInsideMenu,
   toggleVisible,
   toggleHideChanges,
   toggleShowRedline,
   toggleCustomControl,
+  toggleShowSpacing,
 } from '../core/models/ui/actions';
-import { getTypographyCategories } from '../core/models/ds/selectors';
+import { getTypographyCategories, getDS } from '../core/models/ds/selectors';
 import { getOverwrites } from '../core/models/page/selectors';
 import { 
   getVisible, 
@@ -18,6 +21,8 @@ import {
   getHideChanges,
   getShowRedline,
   getCustomControl,
+  getSelectedControl,
+  getShowSpacing,
 } from '../core/models/ui/selectors';
 import MenuItem from './menu-item';
 import TypographyTable from './typography-table';
@@ -25,6 +30,7 @@ import StyleMenu from './style-menu';
 import domtoimage from 'dom-to-image';
 import { parseAndTagPage } from '../core/utils/page';
 import Icon from './icon';
+import HoverMenu from './hover-menu';
 
 const SOpenMenu = Box.extend`
   display: flex;
@@ -54,11 +60,24 @@ const SClosedMenu = Box.extend`
   }
 `;
 
+const SHoverMenuItem = Flex.extend`
+  white-space: nowrap;
+  ${props => `
+    ${props.onClick && `
+      cursor: pointer; 
+      &:hover {
+        background: #f4f4f4;
+      }
+    `}
+  `}
+`
+
 class Menu extends React.Component {
 
   state = {
     open: true,
     menu: 'Style',
+    hovered: false,
   }
 
   componentDidMount() {
@@ -90,21 +109,50 @@ class Menu extends React.Component {
       <Flex p={2}>
         <Text center bold>{this.state.menu} <Text is="span" f="6px" children="▼" style={{position:'relative', top: -1}} /></Text>
         <Flex flex={1} justify="flex-end" m={-1}>
-          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
-            <Icon name="file_download" />
-          </Box>
-          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleHideChanges}>
-            <Icon name="visibility_off" selected={this.props.hideChanges} />
-          </Box>
-          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowRedline}>
-            <Icon name="brush" selected={this.props.showRedline} />
-          </Box>
-          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleSnapshot}>
-            <Icon name="photo_camera" />
-          </Box>
-          <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
-            <Icon name="refresh" />
-          </Box>
+
+          <HoverMenu renderMenu={() => (
+            <Flex p={1} bg="#fff" direction="column">
+              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleHideChanges}>
+                <Icon name="visibility_off" selected={this.props.hideChanges} />
+                <Text children="Hide changes" />
+              </SHoverMenuItem>
+              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowRedline}>
+                <Icon name="brush" selected={this.props.showRedline} />
+                <Text children="Show redlines" />
+              </SHoverMenuItem>
+              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowSpacing}>
+                <Icon name="line_weight" selected={this.props.showSpacing} />
+                <Text children="Show margin & padding" />
+              </SHoverMenuItem>
+            </Flex>
+          )}>
+            <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
+              <Icon name="visibility" />
+            </Box>
+          </HoverMenu>
+
+          <HoverMenu renderMenu={() => (
+            <Flex p={1} bg="#fff" direction="column">
+              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.handleSnapshot}>
+                <Icon name="photo_camera" /> <Text children="Capture Snapshot" />
+              </SHoverMenuItem>
+              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
+                <Icon name="refresh" /> <Text children="Retag Page" />
+              </SHoverMenuItem>
+              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
+                <Icon name="file_download" /> <Text children="Export Page" />
+              </SHoverMenuItem>
+              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
+                <Icon name="file_upload" /> <Text children="Import Page" />
+              </SHoverMenuItem>
+            </Flex>
+          )}>
+            <Box p={1} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
+              <Icon name="import_export" />
+            </Box>
+          </HoverMenu>
+
+
           <Box p={1} style={{ cursor: 'pointer' }} onClick={() => (this.setState({ open: false }), this.handleMouseLeave())}>
             <Icon name="x" size="12" />
           </Box>
@@ -121,21 +169,27 @@ class Menu extends React.Component {
 
   handleMouseEnter = () => {
     document.body.classList.add('dsxray-no-scroll');
+    this.props.setMouseInsideMenu(true);
   }
+
   handleMouseLeave = () => {
     document.body.classList.remove('dsxray-no-scroll');
+    this.props.setMouseInsideMenu(false);
   }
 
   renderMenu() {
     switch(this.state.menu) {
       case 'Style':
-        return <StyleMenu 
+        return <StyleMenu
+          ds={this.props.ds}
           customControl={this.props.customControl}
           overwrites={this.props.overwrites}
           selected={this.props.selected}
           typography={this.props.typography}
           toggleCustomControl={this.props.toggleCustomControl}
           updateOverwrites={this.props.updateOverwrites}
+          selectedControl={this.props.selectedControl}
+          setSelectedControl={this.props.setSelectedControl}
         />
       case 'Typography':
         return <TypographyTable
@@ -173,6 +227,7 @@ class Menu extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  ds: getDS(state),
   visible: getVisible(state),
   typography: getTypographyCategories(state),
   selected: getSelectedNode(state),
@@ -180,6 +235,8 @@ const mapStateToProps = state => ({
   hideChanges: getHideChanges(state),
   showRedline: getShowRedline(state),
   customControl: getCustomControl(state),
+  selectedControl: getSelectedControl(state),
+  showSpacing: getShowSpacing(state),
 })
 
 const mapDispatchToProps = {
@@ -190,6 +247,9 @@ const mapDispatchToProps = {
   toggleHideChanges,
   toggleShowRedline,
   toggleCustomControl,
+  setSelectedControl,
+  setMouseInsideMenu,
+  toggleShowSpacing,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

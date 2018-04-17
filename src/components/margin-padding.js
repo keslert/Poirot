@@ -47,7 +47,7 @@ class MarginPaddingUI extends React.Component {
 
   handleDrag = (e) => {
     const { point, type, sides, dragging, startOffset } = this.state;
-    const diff = Math.floor(dragging === 'col' ? point.x - e.pageX : point.y - e.pageY);
+    const diff = Math.floor(dragging === 'col' ? e.pageX - point.x : point.y - e.pageY);
     let offset = startOffset + diff;
     if(type === 'padding')
       offset = Math.max(0, offset);
@@ -59,7 +59,7 @@ class MarginPaddingUI extends React.Component {
         : sides
     
     const absOffset = Math.abs(offset);
-    const closestOffset = _.sortBy(spacing, s => Math.abs(s - absOffset))[0]
+    const closestOffset = _.sortBy(spacing, s => Math.abs(s - absOffset))[0] * (offset < 0 ? -1 : 1)
     const changes = _.fromPairs(_sides.map(side => [
       `${type}${_.capitalize(side)}`, `${closestOffset}px`
     ]))

@@ -26,8 +26,16 @@ export function getSelectedNode(state) {
   return getUI(state).selectedNode;
 }
 
+export function getSelectedControl(state) {
+  return getUI(state).selectedControl;
+}
+
 export function getCustomControl(state) {
   return getUI(state).customControl;
+}
+
+export function getMouseInsideMenu(state) {
+  return getUI(state).mouseInsideMenu;
 }
 
 export function getSelectionMode(state) {
@@ -40,10 +48,8 @@ export const getPseudoSelectedNodes = createSelector(
   getSelectionMode,
   getTreeprints,
   (nodes, selected, mode, treeprints) => {
-    if(!selected) {
+    if(!selected || mode === 'individual') {
       return [];
-    } else if(mode === 'individual') {
-      return [selected];
     }
 
     const uids = [selected.uid, ...selected.parentUids];

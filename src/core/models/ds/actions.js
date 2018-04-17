@@ -25,6 +25,8 @@ export function buildDSObject(ds) {
         ...ds.typography.categories,
         {label: 'Unknown', groups: []},
       ]
-    }
+    },
+    colors: ds.colors,
+    spacing: ds.spacing,
   }
 }

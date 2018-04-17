@@ -1,4 +1,5 @@
 import { UPDATE_OVERWRITES, ALIAS_UPDATE_OVERWRITES } from './models/page/action-types';
+import { TOGGLE_HIDE_CHANGES } from './models/ui/action-types';
 import { getNodes } from './models/page/selectors';
 import mapValues from 'lodash/mapValues';
 import fromPairs from 'lodash/fromPairs';
@@ -18,10 +19,8 @@ export function updateOverwrites({payload: overwrites}) {
       ]
     }))
 
-    dispatch({
-      type: ALIAS_UPDATE_OVERWRITES,
-      payload: _overwrites
-    })
+    dispatch({type: ALIAS_UPDATE_OVERWRITES, payload: _overwrites});
+    dispatch({type: TOGGLE_HIDE_CHANGES, payload: false});
   }
 }
 

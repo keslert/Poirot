@@ -1,26 +1,41 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Select from 'react-select';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 import GoogleFonts from '../data/google-fonts';
-import { Box } from 'rebass';
+import { getDS } from '../core/models/ds/selectors';
+import VirtualizedSelect from 'react-virtualized-select';
 
 const fonts = GoogleFonts.map(font => ({ label: font, value: font }));
 
-class FontPicker extends React.Component {
+class FontFamilyPicker extends React.Component {
   
   render() {
-    const { value, onChange } = this.props;
+
+    const { value, options, onChange } = this.props;
     return (
-      <div>
-        <Select
-          onChange={({ value }) => onChange(value)}
-          options={fonts}
-          clearable={false}
-          value={{ label: value, value }}
-          scrollMenuIntoView={false}
-        />
-      </div>
+      <VirtualizedSelect
+        onChange={({ value }) => onChange(value)}
+        options={options}
+        clearable={false}
+        value={{ label: value, value }}
+        scrollMenuIntoView={false}
+      />
     )
   }
 }
-export default FontPicker;
+
+const mapStateToProps = createSelector(
+  getDS,
+  (ds) => ({
+    options: [
+      ..._.chain(ds.typography.categories)
+        .flatMap(cat => cat.groups.map(g => g.fontFamily))
+        .uniq()
+        .map(v => ({label: v, value: v}))
+        .value(),
+      ...fonts
+    ]
+  })
+)
+
+export default connect(mapStateToProps)(FontFamilyPicker);

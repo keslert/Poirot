@@ -13,6 +13,8 @@ import ColorSwatch from './color-swatch';
 const SLabel = Text.extend`
   text-transform: uppercase;
   font-size: 12px;
+  color: ${props => props.theme.colors[props.active ? 'blue' : 'black']};
+  cursor: pointer;
 `
 const SReset = Text.extend`
   font-size: 12px;
@@ -27,17 +29,27 @@ const SCustom = Text.extend`
   color: ${props => props.theme.colors[props.active ? 'red' : 'grey']};
 `
 
-
-const swatches = [
-  ['#ffffff'],
-  ['#000000', '#0d0e0e', '#252729', '#3d4144', '#555a5f', '#6e7479'],
-  ['#747476', '#8e8e8f', '#a7a7a9', '#c1c1c2', '#dbdbdb', '#f4f4f5'],
-  ['#d39100', '#ffb107', '#ffc13a', '#ffd16d', '#ffe1a0', '#fff1d3'],
-  ['#21465d', '#2e6383', '#3b7fa9', '#5499c3', '#7ab0d0', '#a0c6dd', '#c5ddeb'],
-  ['#812020', '#aa2a2a', '#ce3939', '#d86262', '#e28b8b', '#ecb4b4', '#f6dddd'],
-  ['#223d3e', '#355e5e', '#477e7f', '#599FA0', '#78b3b4', '#99c6c6', '#bad8d8'],
-]
 class StyleMenu extends React.Component {
+
+  state = {}
+
+  componentDidMount() {
+    this.updateSwatches(this.props.ds);
+  }
+
+  componentWillReceiveProps(props) {
+    if(props.ds !== this.props.ds) {
+      this.props.updateSwatches(props.ds);
+    }
+  }
+
+  updateSwatches = ds => {
+    this.setState({
+      backgroundSwatches: _.map(ds.colors.swatches, swatch => swatch.colors.map(c => c.hex)),
+      colorSwatches: _.map(ds.colors.swatches, swatch => swatch.colors.map(c => c.hex)),
+    })
+
+  }
 
   updateSelected = changes => {
     const { selected, updateOverwrites } = this.props;
@@ -68,14 +80,13 @@ class StyleMenu extends React.Component {
     this.updateSelected(changes);
   }
 
-  handleToggleCustomControl = key => _.memoize(() => {
-    return this.props.toggleCustomControl(key);
-  })
-
+  handleToggleCustomControl = key => _.memoize(() => this.props.toggleCustomControl(key))
+  handleSetSelectedControl = key => _.memoize(() => this.props.setSelectedControl(key));
+  
   _key = (key) => `${this.props.selected.uid}-${key}`
 
   render() {
-    const { typography, selected, overwrites, customControl } = this.props;
+    const { typography, selected, overwrites, customControl, selectedControl } = this.props;
     if(!selected) {
       return null;
     }
@@ -113,7 +124,11 @@ class StyleMenu extends React.Component {
           <Flex mb={2} direction="column">
             <Flex justify="space-between">
               <Flex>
-                <SLabel children="Text" />
+                <SLabel 
+                  active={selectedControl === 'text'}
+                  onClick={this.handleSetSelectedControl('text')}
+                  children="Text" 
+                />
                 {_.some(['fontFamily', 'fontWeight', 'fontSize'], f => selected.style[f] !== style[f]) &&
                   <SReset children="reset" onClick={this.handleResetTypography} />
                 }
@@ -139,7 +154,11 @@ class StyleMenu extends React.Component {
           <Flex mb={2} direction="column">
             <Flex justify="space-between">
               <Flex>
-                <SLabel children="Text Color" />
+                <SLabel 
+                  active={selectedControl === 'color'}
+                  onClick={this.handleSetSelectedControl('color')}
+                  children="Text Color" 
+                />
                 {selected.style.color !== style.color && 
                   <SReset children="reset" onClick={this.handleResetColor} />
                 }
@@ -150,7 +169,7 @@ class StyleMenu extends React.Component {
                 children="custom" />
             </Flex>
             <ColorPicker 
-              swatches={swatches} 
+              swatches={this.state.colorSwatches} 
               color={style.color}
               onChange={this.handleSetColor}
               allowCustom={customControl[this._key('color')]}
@@ -164,7 +183,11 @@ class StyleMenu extends React.Component {
           <Flex mb={2} direction="column">
             <Flex justify="space-between">
               <Flex>
-                <SLabel children="Background" />
+                <SLabel 
+                  active={selectedControl === 'backgroundColor'}
+                  onClick={this.handleSetSelectedControl('backgroundColor')}
+                  children="Background" 
+                />
                 {selected.style.backgroundColor !== style.backgroundColor && 
                   <SReset children="reset" onClick={this.handleResetBackground} />
                 }
@@ -175,7 +198,7 @@ class StyleMenu extends React.Component {
                 children="custom" />
             </Flex>
             <ColorPicker 
-              swatches={swatches} 
+              swatches={this.state.backgroundSwatches} 
               color={style.backgroundColor}
               onChange={this.handleSetBackground}
               allowCustom={customControl[this._key('backgroundColor')]}

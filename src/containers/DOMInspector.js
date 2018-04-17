@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Box, Text } from 'rebass';
 import { getBB } from '../core/utils/html';
-import { getSelectedNode, getPseudoSelectedNodes } from '../core/models/ui/selectors';
+import { getSelectedNode, getPseudoSelectedNodes, getMouseInsideMenu } from '../core/models/ui/selectors';
 import { getNodes } from '../core/models/page/selectors';
 import { 
   updateOverwrites,
@@ -21,7 +21,7 @@ const SFrame = Box.extend`
     border: 1px solid ${props.color}99;
     ${props.fade && `
       animation: dsxray-fade 1s forwards;
-      animation-delay: 2s;
+      animation-delay: .3s;
     `}
   `}
   z-index: 2147483646;
@@ -122,7 +122,7 @@ class DOMInspector extends React.Component {
   }
 
   handleKeyDown = (e) => {
-    if(!this.props.selected || e.target.isContentEditable) {
+    if(!this.props.selected || e.target.isContentEditable || e.target.nodeName === 'INPUT') {
       if (e.which === keyCodes.enter && !e.shiftKey) {
         this.handleDeselect();
         e.preventDefault();
@@ -224,13 +224,13 @@ class DOMInspector extends React.Component {
   }
 
   render() {
-    const { selected, nodes } = this.props;
+    const { selected, nodes, mouseInsideMenu } = this.props;
     const { hoverBB, selectedBB, pseudoBBs } = this.state;
     const hNode = nodes[hoverBB.uid]
     return (
       <div>
         {hNode && 
-          <SFrame color="#888888" style={this.state.hoverBB}>
+          <SFrame color="#888888" style={this.state.hoverBB} fade={mouseInsideMenu}>
             <SDescriptor>
               {hNode.nodeName}
               {hNode.isTextNode &&
@@ -249,7 +249,7 @@ class DOMInspector extends React.Component {
             color={theme.colors[this.state.editingElement === selected.uid ? 'green' : 'blue']} 
             style={selectedBB}
             key={selected.uid}
-            fade={false && this.state.editingElement !== selected.uid}
+            fade={mouseInsideMenu}
           >
             <SDescriptor>
               {selected.nodeName} 
@@ -276,6 +276,7 @@ const mapStateToProps = state => ({
   selected: getSelectedNode(state),
   nodes: getNodes(state),
   pseudoSelectedNodes: getPseudoSelectedNodes(state),
+  mouseInsideMenu: getMouseInsideMenu(state),
 })
 
 const mapDispatchToProps = {

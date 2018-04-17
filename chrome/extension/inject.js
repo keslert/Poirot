@@ -24,12 +24,21 @@ function inject() {
   })
 
   const head = document.getElementsByTagName('head')[0];
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.type = 'text/css';
-  link.href = '//unpkg.com/react-select/dist/react-select.css';
-  link.media = 'all';
-  head.appendChild(link);
+
+  const stylesheets = [
+    'react-select/dist/react-select.css', 
+    'react-virtualized/styles.css', 
+    'react-virtualized-select/styles.css',
+  ];
+  
+  stylesheets.forEach(pkg => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = `//unpkg.com/${pkg}`;
+    link.media = 'all';
+    head.appendChild(link);
+  })
 }
 
 window.addEventListener('load', inject);

@@ -58,7 +58,7 @@ class ColorPicker extends React.Component {
 
 ColorPicker.propTypes = {
   color: PropTypes.string.isRequired,
-  swatches: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  swatches: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
   onChange: PropTypes.func.isRequired,
 };
 

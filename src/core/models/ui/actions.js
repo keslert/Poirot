@@ -15,6 +15,13 @@ export function setSelectedNode(uid) {
   }
 }
 
+export function setSelectedControl(key) {
+  return {
+    type: types.SET_SELECTED_CONTROL,
+    payload: key,
+  }
+}
+
 export function setSelectionMode(mode) {
   return {
     type: types.SET_SELECTION_MODE,
@@ -26,6 +33,13 @@ export function setEditingNode(editing) {
   return {
     type: types.SET_EDITING_NODE,
     payload: editing,
+  }
+}
+
+export function setMouseInsideMenu(inside) {
+  return {
+    type: types.SET_MOUSE_INSIDE_MENU,
+    payload: inside,
   }
 }
 

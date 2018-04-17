@@ -58,8 +58,15 @@ const typography = {
           label: 'Title 3',
           fontFamily: 'Apercu',
           fontWeight: 700,
-          fontSize: '18px',
-          lineHeight: '28px',
+          fontSize: '16px',
+          lineHeight: '26px',
+        },
+        {
+          label: 'Title 4',
+          fontFamily: 'Apercu',
+          fontWeight: 700,
+          fontSize: '14px',
+          lineHeight: '22px',
         },
       ]
     },
@@ -101,59 +108,101 @@ const typography = {
 
 const colors = {
   settings: {
-    max: 80,
-    min: 20,
-    darken: 10,
-    lighten: 10,
+    baseMax: 80,
+    baseMin: 20,
+    darkenStep: {darken: 10},
+    lightenStep: {lighten: 10},
   },
-  roots: [
-    {
-      label: 'Black',
-      hex: '#252729',
+  swatches: {
+    gray: {
       level: 'primary',
-      base: 50,
+      use: ['color', 'backgroundColor'],
+      colors: [
+        {hex: '#747476', base: 70},
+        {hex: '#8e8e8f', base: 60},
+        {hex: '#a7a7a9', base: 50},
+        {hex: '#c1c1c2', base: 40},
+        {hex: '#dbdbdb', base: 30},
+        {hex: '#f4f4f5', base: 20},
+        {hex: '#ffffff', base: 10},
+      ]
     },
-    {
-      label: 'Gray',
-      hex: '#c1c1c2',
+    black: {
       level: 'primary',
-      base: 50,
+      use: ['color', 'backgroundColor'],
+      colors: [
+        {hex: '#000000', base: 70},
+        {hex: '#0d0e0e', base: 60},
+        {hex: '#252729', base: 50},
+        {hex: '#3d4144', base: 40},
+        {hex: '#555a5f', base: 30},
+        {hex: '#6e7479', base: 20},
+      ]
     },
-    {
-      label: 'Yellow',
-      hex: '#ffd16d',
+    yellow: {
       level: 'primary',
-      base: 50,
+      use: ['color', 'backgroundColor'],
+      colors: [
+        {hex: '#d39100', base: 70},
+        {hex: '#ffb107', base: 60},
+        {hex: '#ffc13a', base: 50},
+        {hex: '#ffd16d', base: 40},
+        {hex: '#ffe1a0', base: 30},
+        {hex: '#fff1d3', base: 20},
+      ]
     },
-    {
-      label: 'Blue',
-      hex: '#5499c3',
+    blue: {
       level: 'secondary',
-      base: 50,
+      use: ['color', 'backgroundColor'],
+      colors: [
+        {hex: '#21465d', base: 80},
+        {hex: '#2e6383', base: 70},
+        {hex: '#3b7fa9', base: 60},
+        {hex: '#5499c3', base: 50},
+        {hex: '#7ab0d0', base: 40},
+        {hex: '#a0c6dd', base: 30},
+        {hex: '#c5ddeb', base: 20},
+      ]
     },
-    {
-      label: 'Red',
-      hex: '#d86262',
+    red: {
       level: 'secondary',
-      base: 50,
+      use: ['color', 'backgroundColor'],
+      colors: [
+        {hex: '#812020', base: 80},
+        {hex: '#aa2a2a', base: 70},
+        {hex: '#ce3939', base: 60},
+        {hex: '#d86262', base: 50},
+        {hex: '#e28b8b', base: 40},
+        {hex: '#ecb4b4', base: 30},
+        {hex: '#f6dddd', base: 20},
+      ]
     },
-    {
-      label: 'Green',
-      hex: '#599fa0',
+    green: {
       level: 'secondary',
-      base: 50,
-    },
-  ]
+      use: ['color', 'backgroundColor'],
+      colors: [
+        {hex: '#223d3e', base: 80},
+        {hex: '#355e5e', base: 70},
+        {hex: '#477e7f', base: 60},
+        {hex: '#599FA0', base: 50},
+        {hex: '#78b3b4', base: 40},
+        {hex: '#99c6c6', base: 30},
+        {hex: '#bad8d8', base: 20},
+      ]
+    }
+  }
 }
 
 const spacing = {
   defaults: [5, 10, 15, 20, 30, 40],
   exceptions: {
-    forms: [3,4,5,10,20,30]
+    'form input': [3,4,5,10,20,30]
   }
 }
 
 export default {
   typography,
+  colors,
+  spacing,
 }
 

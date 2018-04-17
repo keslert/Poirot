@@ -6,7 +6,7 @@ import FontFamilyPicker from './font-family-picker';
 import FontWeightPicker from './font-weight-picker';
 import FontSizePicker from './font-size-picker';
 
-class TypographyPicker extends React.PureComponent {
+class TypographyPicker extends React.Component {
 
   fontLabel = (font) => {
     return `${font.fontFamily} ${font.fontWeight} ${font.fontSize}`; 
@@ -47,7 +47,7 @@ class TypographyPicker extends React.PureComponent {
       : <Select
           onChange={({ value }) => onChange(value)}
           options={options.map(value => ({label: this.fontLabel(value), value}))}
-          optionComponent={() => <div>This</div>}
+          optionComponent={FontSelectOption}
           clearable={false}
           value={{ label: this.fontLabel(value), value }}
           scrollMenuIntoView={false}
