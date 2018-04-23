@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image } from 'rebass';
+import { Image, Box } from 'rebass';
 import theme from '../styles/rebass-theme';
 
 export default ({
@@ -9,8 +9,9 @@ export default ({
   highlight=theme.colors.red,
   selected,
 }) => (
-  <Image 
-    w={size}
-    src={`https://icon.now.sh/${name}/${size}/${(selected ? highlight : color).slice(1)}`} 
-  />
+  <Box w={size}>
+    <Image 
+      src={`https://icon.now.sh/${name}/${size}/${(selected ? highlight : color).slice(1)}`} 
+    />
+  </Box>
 )

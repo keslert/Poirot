@@ -165,7 +165,21 @@ class Page extends React.Component {
           [this.selector('.dsxray-no-scroll', true)]: { overflow: 'hidden !important' },
           '.dsxray-contenteditable:focus, .dsxray-contenteditable:active': { outline: 'none' },
           '.dsxray-contenteditable::selection': { background: 'rgba(122,122,122,.15)' },
-          '.react-select__menu': { top: 'auto', bottom: '100%' },
+          '.Select-menu-outer': { 
+            top: 'auto', 
+            bottom: '100%',
+            'border-bottom-right-radius': '0px',
+            'border-bottom-left-radius': '0px',
+            'border-top-right-radius': '4px',
+            'border-top-left-radius': '4px',
+            'border-bottom': 'none',
+          },
+          '.Select.is-open > .Select-control': {
+            'border-bottom-right-radius': '4px',
+            'border-bottom-left-radius': '4px',
+            'border-top-right-radius': '0px',
+            'border-top-left-radius': '0px',
+          }
         }} />
         <style>
           {`@keyframes dsxray-fade {

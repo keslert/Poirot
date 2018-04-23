@@ -1,4 +1,5 @@
 import * as types from './action-types';
+import { normalizeColor } from '../../utils/color';
 
 export function addDS(ds) {
   
@@ -16,6 +17,15 @@ export function updateDSTypography(keys, changeset) {
 }
 
 export function buildDSObject(ds) {
+
+  const swatches = _.mapValues(ds.colors.swatches, swatch => ({
+    ...swatch,
+    colors: _.chain(swatch.colors)
+              .map(color => ({...color, value: normalizeColor(color.value)}))
+              .sortBy(color => color.base)
+              .value()
+  }))
+
   return {
     _original: JSON.parse(JSON.stringify(ds)),
     typography: {
@@ -26,7 +36,15 @@ export function buildDSObject(ds) {
         {label: 'Unknown', groups: []},
       ]
     },
-    colors: ds.colors,
+    colors: {
+      ...ds.colors,
+      swatches,
+      flattened: _.flatMap(swatches, (swatch, swatchKey) => swatch.colors.map((color, i) => ({
+        ...color,
+        index: i,
+        swatchKey,
+      })))
+    },
     spacing: ds.spacing,
   }
 }

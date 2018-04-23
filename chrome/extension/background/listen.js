@@ -1,7 +1,7 @@
 
 const arrowURLs = ['^http://keslertanner\\.com', '^https://www.wework\\.com', '^https://www.landay\\.org',    
   '^https://workona.com/', '^https://compositor.io/', '^https://fiftythree.com/', '^https://bookroo.com/',
-  '^https://www.airbnb.com/', '^https://stripe.com/'];
+  '^https://www.airbnb.com/', '^https://stripe.com/', 'http://griffindietz.com/', 'https://graphics.stanford.edu/~hanrahan/'];
 export function listen(store) {
 
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {

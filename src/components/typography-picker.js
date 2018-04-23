@@ -1,10 +1,11 @@
 import React from 'react';
-import Select from 'react-select';
+import VirtualizedSelect from 'react-virtualized-select';
 import PropTypes from 'prop-types';
 import { Flex, Box } from 'rebass'; 
 import FontFamilyPicker from './font-family-picker';
 import FontWeightPicker from './font-weight-picker';
 import FontSizePicker from './font-size-picker';
+import theme from '../styles/rebass-theme';
 
 class TypographyPicker extends React.Component {
 
@@ -39,15 +40,34 @@ class TypographyPicker extends React.Component {
     )
   }
 
+  renderOption(props) {
+    const { style, option, selectValue, focusOption, focusedOption } = props;
+
+    const extraStyle = {
+      fontFamily: `'${option.value.fontFamily}'`,
+      fontWeight: option.value.fontWeight,
+    }
+    return (
+      <SelectOption
+        style={{...style, ...extraStyle}}
+        onHover={() => null}
+        selectValue={selectValue}
+        option={option}
+        isFocused={focusedOption && focusedOption === option}
+        focusOption={focusOption}
+      />
+    );
+  }
+
   render() {
     const { options, value, onChange, allowCustom } = this.props;
     return (
       allowCustom
       ? this.renderCustom()
-      : <Select
+      : <VirtualizedSelect
           onChange={({ value }) => onChange(value)}
           options={options.map(value => ({label: this.fontLabel(value), value}))}
-          optionComponent={FontSelectOption}
+          // optionRenderer={this.renderOption}
           clearable={false}
           value={{ label: this.fontLabel(value), value }}
           scrollMenuIntoView={false}
@@ -58,54 +78,28 @@ class TypographyPicker extends React.Component {
 export default TypographyPicker;
 
 
-class FontSelectOption extends React.PureComponent {
+class SelectOption extends React.PureComponent {
 
-  static propTypes = {
-    children: PropTypes.node,
-    className: PropTypes.string,
-    isDisabled: PropTypes.bool,
-    isFocused: PropTypes.bool,
-    isSelected: PropTypes.bool,
-    onFocus: PropTypes.func,
-    onSelect: PropTypes.func,
-    option: PropTypes.object.isRequired,
-  }
-
-
-  handleMouseDown = (e) => {
+  handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    this.props.onSelect(this.props.option, e);
+    this.props.selectValue(this.props.option.value);
   }
 
   handleMouseEnter = (event) => {
-    this.props.onFocus(this.props.option, event);
-  }
-  handleMouseMove = (event) => {
-    if (this.props.isFocused) return;
-    this.props.onFocus(this.props.option, event);
+    this.props.focusOption(this.props.option);
+    this.props.onHover();
   }
 
   render() {
-    const value = this.props.option.value;
-    const style = {
-      fontFamily: `'${value.fontFamily}'`,
-      fontWeight: value.fontWeight,
-      fontSize: value.fontSize,
-      color: '#575757',
-    }
-
     return (
-      <div
-        className={this.props.className}
-        onMouseDown={this.handleMouseDown}
+      <Box p={2} bg={theme.colors[this.props.isFocused ? 'lightBlue' : 'white']}
+        style={this.props.style}
+        onClick={this.handleClick}
         onMouseEnter={this.handleMouseEnter}
-        onMouseMove={this.handleMouseMove}
       >
-        <Box px={2} py={1} className="Select-value-label" style={style}>
-          {this.props.children}
-        </Box>
-      </div>
+        {this.props.option.label}
+      </Box>
     );
   }
 }

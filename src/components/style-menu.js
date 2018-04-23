@@ -45,8 +45,8 @@ class StyleMenu extends React.Component {
 
   updateSwatches = ds => {
     this.setState({
-      backgroundSwatches: _.map(ds.colors.swatches, swatch => swatch.colors.map(c => c.hex)),
-      colorSwatches: _.map(ds.colors.swatches, swatch => swatch.colors.map(c => c.hex)),
+      backgroundSwatches: _.map(ds.colors.swatches, swatch => swatch.colors.map(c => c.value)),
+      colorSwatches: _.map(ds.colors.swatches, swatch => swatch.colors.map(c => c.value)),
     })
 
   }
@@ -112,9 +112,14 @@ class StyleMenu extends React.Component {
             />
           </Flex>
           <Flex justify="center">
-            <MarginPaddingUI 
+            <MarginPaddingUI
+              activeControls={{
+                margin: _.startsWith(selectedControl, 'margin') ? selectedControl.slice(6).split('') : {},
+                padding: _.startsWith(selectedControl, 'padding') ? selectedControl.slice(7).split('') : {},
+              }}
               allowCustom={customControl[this._key('margin-padding')]}
               onChange={this.handleSetMarginPadding}
+              spacing={this.props.ds.spacing.defaults}
               style={style}
             />
           </Flex>

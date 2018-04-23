@@ -32,3 +32,10 @@ export function _updateNode(node, changes) {
     payload: {node, changes},
   }
 }
+
+export function popOverwrite(action) {
+  return {
+    type: types.POP_OVERWRITE,
+    payload: action,
+  }
+}

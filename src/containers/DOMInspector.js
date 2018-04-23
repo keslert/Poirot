@@ -6,9 +6,11 @@ import { getSelectedNode, getPseudoSelectedNodes, getMouseInsideMenu } from '../
 import { getNodes } from '../core/models/page/selectors';
 import { 
   updateOverwrites,
+  popOverwrite,
 } from '../core/models/page/actions';
 import { 
   setSelectedNode,
+  setSelectedControl,
   toggleShowSpacing,
 } from '../core/models/ui/actions';
 import theme from '../styles/rebass-theme';
@@ -48,15 +50,34 @@ const SDescriptor = Box.extend`
   white-space: nowrap;
 `
 
-
 const keyCodes = {
   left: 37,
   right: 39,
   down: 40,
   up: 38,
-  shift: 65,
   enter: 13,
+  a: 65,
+  b: 66,
+  c: 67,
+  l: 76,
   m: 77,
+  p: 80,
+  r: 82,
+  s: 83,
+  t: 84,
+  w: 87,
+  x: 88,
+  y: 89,
+  0: 48,
+  1: 49,
+  2: 50,
+  3: 51,
+  4: 52,
+  5: 53,
+  6: 54,
+  7: 55,
+  8: 56,
+  9: 57,
 }
 const resetBB = {top: 0, left: 0, width: 0, height: 0}
 const DBL_CLICK_MS = 300;
@@ -68,6 +89,7 @@ class DOMInspector extends React.Component {
     pseudoBBs: [],
     editingElement: null,
     lastClick: 0,
+    lastKeyPress: null,
   }
 
   componentDidMount() {
@@ -129,7 +151,68 @@ class DOMInspector extends React.Component {
       }
       return;
     }
-      
+    const { lastKeyPress } = this.state;
+    this.setState({lastKeyPress: e.which});
+    
+    if(e.altKey && this.handleControlHotkeys(e, lastKeyPress)) {
+      e.preventDefault();
+      return;
+    }
+    this.handleNextElementSelection(e);
+  }
+
+  handleControlHotkeys(e, lastKeyPress) {
+    const keyCombos = [
+      {lastKey: keyCodes.m, key: keyCodes.t, control: 'marginT'},
+      {lastKey: keyCodes.m, key: keyCodes.b, control: 'marginB'},
+      {lastKey: keyCodes.m, key: keyCodes.l, control: 'marginL'},
+      {lastKey: keyCodes.m, key: keyCodes.r, control: 'marginR'},
+      {lastKey: keyCodes.m, key: keyCodes.x, control: 'marginLR'},
+      {lastKey: keyCodes.m, key: keyCodes.y, control: 'marginTB'},
+      {lastKey: keyCodes.m, key: keyCodes.a, control: 'marginTBLR'},
+
+      {lastKey: keyCodes.p, key: keyCodes.t, control: 'paddingT'},
+      {lastKey: keyCodes.p, key: keyCodes.b, control: 'paddingB'},
+      {lastKey: keyCodes.p, key: keyCodes.l, control: 'paddingL'},
+      {lastKey: keyCodes.p, key: keyCodes.r, control: 'paddingR'},
+      {lastKey: keyCodes.p, key: keyCodes.x, control: 'paddingLR'},
+      {lastKey: keyCodes.p, key: keyCodes.y, control: 'paddingTB'},
+      {lastKey: keyCodes.p, key: keyCodes.a, control: 'paddingTBLR'},
+
+      {key: keyCodes.t, control: 'text'},
+      {key: keyCodes.s, control: 'font-size'},
+      {key: keyCodes.w, control: 'font-weight'},
+      {key: keyCodes.c, control: 'color'},
+      {key: keyCodes.b, control: 'backgroundColor'},
+
+      {key: keyCodes.up, action: {step: 1}},
+      {key: keyCodes.down, action: {step: -1}},
+      {key: keyCodes['0'], action: {level: 0}},
+      {key: keyCodes['1'], action: {level: 1}},
+      {key: keyCodes['2'], action: {level: 2}},
+      {key: keyCodes['3'], action: {level: 3}},
+      {key: keyCodes['4'], action: {level: 4}},
+      {key: keyCodes['5'], action: {level: 5}},
+      {key: keyCodes['6'], action: {level: 6}},
+      {key: keyCodes['7'], action: {level: 7}},
+      {key: keyCodes['8'], action: {level: 8}},
+      {key: keyCodes['9'], action: {level: 9}},
+    ]
+    const validCombo = _.find(keyCombos, combo => (
+      e.which === combo.key && (!combo.lastKey || combo.lastKey === lastKeyPress)
+    ))
+    if(validCombo) {
+      if(validCombo.control) {
+        this.props.setSelectedControl(validCombo.control);
+      } else if(validCombo && validCombo.action) {
+        this.props.popOverwrite(validCombo.action);
+      }
+    }
+
+    return !!validCombo;
+  }
+
+  handleNextElementSelection(e) {
     const el = document.querySelector(`.${this.props.selected.uid}`) || {};
     let nextEl;
     if(e.which === keyCodes.left && el.previousElementSibling) {
@@ -140,8 +223,6 @@ class DOMInspector extends React.Component {
       nextEl = el.parentElement;
     } else if(e.which === keyCodes.down && el.firstElementChild) {
       nextEl = el.firstElementChild;
-    } else if (e.which === keyCodes.m) {
-      this.props.toggleShowSpacing();
     }
     
     if(nextEl) {
@@ -283,6 +364,8 @@ const mapDispatchToProps = {
   setSelectedNode,
   toggleShowSpacing,
   updateOverwrites,
+  setSelectedControl,
+  popOverwrite,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DOMInspector);

@@ -23,3 +23,14 @@ function getDefaultTypographyColors(typ) {
     copy,
   }
 }
+
+const colorCache = {
+  'rgba(0, 0, 0, 0)': 'none',
+  'none': 'none',
+};
+export function normalizeColor(color) {
+  if(!colorCache[color]) {
+    colorCache[color] = tinycolor(color).toHexString();
+  }
+  return colorCache[color];
+}

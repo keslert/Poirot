@@ -118,83 +118,83 @@ const colors = {
       level: 'primary',
       use: ['color', 'backgroundColor'],
       colors: [
-        {hex: '#747476', base: 70},
-        {hex: '#8e8e8f', base: 60},
-        {hex: '#a7a7a9', base: 50},
-        {hex: '#c1c1c2', base: 40},
-        {hex: '#dbdbdb', base: 30},
-        {hex: '#f4f4f5', base: 20},
-        {hex: '#ffffff', base: 10},
+        {value: '#747476', base: 70},
+        {value: '#8e8e8f', base: 60},
+        {value: '#a7a7a9', base: 50},
+        {value: '#c1c1c2', base: 40},
+        {value: '#dbdbdb', base: 30},
+        {value: '#f4f4f5', base: 20},
+        {value: '#ffffff', base: 10},
       ]
     },
     black: {
       level: 'primary',
       use: ['color', 'backgroundColor'],
       colors: [
-        {hex: '#000000', base: 70},
-        {hex: '#0d0e0e', base: 60},
-        {hex: '#252729', base: 50},
-        {hex: '#3d4144', base: 40},
-        {hex: '#555a5f', base: 30},
-        {hex: '#6e7479', base: 20},
+        {value: '#000000', base: 70},
+        {value: '#0d0e0e', base: 60},
+        {value: '#252729', base: 50},
+        {value: '#3d4144', base: 40},
+        {value: '#555a5f', base: 30},
+        {value: '#6e7479', base: 20},
       ]
     },
     yellow: {
       level: 'primary',
       use: ['color', 'backgroundColor'],
       colors: [
-        {hex: '#d39100', base: 70},
-        {hex: '#ffb107', base: 60},
-        {hex: '#ffc13a', base: 50},
-        {hex: '#ffd16d', base: 40},
-        {hex: '#ffe1a0', base: 30},
-        {hex: '#fff1d3', base: 20},
+        {value: '#d39100', base: 70},
+        {value: '#ffb107', base: 60},
+        {value: '#ffc13a', base: 50},
+        {value: '#ffd16d', base: 40},
+        {value: '#ffe1a0', base: 30},
+        {value: '#fff1d3', base: 20},
       ]
     },
     blue: {
       level: 'secondary',
       use: ['color', 'backgroundColor'],
       colors: [
-        {hex: '#21465d', base: 80},
-        {hex: '#2e6383', base: 70},
-        {hex: '#3b7fa9', base: 60},
-        {hex: '#5499c3', base: 50},
-        {hex: '#7ab0d0', base: 40},
-        {hex: '#a0c6dd', base: 30},
-        {hex: '#c5ddeb', base: 20},
+        {value: '#21465d', base: 80},
+        {value: '#2e6383', base: 70},
+        {value: '#3b7fa9', base: 60},
+        {value: '#5499c3', base: 50},
+        {value: '#7ab0d0', base: 40},
+        {value: '#a0c6dd', base: 30},
+        {value: '#c5ddeb', base: 20},
       ]
     },
     red: {
       level: 'secondary',
       use: ['color', 'backgroundColor'],
       colors: [
-        {hex: '#812020', base: 80},
-        {hex: '#aa2a2a', base: 70},
-        {hex: '#ce3939', base: 60},
-        {hex: '#d86262', base: 50},
-        {hex: '#e28b8b', base: 40},
-        {hex: '#ecb4b4', base: 30},
-        {hex: '#f6dddd', base: 20},
+        {value: '#812020', base: 80},
+        {value: '#aa2a2a', base: 70},
+        {value: '#ce3939', base: 60},
+        {value: '#d86262', base: 50},
+        {value: '#e28b8b', base: 40},
+        {value: '#ecb4b4', base: 30},
+        {value: '#f6dddd', base: 20},
       ]
     },
     green: {
       level: 'secondary',
       use: ['color', 'backgroundColor'],
       colors: [
-        {hex: '#223d3e', base: 80},
-        {hex: '#355e5e', base: 70},
-        {hex: '#477e7f', base: 60},
-        {hex: '#599FA0', base: 50},
-        {hex: '#78b3b4', base: 40},
-        {hex: '#99c6c6', base: 30},
-        {hex: '#bad8d8', base: 20},
+        {value: '#223d3e', base: 80},
+        {value: '#355e5e', base: 70},
+        {value: '#477e7f', base: 60},
+        {value: '#599FA0', base: 50},
+        {value: '#78b3b4', base: 40},
+        {value: '#99c6c6', base: 30},
+        {value: '#bad8d8', base: 20},
       ]
     }
   }
 }
 
 const spacing = {
-  defaults: [5, 10, 15, 20, 30, 40],
+  defaults: [0, 5, 10, 15, 20, 30, 40],
   exceptions: {
     'form input': [3,4,5,10,20,30]
   }

@@ -111,18 +111,18 @@ class Menu extends React.Component {
         <Flex flex={1} justify="flex-end" m={-1}>
 
           <HoverMenu renderMenu={() => (
-            <Flex p={1} bg="#fff" direction="column">
-              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleHideChanges}>
+            <Flex bg="#fff" direction="column">
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.props.toggleHideChanges}>
                 <Icon name="visibility_off" selected={this.props.hideChanges} />
-                <Text children="Hide changes" />
+                <Text ml={1} children="Hide changes" />
               </SHoverMenuItem>
-              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowRedline}>
-                <Icon name="brush" selected={this.props.showRedline} />
-                <Text children="Show redlines" />
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowRedline}>
+                <Icon name="mode_edit" selected={this.props.showRedline} />
+                <Text ml={1} children="Show redlines" />
               </SHoverMenuItem>
-              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowSpacing}>
-                <Icon name="line_weight" selected={this.props.showSpacing} />
-                <Text children="Show margin & padding" />
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowSpacing}>
+                <Icon name="vertical_align_center" selected={this.props.showSpacing} />
+                <Text ml={1} children="Show margin & padding" />
               </SHoverMenuItem>
             </Flex>
           )}>
@@ -132,18 +132,22 @@ class Menu extends React.Component {
           </HoverMenu>
 
           <HoverMenu renderMenu={() => (
-            <Flex p={1} bg="#fff" direction="column">
-              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.handleSnapshot}>
-                <Icon name="photo_camera" /> <Text children="Capture Snapshot" />
+            <Flex bg="#fff" direction="column">
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleSnapshot}>
+                <Icon name="photo_camera" />
+                <Text ml={1} children="Capture Snapshot" />
               </SHoverMenuItem>
-              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
-                <Icon name="refresh" /> <Text children="Retag Page" />
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
+                <Icon name="refresh" /> 
+                <Text ml={1} children="Retag Page" />
               </SHoverMenuItem>
-              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
-                <Icon name="file_download" /> <Text children="Export Page" />
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
+                <Icon name="file_download" /> 
+                <Text ml={1} children="Export Page" />
               </SHoverMenuItem>
-              <SHoverMenuItem p={1} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
-                <Icon name="file_upload" /> <Text children="Import Page" />
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
+                <Icon name="file_upload" /> 
+                <Text ml={1} children="Import Page" />
               </SHoverMenuItem>
             </Flex>
           )}>

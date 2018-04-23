@@ -35,6 +35,7 @@ class ColorPicker extends React.Component {
                 triangle="hide" 
               />
             : <SwatchesPicker
+                color={color}
                 colors={swatches}
                 onChange={this.handleChange}
               />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Relative, Absolute } from 'rebass'
+import { Relative, Absolute, Box } from 'rebass'
 
 class HoverMenu extends React.Component {
   state = {
@@ -14,12 +14,15 @@ class HoverMenu extends React.Component {
   }
 
   render() {
+    const { visible } = this.state;
     return (
       <Relative onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
-        {this.props.children}
+        <Box bg={visible ? 'rgba(0,0,0,.05)' : 'transparent'}>
+          {this.props.children}
+        </Box>
 
         {this.state.visible && 
-          <Absolute style={{bottom: 30, left: 0, boxShadow: '0 1px 2px rgba(0,0,0,.1)'}}>
+          <Absolute style={{bottom: 28, left: 0, boxShadow: '0 1px 2px rgba(0,0,0,.1)'}}>
             {this.props.renderMenu()}
           </Absolute>
         }
