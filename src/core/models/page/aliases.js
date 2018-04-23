@@ -10,10 +10,10 @@ import {
 } from '../ui/selectors';
 import { getDS } from '../ds/selectors';
 
-export function updateOverwrites({payload: overwrites}) {
+export function updateOverwrites({payload: overwrites, _sender}) {
   return (dispatch, getState) => {
     const uids = Object.keys(overwrites);
-    const nodes = getNodes(getState());
+    const nodes = getNodes(getState(), _sender.url);
 
     const _overwrites = fromPairs(uids.map(uid => {
       const style = overwrites[uid];
@@ -25,17 +25,17 @@ export function updateOverwrites({payload: overwrites}) {
       ]
     }))
 
-    dispatch({type: ALIAS_UPDATE_OVERWRITES, payload: _overwrites});
-    dispatch({type: TOGGLE_HIDE_CHANGES, payload: false});
+    dispatch({type: ALIAS_UPDATE_OVERWRITES, payload: _overwrites, _sender});
+    dispatch({type: TOGGLE_HIDE_CHANGES, payload: false, _sender});
   }
 }
 
-export function popOverwrite({payload: action}) {
+export function popOverwrite({payload: action, _sender}) {
   return (dispatch, getState) => {
     const state = getState();
-    const selected = getSelectedNode(state);
-    const selectedControl = getSelectedControl(state);
-    const overwrites = getOverwrites(state);
+    const selected = getSelectedNode(state, _sender.url);
+    const selectedControl = getSelectedControl(state, _sender.url);
+    const overwrites = getOverwrites(state, _sender.url);
 
     const style = {...selected.style, ...(overwrites[selected.uid] || {})}
     const ds = getDS(state);
@@ -53,7 +53,8 @@ export function popOverwrite({payload: action}) {
       }
     })()
     dispatch(updateOverwrites({
-      payload: {[selected.uid]: changes}
+      payload: {[selected.uid]: changes},
+      _sender,
     }))
   }
 }

@@ -1,5 +1,6 @@
 import * as types from './action-types';
 import _ from 'lodash';
+import { pageSpecificReducer } from '../../utils/redux';
 
 const pageState = () => ({
   nodes: {},
@@ -10,7 +11,7 @@ const customMerge = (objV, srcV) => {
   return _.pickBy(!objV ? srcV : {...objV, ...srcV}, v => v !== null)
 }
 
-export function pageReducer(state = pageState(), { payload, type }) {
+export const pageReducer = pageSpecificReducer((state = pageState(), { payload, type }) => {
   switch (type) {
 
     case types.ADD_PAGE:
@@ -37,4 +38,4 @@ export function pageReducer(state = pageState(), { payload, type }) {
       return state;
 
   }
-}
+})

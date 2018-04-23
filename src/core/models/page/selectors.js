@@ -1,20 +1,21 @@
 import { createSelector } from 'reselect';
 import filter from 'lodash/filter';
+import { pageSpecificSelector } from '../../utils/redux';
 
-export function getPage(state) {
-  return state.page;
+export function getPage(state, _url) {
+  return pageSpecificSelector(state, 'page', _url);
 }
 
-export function getNodes(state) {
-  return getPage(state).nodes;
+export function getNodes(state, url) {
+  return getPage(state, url).nodes;
 }
 
-export function getOverwrites(state) {
-  return getPage(state).overwrites;
+export function getOverwrites(state, url) {
+  return getPage(state, url).overwrites;
 }
 
-export function getTreeprints(state) {
-  return getPage(state).treeprints;
+export function getTreeprints(state, url) {
+  return getPage(state, url).treeprints;
 }
 
 export const getTextNodes = createSelector(

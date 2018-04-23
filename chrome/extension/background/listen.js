@@ -1,3 +1,5 @@
+import URL from 'url-parse';
+import { REGISTER_PAGE } from '../../../src/core/utils/redux';
 
 const arrowURLs = ['^http://keslertanner\\.com', '^https://www.wework\\.com', '^https://www.landay\\.org',    
   '^https://workona.com/', '^https://compositor.io/', '^https://fiftythree.com/', '^https://bookroo.com/',
@@ -7,9 +9,14 @@ export function listen(store) {
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     const isCompleted = changeInfo.status === 'complete';
     const isValidDomain = tab.url.match(arrowURLs.join('|'))
-
+    
     if(isCompleted && isValidDomain) {
-      injectDSXray(tabId);
+      injectDSXray(tabId, store);
+      const url = new URL(tab.url);
+      store.dispatch({
+        type: REGISTER_PAGE,
+        payload: {hostname: url.hostname, pathname: url.pathname},
+      })
     }
   });
 }

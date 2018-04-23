@@ -1,5 +1,6 @@
 import * as types from './action-types';
 import uniq from 'lodash/uniq';
+import { pageSpecificReducer } from '../../utils/redux';
 
 const uiState = () => ({
   customControl: {},
@@ -14,7 +15,7 @@ const uiState = () => ({
   mouseInsideMenu: false,
 });
 
-export function uiReducer(state = uiState(), { payload, type }) {
+export const uiReducer = pageSpecificReducer((state = uiState(), { payload, type }) => {
   switch (type) {
 
     case types.TOGGLE_VISIBLE:
@@ -59,4 +60,4 @@ export function uiReducer(state = uiState(), { payload, type }) {
       return state;
 
   }
-}
+})

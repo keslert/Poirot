@@ -39,7 +39,7 @@ class StyleMenu extends React.Component {
 
   componentWillReceiveProps(props) {
     if(props.ds !== this.props.ds) {
-      this.props.updateSwatches(props.ds);
+      this.updateSwatches(props.ds);
     }
   }
 
@@ -108,7 +108,7 @@ class StyleMenu extends React.Component {
             <SCustom 
               active={customControl[this._key('margin-padding')]} 
               onClick={this.handleToggleCustomControl(this._key('margin-padding'))}
-              children="custom" 
+              children="allow custom" 
             />
           </Flex>
           <Flex justify="center">
@@ -141,7 +141,7 @@ class StyleMenu extends React.Component {
               <SCustom 
                 active={customControl[this._key('text')]}
                 onClick={this.handleToggleCustomControl(this._key('text'))}
-                children="custom" 
+                children="allow custom" 
               />
             </Flex>
             <Box flex={1}>
@@ -171,7 +171,7 @@ class StyleMenu extends React.Component {
               <SCustom 
                 active={customControl[this._key('color')]}
                 onClick={this.handleToggleCustomControl(this._key('color'))}
-                children="custom" />
+                children="allow custom" />
             </Flex>
             <ColorPicker 
               swatches={this.state.colorSwatches} 
@@ -200,7 +200,7 @@ class StyleMenu extends React.Component {
               <SCustom 
                 active={customControl[this._key('backgroundColor')]}
                 onClick={this.handleToggleCustomControl(this._key('backgroundColor'))}
-                children="custom" />
+                children="allow custom" />
             </Flex>
             <ColorPicker 
               swatches={this.state.backgroundSwatches} 

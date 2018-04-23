@@ -2,9 +2,10 @@ import { createSelector } from 'reselect';
 import { getNodes, getTextNodes } from '../page/selectors';
 import { getTypographyGroupKey } from '../../utils/html';
 import _ from 'lodash';
+import { hostnameSpecificSelector } from '../../utils/redux';
 
 export function getDS(state) {
-  return state.ds;
+  return hostnameSpecificSelector(state, 'ds');
 }
 
 export const getSpacingCategories = createSelector(

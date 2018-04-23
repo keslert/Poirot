@@ -1,9 +1,10 @@
 import { createSelector } from 'reselect';
 import { getNodes, getTreeprints } from '../page/selectors';
 import filter from 'lodash/filter';
+import { pageSpecificSelector } from '../../utils/redux';
 
 export function getUI(state) {
-  return state.ui;
+  return pageSpecificSelector(state, 'ui');
 }
 
 export function getVisible(state) {

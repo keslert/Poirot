@@ -22,15 +22,16 @@ function inject() {
       el
     );
   })
+  injectStylesheets();
+}
 
+function injectStylesheets() {
   const head = document.getElementsByTagName('head')[0];
-
   const stylesheets = [
     'react-select/dist/react-select.css', 
     'react-virtualized/styles.css', 
     'react-virtualized-select/styles.css',
   ];
-  
   stylesheets.forEach(pkg => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
