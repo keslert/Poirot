@@ -25,7 +25,7 @@ class ColorPicker extends React.Component {
     const { color, swatches, allowCustom } = this.props;
     if (this.state.displayPicker) {
       return (
-        <Absolute style={{bottom: 20, right: 0, zIndex: 2147483647}}>
+        <Absolute style={{bottom: 20, left: 0, zIndex: 2147483647}}>
           <Fixed style={{ top: 0, left: 0, right: 0, bottom: 0 }} onClick={this.handleClose} />
           {allowCustom 
             ? <SketchPicker

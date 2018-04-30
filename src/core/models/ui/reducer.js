@@ -1,6 +1,7 @@
 import * as types from './action-types';
 import uniq from 'lodash/uniq';
 import { pageSpecificReducer } from '../../utils/redux';
+import { SET_COPY_NODE } from '../clipboard/action-types';
 
 const uiState = () => ({
   customControl: {},
@@ -10,9 +11,10 @@ const uiState = () => ({
   hideChanges: false,
   selectedControl: null,
   selectedNode: null,
-  selectionMode: 'individual',
+  selectionMode: 'symbol',
   visible: [],
   mouseInsideMenu: false,
+  pasteNode: null,
 });
 
 export const uiReducer = pageSpecificReducer((state = uiState(), { payload, type }) => {
@@ -38,7 +40,13 @@ export const uiReducer = pageSpecificReducer((state = uiState(), { payload, type
       return Object.assign({}, state, {selectedControl: payload})
 
     case types.SET_MOUSE_INSIDE_MENU:
-    return Object.assign({}, state, {mouseInsideMenu: payload})
+      return Object.assign({}, state, {mouseInsideMenu: payload})
+
+    case SET_COPY_NODE:
+      return Object.assign({}, state, {pasteNode: null});
+    
+    case types.ALIAS_SET_PASTE_NODE:
+      return Object.assign({}, state, {pasteNode: payload})
 
     case types.TOGGLE_SHOW_SPACING:
       return Object.assign({}, state, {showSpacing: !state.showSpacing})

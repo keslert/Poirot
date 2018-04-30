@@ -17,7 +17,7 @@ export const pageSpecificReducer = reducer => (state={}, action) => {
 }
 
 export const pageSpecificSelector = (state, key, _url) => {
-  const url = _url ? new URL(_url) : document.location;
+  const url = _.isString(_url) ? new URL(_url) : document.location;
   return state[key][url.hostname + url.pathname];
 }
 
@@ -36,6 +36,6 @@ export const hostnameSpecificReducer = reducer => (state={}, action) => {
 }
 
 export const hostnameSpecificSelector = (state, key, _url) => {
-  const url = _url ? new URL(_url) : document.location;
+  const url = _.isString(_url) ? new URL(_url) : document.location;
   return state[key][url.hostname];
 }

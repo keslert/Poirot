@@ -1,0 +1,1 @@
+export const SET_COPY_NODE = 'SET_COPY_NODE';

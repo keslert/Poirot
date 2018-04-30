@@ -5,14 +5,19 @@ import { getBB } from '../core/utils/html';
 import { getSelectedNode, getPseudoSelectedNodes, getMouseInsideMenu } from '../core/models/ui/selectors';
 import { getNodes } from '../core/models/page/selectors';
 import { 
-  updateOverwrites,
+  updateSelectedOverwrites,
   popOverwrite,
 } from '../core/models/page/actions';
 import { 
+  setPasteNode,
   setSelectedNode,
   setSelectedControl,
   toggleShowSpacing,
 } from '../core/models/ui/actions';
+import { 
+  setCopyNode,
+} from '../core/models/clipboard/actions';
+
 import theme from '../styles/rebass-theme';
 
 const SFrame = Box.extend`
@@ -65,6 +70,7 @@ const keyCodes = {
   r: 82,
   s: 83,
   t: 84,
+  v: 86,
   w: 87,
   x: 88,
   y: 89,
@@ -121,8 +127,7 @@ class DOMInspector extends React.Component {
   }
 
   updateSelected = changes => {
-    const { selected, updateOverwrites } = this.props;
-    this.props.updateOverwrites({[selected.uid]: changes})
+    this.props.updateSelectedOverwrites(changes)
   }
 
   handleDeselect = () => {
@@ -159,6 +164,16 @@ class DOMInspector extends React.Component {
       return;
     }
     this.handleNextElementSelection(e);
+    this.handleCopyPaste(e);
+  }
+
+  handleCopyPaste = (e) => {
+    const { selected} = this.props;
+    if(selected && e.metaKey && e.which === keyCodes.c) {
+      this.props.setCopyNode(selected);
+    } else if(selected && e.metaKey && e.which === keyCodes.v) {
+      this.props.setPasteNode(selected);
+    }
   }
 
   handleControlHotkeys(e, lastKeyPress) {
@@ -345,7 +360,12 @@ class DOMInspector extends React.Component {
           </SFrame>
         }
         {pseudoBBs.map(bb => 
-          <SFrame color={theme.colors.purple} style={bb} key={bb.uid} />
+          <SFrame 
+            color={theme.colors.purple} 
+            style={bb} 
+            key={bb.uid} 
+            fade={mouseInsideMenu}
+            />
         )}
         {this.renderHiddenFileInput()}
       </div>
@@ -363,9 +383,11 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   setSelectedNode,
   toggleShowSpacing,
-  updateOverwrites,
+  updateSelectedOverwrites,
   setSelectedControl,
   popOverwrite,
+  setPasteNode,
+  setCopyNode,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DOMInspector);

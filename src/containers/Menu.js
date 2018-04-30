@@ -3,10 +3,11 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Flex, Box, Text } from 'rebass';
 import { updateDSTypography } from '../core/models/ds/actions';
-import { addPage, updateOverwrites } from '../core/models/page/actions';
+import { addPage, updateSelectedOverwrites } from '../core/models/page/actions';
 import { 
   setSelectedControl,
   setMouseInsideMenu,
+  setSelectionMode,
   toggleVisible,
   toggleHideChanges,
   toggleShowRedline,
@@ -23,19 +24,20 @@ import {
   getCustomControl,
   getSelectedControl,
   getShowSpacing,
+  getSelectionMode,
 } from '../core/models/ui/selectors';
-import MenuItem from './menu-item';
-import TypographyTable from './typography-table';
-import StyleMenu from './style-menu';
+import MenuItem from '../components/menu-item';
+import TypographyTable from '../components/typography-table';
+import StyleMenu from '../components/style-menu';
 import domtoimage from 'dom-to-image';
 import { parseAndTagPage } from '../core/utils/page';
-import Icon from './icon';
-import HoverMenu from './hover-menu';
+import Icon from '../components/icon';
+import HoverMenu from '../components/hover-menu';
 
 const SOpenMenu = Box.extend`
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 16px 2px rgba(0,0,0,0.20);
+  box-shadow: ${props => props.theme.shadows.heavy};
   height: auto;
   background-color: #fff;
   border-radius: 4px;
@@ -106,9 +108,9 @@ class Menu extends React.Component {
 
   renderHeader = (str) => {
     return (
-      <Flex p={2}>
+      <Flex px={2} py={1}>
         <Text center bold>{this.state.menu} <Text is="span" f="6px" children="▼" style={{position:'relative', top: -1}} /></Text>
-        <Flex flex={1} justify="flex-end" m={-1}>
+        <Flex flex={1} justify="flex-end" align="center" m={-1}>
 
           <HoverMenu renderMenu={() => (
             <Flex bg="#fff" direction="column">
@@ -172,12 +174,12 @@ class Menu extends React.Component {
   }
 
   handleMouseEnter = () => {
-    document.body.classList.add('dsxray-no-scroll');
+    // document.body.classList.add('dsxray-no-scroll');
     this.props.setMouseInsideMenu(true);
   }
 
   handleMouseLeave = () => {
-    document.body.classList.remove('dsxray-no-scroll');
+    // document.body.classList.remove('dsxray-no-scroll');
     this.props.setMouseInsideMenu(false);
   }
 
@@ -189,11 +191,13 @@ class Menu extends React.Component {
           customControl={this.props.customControl}
           overwrites={this.props.overwrites}
           selected={this.props.selected}
+          selectionMode={this.props.selectionMode}
           typography={this.props.typography}
           toggleCustomControl={this.props.toggleCustomControl}
-          updateOverwrites={this.props.updateOverwrites}
+          updateSelectedOverwrites={this.props.updateSelectedOverwrites}
           selectedControl={this.props.selectedControl}
           setSelectedControl={this.props.setSelectedControl}
+          setSelectionMode={this.props.setSelectionMode}
         />
       case 'Typography':
         return <TypographyTable
@@ -210,12 +214,8 @@ class Menu extends React.Component {
   render() {
     const { open } = this.state;
     return (
-      <div>
-        <SOpenMenu 
-          onMouseEnter={this.handleMouseEnter} 
-          onMouseLeave={this.handleMouseLeave}
-          style={{display: open ? 'block' : 'none'}}
-        >
+      <div onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+        <SOpenMenu style={{display: open ? 'block' : 'none'}}>
           {this.renderHeader()}
           {this.renderMenu()}
         </SOpenMenu>
@@ -241,19 +241,21 @@ const mapStateToProps = state => ({
   customControl: getCustomControl(state),
   selectedControl: getSelectedControl(state),
   showSpacing: getShowSpacing(state),
+  selectionMode: getSelectionMode(state),
 })
 
 const mapDispatchToProps = {
   toggleVisible,
   updateDSTypography,
   addPage,
-  updateOverwrites,
+  updateSelectedOverwrites,
   toggleHideChanges,
   toggleShowRedline,
   toggleCustomControl,
   setSelectedControl,
   setMouseInsideMenu,
   toggleShowSpacing,
+  setSelectionMode,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

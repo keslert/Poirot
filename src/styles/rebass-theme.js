@@ -45,6 +45,7 @@ export default {
   },
   shadows: {
     basic: '0 1px 3px rgba(50,50,93,.06)',
+    heavy: '0 4px 16px 2px rgba(0,0,0,0.20)',
   },
   bg: '#aea',
   radius: 0,

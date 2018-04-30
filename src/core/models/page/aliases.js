@@ -6,26 +6,63 @@ import mapValues from 'lodash/mapValues';
 import fromPairs from 'lodash/fromPairs';
 import { 
   getSelectedNode, 
-  getSelectedControl, 
+  getSelectedControl,
+  getPseudoSelectedNodes, 
 } from '../ui/selectors';
 import { getDS } from '../ds/selectors';
 
-export function updateOverwrites({payload: overwrites, _sender}) {
-  return (dispatch, getState) => {
-    const uids = Object.keys(overwrites);
-    const nodes = getNodes(getState(), _sender.url);
 
+export function updateSelectedOverwrites({payload: {overwrites, isEphemeral}, _sender}) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const selected = getSelectedNode(state, _sender.url);
+    const psuedoSelected = getPseudoSelectedNodes(state, _sender.url);
+
+    const overwrites_ = _.fromPairs([selected, ...psuedoSelected].map(node => [node.uid, overwrites]));
+    dispatch(updateOverwrites({
+      payload: {overwrites: overwrites_, isEphemeral},
+      _sender,
+    }))
+  }
+}
+
+export function clearSelectedOverwrites({payload: action, _sender}) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const selected = getSelectedNode(state, _sender.url);
+    const psuedoSelected = getPseudoSelectedNodes(state, _sender.url);
+
+    dispatch({
+      type: ALIAS_CLEAR_SELECTED_OVERWRITES,
+      payload: {uids: [selected, ...psuedoSelected], isEphemeral},
+      _sender,
+    })
+  }
+}
+
+export function updateOverwrites({payload: {overwrites, isEphemeral}, _sender}) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const nodes = getNodes(state, _sender.url);
+    const currentOverwrites = getOverwrites(state, _sender.url);
+    
+    const uids = Object.keys(overwrites);
     const _overwrites = fromPairs(uids.map(uid => {
-      const style = overwrites[uid];
       const node = nodes[uid];
+      const style = {...node.style, ...((isEphemeral && currentOverwrites[node.uid]) || {})}
+      
       return [
         uid,
         // If the overwrite value is the same as the original, set it to null
-        mapValues(style, (value, key) => node.style[key] === value ? null : value)
+        mapValues(overwrites[uid], (value, key) => style[key] === value ? null : value)
       ]
     }))
 
-    dispatch({type: ALIAS_UPDATE_OVERWRITES, payload: _overwrites, _sender});
+    dispatch({
+      type: ALIAS_UPDATE_OVERWRITES, 
+      payload: {overwrites: _overwrites, isEphemeral}, 
+      _sender,
+    });
     dispatch({type: TOGGLE_HIDE_CHANGES, payload: false, _sender});
   }
 }
@@ -36,9 +73,9 @@ export function popOverwrite({payload: action, _sender}) {
     const selected = getSelectedNode(state, _sender.url);
     const selectedControl = getSelectedControl(state, _sender.url);
     const overwrites = getOverwrites(state, _sender.url);
-
+    const ds = getDS(state, _sender.url);
     const style = {...selected.style, ...(overwrites[selected.uid] || {})}
-    const ds = getDS(state);
+    
     const changes = (() => {
       if(_.startsWith(selectedControl, 'margin')) {
         return popSpacing('margin', style, ds, action, selectedControl);
@@ -52,8 +89,8 @@ export function popOverwrite({payload: action, _sender}) {
         return popText(style, ds, action);
       }
     })()
-    dispatch(updateOverwrites({
-      payload: {[selected.uid]: changes},
+    dispatch(updateSelectedOverwrites({
+      payload: {overwrites: changes},
       _sender,
     }))
   }

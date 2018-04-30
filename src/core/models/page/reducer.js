@@ -5,6 +5,7 @@ import { pageSpecificReducer } from '../../utils/redux';
 const pageState = () => ({
   nodes: {},
   overwrites: {},
+  ephemerals: {},
 });
 
 const customMerge = (objV, srcV) => {
@@ -12,6 +13,7 @@ const customMerge = (objV, srcV) => {
 }
 
 export const pageReducer = pageSpecificReducer((state = pageState(), { payload, type }) => {
+  let key;
   switch (type) {
 
     case types.ADD_PAGE:
@@ -29,10 +31,22 @@ export const pageReducer = pageSpecificReducer((state = pageState(), { payload, 
       })
 
     case types.ALIAS_UPDATE_OVERWRITES:
+      key = payload.isEphemeral ? 'ephemerals' : 'overwrites';
       return Object.assign({}, state, {
-        overwrites: _.pickBy(_.mergeWith({}, state.overwrites, payload, customMerge), i => !_.isEmpty(i))
+        [key]: _.chain({})
+          .mergeWith(state[key], payload.overwrites, customMerge)
+          .pickBy(i => !_.isEmpty(i))
+          .value()
       })
 
+    case types.ALIAS_CLEAR_SELECTED_OVERWRITES:
+      key = payload.isEphemeral ? 'ephemerals' : 'overwrites';
+      return Object.assign({}, state, {
+        [key]: _.chain(state[key])
+          .mapValues((v, uid) => _.includes(payload.uids, uid) ? null : v)
+          .pickBy(i => !_.isEmpty(i))
+          .value()
+      })
 
     default:
       return state;

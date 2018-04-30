@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Flex, Box } from 'rebass'; 
 import FontFamilyPicker from './font-family-picker';
 import FontWeightPicker from './font-weight-picker';
-import FontSizePicker from './font-size-picker';
+import NumericPicker from './numeric-picker';
 import theme from '../styles/rebass-theme';
 
 class TypographyPicker extends React.Component {
@@ -31,7 +31,10 @@ class TypographyPicker extends React.Component {
           />
         </Box>
         <Box flex={1}>
-          <FontSizePicker
+          <NumericPicker
+            min={8}
+            max={100}
+            unit="px"
             value={value.fontSize}
             onChange={fontSize => onChange({ ...value, fontSize })}
           />

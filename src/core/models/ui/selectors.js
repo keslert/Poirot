@@ -1,46 +1,55 @@
 import { createSelector } from 'reselect';
-import { getNodes, getTreeprints } from '../page/selectors';
+import { 
+  getNodes, 
+  getTreeprints, 
+  getOverwrites,
+} from '../page/selectors';
 import filter from 'lodash/filter';
 import { pageSpecificSelector } from '../../utils/redux';
+import { getStyle } from '../../utils/page';
 
-export function getUI(state) {
-  return pageSpecificSelector(state, 'ui');
+export function getUI(state, _url) {
+  return pageSpecificSelector(state, 'ui', _url);
 }
 
-export function getVisible(state) {
-  return getUI(state).visible;
+export function getVisible(state, _url) {
+  return getUI(state, _url).visible;
 }
 
-export function getShowSpacing(state) {
-  return getUI(state).showSpacing;
+export function getShowSpacing(state, _url) {
+  return getUI(state, _url).showSpacing;
 }
 
-export function getShowRedline(state) {
-  return getUI(state).showRedline;
+export function getShowRedline(state, _url) {
+  return getUI(state, _url).showRedline;
 }
 
-export function getHideChanges(state) {
-  return getUI(state).hideChanges;
+export function getHideChanges(state, _url) {
+  return getUI(state, _url).hideChanges;
 }
 
-export function getSelectedNode(state) {
-  return getUI(state).selectedNode;
+export function getSelectedNode(state, _url) {
+  return getUI(state, _url).selectedNode;
 }
 
-export function getSelectedControl(state) {
-  return getUI(state).selectedControl;
+export function getSelectedControl(state, _url) {
+  return getUI(state, _url).selectedControl;
 }
 
-export function getCustomControl(state) {
-  return getUI(state).customControl;
+export function getCustomControl(state, _url) {
+  return getUI(state, _url).customControl;
 }
 
-export function getMouseInsideMenu(state) {
-  return getUI(state).mouseInsideMenu;
+export function getMouseInsideMenu(state, _url) {
+  return getUI(state, _url).mouseInsideMenu;
 }
 
-export function getSelectionMode(state) {
-  return getUI(state).selectionMode;
+export function getSelectionMode(state, _url) {
+  return getUI(state, _url).selectionMode;
+}
+
+export function getPasteNode(state, _url) {
+  return getUI(state, _url).pasteNode;
 }
 
 export const getPseudoSelectedNodes = createSelector(
@@ -48,11 +57,30 @@ export const getPseudoSelectedNodes = createSelector(
   getSelectedNode,
   getSelectionMode,
   getTreeprints,
-  (nodes, selected, mode, treeprints) => {
+  getOverwrites,
+  (nodes, selected, mode, treeprints, overwrites) => {
     if(!selected || mode === 'individual') {
       return [];
     }
 
+    if(selected.isTextNode) {
+      const matchStyles = [
+        'fontFamily', 'fontWeight', 'fontSize', 'color', 'backgroundColor',
+        // 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 
+        // 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight',
+      ]
+      return filterMatches(selected, nodes, matchStyles, overwrites);
+    } else {
+      const siblings = _.filter(selected.siblings.map(uid => nodes[uid]), Boolean);
+      const matchStyles = [
+        'backgroundColor', 'boxShadow',
+        'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 
+        'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight',
+      ]
+      return filterMatches(selected, siblings, matchStyles, overwrites);
+    }
+
+    /* Tree Selection
     const uids = [selected.uid, ...selected.parentUids];
     const treeprintNodeUid = _.find(uids, uid => treeprints[nodes[uid].treeprint]);
     if(treeprintNodeUid) {
@@ -62,6 +90,9 @@ export const getPseudoSelectedNodes = createSelector(
       const treeprintNodes = treeprints[treeprintNode.treeprint].filter(n => n.uid !== selected.uid);
       return treeprintNodes;
     }
+    */
+
+
     return [];
   }
 )
@@ -73,3 +104,14 @@ export const getSelectedChildNodes = createSelector(
     return selected ? filter(nodes, ({ parentUids }) => parentUids.includes(selected.uid)) : []
   }
 )
+
+function filterMatches(selected, nodes, matchStyles, overwrites) {
+  const style = getStyle(selected, overwrites); 
+  const matches = _.filter(nodes, node => {
+    const nodeStyle = getStyle(node, overwrites);
+    return node.nodeName === selected.nodeName && 
+      _.every(matchStyles, key => nodeStyle[key] === style[key]) &&
+      selected.uid !== node.uid
+  })
+  return matches;
+}

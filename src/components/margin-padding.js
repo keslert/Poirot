@@ -16,6 +16,7 @@ const SBar = Flex.extend`
   justify-content: center;
   align-items: center;
   opacity: 0.8;
+  font-weight: 600;
   cursor: ${props => props.vertical ? 'col' : 'row'}-resize;
   &:hover {
     opacity: 1;

@@ -1,18 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Box, Flex, Text } from 'rebass';
+import { Box, Flex, Text, Subhead } from 'rebass';
 import MarginPaddingUI from './margin-padding';
-import Select from 'react-select';
-import TypographyPicker from './typography-picker';
-import flatMap from 'lodash/flatMap';
-
 import ColorPicker from './color-picker';
 import ColorSwatch from './color-swatch';
+import ShadowPicker from './shadow-picker';
+import TypographyPicker from './typography-picker';
+import Icon from './icon';
+import theme from '../styles/rebass-theme';
+import Toggle from './toggle';
 
 
 const SLabel = Text.extend`
   text-transform: uppercase;
   font-size: 12px;
+  font-weight: 600;
   color: ${props => props.theme.colors[props.active ? 'blue' : 'black']};
   cursor: pointer;
 `
@@ -52,8 +54,7 @@ class StyleMenu extends React.Component {
   }
 
   updateSelected = changes => {
-    const { selected, updateOverwrites } = this.props;
-    updateOverwrites({[selected.uid]: changes})
+    this.props.updateSelectedOverwrites(changes)
   }
 
   handleResetTypography = () => this.handleSetTypography({fontFamily: null, fontWeight: null, fontSize: null});
@@ -80,24 +81,41 @@ class StyleMenu extends React.Component {
     this.updateSelected(changes);
   }
 
-  handleToggleCustomControl = key => _.memoize(() => this.props.toggleCustomControl(key))
-  handleSetSelectedControl = key => _.memoize(() => this.props.setSelectedControl(key));
+  handleResetBoxShadow = () => this.handleSetBoxShadow(null);
+  handleSetBoxShadow = boxShadow => this.updateSelected({boxShadow});
+
+  handleToggleCustomControl = _.memoize(key => () => this.props.toggleCustomControl(key));
+  handleSetSelectedControl = _.memoize(key => () => this.props.setSelectedControl(key));
+  handleSetSelectionMode = _.memoize(key => () => this.props.setSelectionMode(key));
   
   _key = (key) => `${this.props.selected.uid}-${key}`
 
   render() {
-    const { typography, selected, overwrites, customControl, selectedControl } = this.props;
+    const { typography, selected, overwrites, customControl, selectedControl, selectionMode } = this.props;
     if(!selected) {
       return null;
     }
 
     const style = {...selected.style, ...(overwrites[selected.uid] || {})}
 
-    const groups = flatMap(this.props.typography.categories, cat => cat.groups)
+    const groups = _.flatMap(this.props.typography.categories, cat => cat.groups)
+    
+    const symbolSelected = selectionMode === 'symbol';
 
     return (
-      <Flex p={2} direction="column">
+      <Flex px={2} py={1} direction="column">
         <Flex mb={2} direction="column">
+          <Flex align="center" mb={1}>
+            <Subhead children={selected.nodeName} />
+            <Box mx={1}><Icon name="chevron" size={10} /></Box>
+            <Toggle
+              color={theme.colors.purple}
+              checked={symbolSelected}
+              onClick={() => this.props.setSelectionMode(symbolSelected ? 'individual' : 'symbol')}
+            />
+            <Text ml={1}>Edit Similar Instances</Text>
+            
+          </Flex>
           <Flex justify="space-between">
             <Flex>
               <SLabel children="Margin & Padding" />
@@ -210,6 +228,34 @@ class StyleMenu extends React.Component {
             >
               <ColorSwatch color={style.backgroundColor} />
             </ColorPicker>
+          </Flex>
+        }
+
+        {!selected.isTextNode && 
+          <Flex mb={2} direction="column">
+            <Flex justify="space-between">
+              <Flex>
+                <SLabel 
+                  active={selectedControl === 'boxShadow'}
+                  onClick={this.handleSetSelectedControl('boxShadow')}
+                  children="Drop Shadow" 
+                />
+                {selected.style.boxShadow !== style.boxShadow && 
+                  <SReset children="reset" onClick={this.handleResetBoxShadow} />
+                }
+              </Flex>
+              <SCustom 
+                active={customControl[this._key('boxShadow')]}
+                onClick={this.handleToggleCustomControl(this._key('boxShadow'))}
+                children="allow custom" />
+            </Flex>
+            <ShadowPicker 
+              swatches={this.state.colorSwatches}
+              value={style.boxShadow}
+              onChange={this.handleSetBoxShadow}
+              options={this.props.ds.shadows.defaults}
+              allowCustom={customControl[this._key('boxShadow')]}
+            />
           </Flex>
         }
         

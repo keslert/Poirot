@@ -4,8 +4,8 @@ import { getTypographyGroupKey } from '../../utils/html';
 import _ from 'lodash';
 import { hostnameSpecificSelector } from '../../utils/redux';
 
-export function getDS(state) {
-  return hostnameSpecificSelector(state, 'ds');
+export function getDS(state, _url) {
+  return hostnameSpecificSelector(state, 'ds', _url);
 }
 
 export const getSpacingCategories = createSelector(

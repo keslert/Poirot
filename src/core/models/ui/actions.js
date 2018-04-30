@@ -43,6 +43,13 @@ export function setMouseInsideMenu(inside) {
   }
 }
 
+export function setPasteNode(node) {
+  return {
+    type: types.SET_PASTE_NODE,
+    payload: node,
+  }
+}
+
 export function toggleShowSpacing() {
   return {
     type: types.TOGGLE_SHOW_SPACING,

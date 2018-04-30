@@ -22,7 +22,7 @@ export default Box.extend`
     transition: transform 200ms;
   }
   ${props => props.checked && `
-    background: ${props.theme.colors.red};
+    background: ${props.color ? props.color : props.theme.colors.blue};
     &:after {
       transform: translateX(16px);
     }

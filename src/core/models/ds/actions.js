@@ -46,5 +46,9 @@ export function buildDSObject(ds) {
       })))
     },
     spacing: ds.spacing,
+    shadows: {
+      ...ds.shadows,
+      defaults: ['none', ...ds.shadows.defaults],
+    }
   }
 }

@@ -5,8 +5,9 @@ import DOMInspector from './DOMInspector';
 import { Flex, Fixed } from 'rebass';
 import { Provider as Rebass } from 'rebass';
 import theme from '../styles/rebass-theme';
+import CopyPasteModal from './CopyPasteModal';
 
-import Menu from '../components/menu';
+import Menu from './Menu';
 
 class App extends React.Component {
 
@@ -18,6 +19,7 @@ class App extends React.Component {
         </Fixed>
         <Page />
         <DOMInspector />
+        <CopyPasteModal />
       </Rebass>
     );
   }

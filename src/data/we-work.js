@@ -200,9 +200,17 @@ const spacing = {
   }
 }
 
+const shadows = {
+  defaults: [
+    'rgba(0, 0, 0, 0.15) 0px 10px 25px 0px',
+    'rgba(0,0,0,.1) 0px 1px 2px',
+  ]
+}
+
 export default {
   typography,
   colors,
   spacing,
+  shadows,
 }
 

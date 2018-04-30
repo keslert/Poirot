@@ -41,6 +41,7 @@ import {
   getImageNodes,
   getOverwrites,
   getTextNodes,
+  getEphemerals,
 } from '../core/models/page/selectors';
 import { 
   _updateNode,
@@ -129,7 +130,8 @@ class Page extends React.Component {
     //   this.selector(`.${key}`), cleanCSS(style)
     // ]).fromPairs().value();
 
-    const overwrites = _.chain(hideChanges ? {} : this.props.overwrites).map((style, key) => [
+    const _overwrites = _.merge(this.props.overwrites, this.props.ephemerals);
+    const overwrites = _.chain(hideChanges ? {} : _overwrites).map((style, key) => [
       this.selector(`.${key}`), cleanCSS(style)
     ]).fromPairs().value();
 
@@ -139,7 +141,9 @@ class Page extends React.Component {
 
     const nodes = showSpacing ? [selectedNode, ...selectedChildNodes] : [];
     const spacing = _.chain(nodes).map(node => {
-      const style = {...node.style, ...(this.props.overwrites[node.uid] || {})}
+      const overwrites = this.props.overwrites[node.uid] || {};
+      const ephemerals = this.props.ephemerals[node.uid] || {};
+      const style = {...node.style, ...overwrites, ...ephemerals}
       return [
         this.selector(`.${node.uid}`), {
           'box-shadow': `
@@ -210,6 +214,7 @@ const mapStateToProps = state => ({
   hideChanges: getHideChanges(state),
   typography: getTypographyCategories(state),
   overwrites: getOverwrites(state),
+  ephemerals: getEphemerals(state),
 })
 
 const mapDispatchToProps = {

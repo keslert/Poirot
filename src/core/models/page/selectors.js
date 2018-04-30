@@ -14,6 +14,10 @@ export function getOverwrites(state, url) {
   return getPage(state, url).overwrites;
 }
 
+export function getEphemerals(state, url) {
+  return getPage(state, url).ephemerals;
+}
+
 export function getTreeprints(state, url) {
   return getPage(state, url).treeprints;
 }
