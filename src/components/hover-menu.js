@@ -22,7 +22,7 @@ class HoverMenu extends React.Component {
         </Box>
 
         {this.state.visible && 
-          <Absolute style={{bottom: 28, left: 0, boxShadow: '0 1px 2px rgba(0,0,0,.1)'}}>
+          <Absolute style={{bottom: 22, left: 0, boxShadow: '0 1px 2px rgba(0,0,0,.1)'}}>
             {this.props.renderMenu()}
           </Absolute>
         }

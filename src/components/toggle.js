@@ -7,7 +7,6 @@ export default Box.extend`
   height: 16px;
   background: #ccc;
   border-radius: 8px;
-  cursor: pointer;
   transition: background-color 200ms;
   &:after {
     content: '';
@@ -21,8 +20,9 @@ export default Box.extend`
     background: #fff;
     transition: transform 200ms;
   }
+  cursor: ${props => props.disabled ? 'auto' : 'pointer'};
   ${props => props.checked && `
-    background: ${props.color ? props.color : props.theme.colors.blue};
+    background: ${props.disabled ? props.theme.colors.gray : (props.color ? props.color : props.theme.colors.blue)};
     &:after {
       transform: translateX(16px);
     }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Flex, Box, Text } from 'rebass';
+import { Flex, Box, Text, Subhead } from 'rebass';
 import { updateDSTypography } from '../core/models/ds/actions';
 import { addPage, updateSelectedOverwrites } from '../core/models/page/actions';
 import { 
@@ -25,7 +25,9 @@ import {
   getSelectedControl,
   getShowSpacing,
   getSelectionMode,
+  getPasteNode,
 } from '../core/models/ui/selectors';
+import { getCopyNode } from '../core/models/clipboard/selectors';
 import MenuItem from '../components/menu-item';
 import TypographyTable from '../components/typography-table';
 import StyleMenu from '../components/style-menu';
@@ -109,7 +111,7 @@ class Menu extends React.Component {
   renderHeader = (str) => {
     return (
       <Flex px={2} py={1}>
-        <Text center bold>{this.state.menu} <Text is="span" f="6px" children="▼" style={{position:'relative', top: -1}} /></Text>
+        <Flex align="center"><Subhead f={2} mr={1} children={this.state.menu} /><Icon name="chevronDown" size={8} /></Flex>
         <Flex flex={1} justify="flex-end" align="center" m={-1}>
 
           <HoverMenu renderMenu={() => (
@@ -213,15 +215,18 @@ class Menu extends React.Component {
 
   render() {
     const { open } = this.state;
+    const { copyPasteModalOpen } = this.props;
+
+    const _open = open && !copyPasteModalOpen;
     return (
       <div onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
-        <SOpenMenu style={{display: open ? 'block' : 'none'}}>
+        <SOpenMenu style={{display: _open ? 'block' : 'none'}}>
           {this.renderHeader()}
           {this.renderMenu()}
         </SOpenMenu>
         <SClosedMenu 
           onClick={() => this.setState({open: true})}
-          style={{ display: open ? 'none' : 'block' }}
+          style={{ display: _open ? 'none' : 'block' }}
         >
           <img src="https://icon.now.sh/grid" />
         </SClosedMenu>
@@ -242,6 +247,7 @@ const mapStateToProps = state => ({
   selectedControl: getSelectedControl(state),
   showSpacing: getShowSpacing(state),
   selectionMode: getSelectionMode(state),
+  copyPasteModalOpen: !!getCopyNode(state) && !!getPasteNode(state),
 })
 
 const mapDispatchToProps = {

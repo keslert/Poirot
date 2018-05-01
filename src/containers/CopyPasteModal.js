@@ -23,14 +23,11 @@ class CopyPasteModal extends React.Component {
   state = {}
 
   handleCancel = () => {
-    const { pasteNode } = this.props;
     this.props.clearSelectedOverwrites(true);
     this.props.setPasteNode(null);
   }
 
   handleAccept = () => {
-    const { pasteNode } = this.props;
-
     const style = this.getStyle();
     this.props.updateSelectedOverwrites(style);
     this.props.clearSelectedOverwrites(true);
@@ -38,7 +35,6 @@ class CopyPasteModal extends React.Component {
   }
 
   handleToggle = key => {
-    const { pasteNode } = this.props;
     const newState = {controls: {...this.state.controls, [key]: !this.state.controls[key]}};
     this.setState(newState);
 
@@ -49,6 +45,7 @@ class CopyPasteModal extends React.Component {
 
   getStyle = (props=this.props, state=this.state) => {
     const keys = [];
+    console.log('getStyle');
     if(state.controls.margin) {
       keys.push('marginTop', 'marginBottom', 'marginLeft', 'marginRight');
     }
@@ -81,35 +78,28 @@ class CopyPasteModal extends React.Component {
       }
       
       const style = this.getStyle(props, {controls});
-      props.updateSelectedOverwrites({[props.pasteNode.uid]: style}, true);
+      props.updateSelectedOverwrites(style, true);
       this.setState({controls});
     }
   }
 
   renderSpacing = (key, label) => {
-    const { copyStyle, pasteStyle } = this.props;
-    return (
-      <Flex align="center" py={2}>
-        <Toggle checked={this.state.controls[key]} onClick={() => this.handleToggle(key)} />
-        <Subhead f={2} mx={2} children={label} />
-        <Text color="#999" children={`${pasteStyle[`${key}Top`]} ${pasteStyle[`${key}Right`]} ${pasteStyle[`${key}Bottom`]} ${pasteStyle[`${key}Left`]}`} />
-        <Text mx={2} children="→" />
-        <Text children={`${copyStyle[`${key}Top`]} ${copyStyle[`${key}Right`]} ${copyStyle[`${key}Bottom`]} ${copyStyle[`${key}Left`]}`} />
-      </Flex>
-    )
+    const sides = ['Top', 'Right', 'Bottom', 'Left']
+    return this.renderRow({
+      key,
+      label,
+      copyValue: sides.map(side => this.props.copyStyle[`${key}${side}`]).join(' '),
+      pasteValue: sides.map(side => this.props.copyStyle[`${key}${side}`]).join(' '),
+    })
   }
 
   renderColor = (key, label) => {
-    const { copyStyle, pasteStyle } = this.props;
-    return (
-      <Flex align="center" py={2}>
-        <Toggle checked={this.state.controls[key]} onClick={() => this.handleToggle(key)} />
-        <Subhead f={2} mx={2} children={label} />
-        <Text color="#999" children={pasteStyle[key]} />
-        <Text mx={2} children="→" />
-        <Text children={copyStyle[key]} />
-      </Flex>
-    )
+    return this.renderRow({
+      key,
+      label,
+      copyValue: this.props.copyStyle[key],
+      pasteValue: this.props.pasteStyle[key],
+    })
   }
 
   renderText = () => {
@@ -117,13 +107,29 @@ class CopyPasteModal extends React.Component {
     if(!copyNode.isTextNode || !pasteNode.isTextNode) {
       return null;
     }
+
+    return this.renderRow({
+      key: 'text',
+      label: 'Text',
+      copyValue: getTextString(copyStyle),
+      pasteValue: getTextString(pasteStyle),
+    })
+  }
+
+  renderRow({key, label, copyValue, pasteValue}) {
+    const checked = this.state.controls[key];
+    const isEqual = pasteValue === copyValue;
     return (
-      <Flex align="center" py={2}>
-        <Toggle checked={this.state.controls['text']} onClick={() => this.handleToggle('text')} />
-        <Subhead f={2} mx={2} children="Text" />
-        <Text color="#999" children={getTextString(pasteStyle)} />
+      <Flex align="center" py={2} style={{opacity: isEqual ? .3 : 1, order: isEqual ? 2 : 1}}>
+        <Toggle 
+          disabled={isEqual} 
+          checked={checked} 
+          onClick={() => !isEqual && this.handleToggle(key)} 
+        />
+        <Subhead f={2} mx={2} children={label} />
+        <Text color="#999" children={pasteValue} />
         <Text mx={2} children="→" />
-        <Text children={getTextString(copyStyle)} />
+        <Text children={copyValue} style={{textDecoration: isEqual ? 'line-through' : 'none'}} />
       </Flex>
     )
   }
@@ -143,7 +149,7 @@ class CopyPasteModal extends React.Component {
     return (
       <div>
         <Fixed style={{top:0, left: 0, right: 0, bottom: 0}} onClick={this.handleCancel} />
-        <Absolute style={{top: bb.top + bb.height + 30, left: bb.left}}>
+        <Absolute style={{top: bb.top + bb.height + 10, left: bb.left}}>
           <Flex direction="column" bg="#fff" style={{boxShadow: theme.shadows.heavy, borderRadius: 4, overflow: 'hidden'}}>
             <Flex direction="column" p={3}>
               {this.renderSpacing('margin', 'Margin (T R B L)')}
@@ -154,7 +160,7 @@ class CopyPasteModal extends React.Component {
             </Flex>
             <Flex justify="flex-end" p={2} bg="#f4f4f4">
               <Button mr={2} color="#999" children="Cancel" onClick={this.handleCancel} />
-              <Button bg={theme.colors.blue} color="#fff" children="Apply Styles" />
+              <Button bg={theme.colors.blue} color="#fff" children="Apply Styles" onClick={this.handleAccept} />
             </Flex>
           </Flex>
         </Absolute>
@@ -172,8 +178,12 @@ const mapStateToProps = createSelector(
       return {visible: false};
     }
 
+    // console.log(overwrites);
+
     const copyStyle = {...copyNode.style, ...(overwrites[copyNode.uid] || {})};
     const pasteStyle = {...pasteNode.style, ...(overwrites[pasteNode.uid] || {})};
+    // console.log('pasteStyle', pasteStyle);
+    // console.log('overwrites', overwrites[pasteNode.uid]);
 
     return {
       visible: true,

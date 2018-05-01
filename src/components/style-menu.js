@@ -28,7 +28,7 @@ const SCustom = Text.extend`
   font-size: 12px;
   margin-left: 4px;
   cursor: pointer;
-  color: ${props => props.theme.colors[props.active ? 'red' : 'grey']};
+  color: ${props => props.theme.colors[props.active ? 'red' : 'gray']};
 `
 
 class StyleMenu extends React.Component {

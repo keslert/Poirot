@@ -340,33 +340,7 @@ class DOMInspector extends React.Component {
           </SFrame>
         }
         
-        {selected && 
-          <SFrame 
-            color={theme.colors[this.state.editingElement === selected.uid ? 'green' : 'blue']} 
-            style={selectedBB}
-            key={selected.uid}
-            fade={mouseInsideMenu}
-          >
-            <SDescriptor>
-              {selected.nodeName} 
-              {selected.isTextNode && 
-                <Text 
-                  is="span" 
-                  ml={1} 
-                  children={`${selected.style.fontFamily} ${selected.style.fontWeight} ${selected.style.fontSize}`} 
-                />
-              }
-            </SDescriptor>
-          </SFrame>
-        }
-        {pseudoBBs.map(bb => 
-          <SFrame 
-            color={theme.colors.purple} 
-            style={bb} 
-            key={bb.uid} 
-            fade={mouseInsideMenu}
-            />
-        )}
+        
         {this.renderHiddenFileInput()}
       </div>
     );

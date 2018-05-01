@@ -1,4 +1,7 @@
-import { ALIAS_UPDATE_OVERWRITES } from './action-types';
+import { 
+  ALIAS_UPDATE_OVERWRITES, 
+  ALIAS_CLEAR_SELECTED_OVERWRITES,
+} from './action-types';
 import { TOGGLE_HIDE_CHANGES } from '../ui/action-types';
 import { getNodes, getOverwrites } from './selectors';
 import { normalizeColor } from '../../utils/color';
@@ -26,15 +29,15 @@ export function updateSelectedOverwrites({payload: {overwrites, isEphemeral}, _s
   }
 }
 
-export function clearSelectedOverwrites({payload: action, _sender}) {
+export function clearSelectedOverwrites({payload: {isEphemeral}, _sender}) {
   return (dispatch, getState) => {
     const state = getState();
     const selected = getSelectedNode(state, _sender.url);
     const psuedoSelected = getPseudoSelectedNodes(state, _sender.url);
-
+    const uids = [selected, ...psuedoSelected].map(node => node.uid);
     dispatch({
       type: ALIAS_CLEAR_SELECTED_OVERWRITES,
-      payload: {uids: [selected, ...psuedoSelected], isEphemeral},
+      payload: {uids, isEphemeral},
       _sender,
     })
   }

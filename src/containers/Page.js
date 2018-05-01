@@ -5,22 +5,24 @@ import theme from '../styles/rebass-theme';
 import { Box } from 'rebass';
 import { getBB } from '../core/utils/html';
 
-const SRedline = Box.extend`
+const SBox = Box.extend`
   position: absolute;
   pointer-events: none;
   ${props => `
-    background: ${props.theme.colors.red}08;
-    border: 1px solid ${props.theme.colors.red};
-    &:after {
-      content: "${props.text}";
-      position: absolute;
-      top: -18px;
-      left: 0;
-      color: ${props.theme.colors.red};
-      font-size: 10px;
-      background: rgba(255,255,255,0.8);
-      white-space: nowrap;
-    }
+    background: ${props.color}08;
+    border: 1px solid ${props.color};
+    ${props.text && `
+      &:after {
+        content: "${props.text}";
+        position: absolute;
+        top: -18px;
+        left: 0;
+        color: ${props.color};
+        font-size: 10px;
+        background: rgba(255,255,255,0.8);
+        white-space: nowrap;
+      }
+    `}
   `}
 `
 
@@ -31,6 +33,7 @@ import {
   getSelectedChildNodes,
   getHideChanges,
   getShowRedline,
+  getPseudoSelectedNodes,
 } from '../core/models/ui/selectors';
 
 import { 
@@ -46,11 +49,14 @@ import {
 import { 
   _updateNode,
 } from '../core/models/page/actions';
+import { getTextString } from '../core/utils/text';
+import { getStyle } from '../core/utils/page';
 
 class Page extends React.Component {
 
   state = {
-    redlines: [],
+    redlineBBs: [],
+    selectedBBs: [],
   }
 
   componentDidMount() {
@@ -61,14 +67,23 @@ class Page extends React.Component {
     this.superSpecificHammerTime = `#${id}`.repeat(10);
     this.updateText(this.props);
     this.updateImages(this.props);
-    this.updateRedlines(this.props);
+    this.updateRedlineBBs(this.props);
   }
 
   componentWillReceiveProps(props) {
     this.updateText(props);
     this.updateImages(props);
-    if (!_.isEqual(props.overwrites, this.props.overwrites)) {
-      this.updateRedlines(props);
+
+    if (!_.isEqual(props.overwrites, this.props.overwrites) || 
+        !_.isEqual(props.ephemerals, this.props.ephemerals)) 
+    {
+      // Let the stylesheets update first so we know the new bounding boxes
+      setTimeout(() => {
+        this.updateRedlineBBs(props);
+        this.updateSelectedBBs(props);
+      }, 1);
+    } else if(props.selectedNode !== this.props.selectedNode) {
+      this.updateSelectedBBs(props);
     }
   }
 
@@ -100,23 +115,32 @@ class Page extends React.Component {
     })
   }
 
-  updateRedlines = props => {
-    // Let the stylesheets update first so we know the new bounding boxes
-    setTimeout(() => {
-      const redlines = _.map(props.overwrites, (style, selector) => {
-        const _style = _.pickBy({
-          ..._.omit(style, ['backgroundImage', 'src', 'innerHTML']),
-          image: (style.src || style.backgroundImage) ? 'updated' : undefined,
-          text: (style.innerHTML) ? 'updated' : undefined,
-        }, i => i);
-        const el = document.querySelector(`.${selector}`);
-        return {
-          ...getBB(el),
-          text: _.map(_style, (v, k) => `${camelcaseToHyphenated(k)}: ${v}`).join(', '),
-        }
-      })
-      this.setState({ redlines });
-    }, 1)
+  updateRedlineBBs = props => {
+    const redlineBBs = _.map(props.overwrites, (style, selector) => {
+      const _style = _.pickBy({
+        ..._.omit(style, ['backgroundImage', 'src', 'innerHTML']),
+        image: (style.src || style.backgroundImage) ? 'updated' : undefined,
+        text: (style.innerHTML) ? 'updated' : undefined,
+      }, i => i);
+      const el = document.querySelector(`.${selector}`);
+      return {
+        ...getBB(el),
+        text: _.map(_style, (v, k) => `${camelcaseToHyphenated(k)}: ${v}`).join(', '),
+      }
+    })
+    this.setState({ redlineBBs });
+  }
+
+  updateSelectedBBs = props => {
+    const selectedBBs = [props.selectedNode, ...props.psuedoSelectedNodes].map(node => {
+      const el = document.querySelector(`.${node.uid}`);
+      const style = getStyle(node, props.overwrites, props.ephemerals);
+      return {
+        ...getBB(el),
+        color: theme.colors[node.uid === props.selectedNode.uid ? 'blue' : 'purple'],
+      }
+    })
+    this.setState({ selectedBBs });
   }
 
   selector(selector, noSpace) {
@@ -126,11 +150,7 @@ class Page extends React.Component {
   render() {
     const { selectedNode, selectedChildNodes, showSpacing, showRedline, hideChanges } = this.props;
 
-    // const overwrites = _.chain(this.props.typography.overwrites).map((style, key) => [
-    //   this.selector(`.${key}`), cleanCSS(style)
-    // ]).fromPairs().value();
-
-    const _overwrites = _.merge(this.props.overwrites, this.props.ephemerals);
+    const _overwrites = _.merge({}, this.props.overwrites, this.props.ephemerals);
     const overwrites = _.chain(hideChanges ? {} : _overwrites).map((style, key) => [
       this.selector(`.${key}`), cleanCSS(style)
     ]).fromPairs().value();
@@ -195,8 +215,12 @@ class Page extends React.Component {
         <Style css={visible} />
         <Style css={spacing} />
 
-        {showRedline && this.state.redlines.map((r, i) => 
-          <SRedline key={r.uid} text={r.text} style={r} />
+        {showRedline && this.state.redlineBBs.map(bb => 
+          <SBox color={theme.colors.red} key={bb.uid} text={bb.text} style={bb} />
+        )}
+
+        {this.state.selectedBBs.map(bb => 
+          <SBox color={bb.color} key={bb.uid} style={bb} />
         )}
       </div>
     );
@@ -209,6 +233,7 @@ const mapStateToProps = state => ({
   textNodes: getTextNodes(state),
   selectedNode: getSelectedNode(state),
   selectedChildNodes: getSelectedChildNodes(state),
+  psuedoSelectedNodes: getPseudoSelectedNodes(state),
   showSpacing: getShowSpacing(state),
   showRedline: getShowRedline(state),
   hideChanges: getHideChanges(state),

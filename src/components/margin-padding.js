@@ -17,7 +17,7 @@ const SBar = Flex.extend`
   align-items: center;
   opacity: 0.8;
   font-weight: 600;
-  cursor: ${props => props.vertical ? 'col' : 'row'}-resize;
+  cursor: ${props => props.vertical ? 'ew' : 'ns'}-resize;
   &:hover {
     opacity: 1;
   }
@@ -43,7 +43,6 @@ class MarginPaddingUI extends React.Component {
 
   handleDragEnd = (e) => {
     this.setState({dragging: null});
-    console.log('drag ended');
   }
 
   handleDrag = (e) => {
@@ -89,7 +88,7 @@ class MarginPaddingUI extends React.Component {
     const thickness = 18;
     const vLength = thickness * 5;
     const hLength = thickness * 8;
-    const textOffset = thickness + 8;
+    const textOffset = thickness + 12;
     const width = hLength + thickness * 2 + spacing * 2;
     const height = vLength + thickness * 2 + spacing * 2;
 

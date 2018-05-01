@@ -1,10 +1,10 @@
 {
-  "version": "0.0.0",
-  "name": "design-system-xray",
+  "version": "0.0.1",
+  "name": "xray-designer-tools",
   "manifest_version": 2,
-  "description": "Provide insights into design systems.",
+  "description": "Better web tools for designers.",
   "browser_action": {
-    "default_title": "Design System Xray",
+    "default_title": "Xray",
     "default_icon": {
       "16": "img/icon-16.png",
       "48": "img/icon-48.png",
