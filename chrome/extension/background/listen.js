@@ -3,7 +3,8 @@ import { REGISTER_PAGE } from '../../../src/core/utils/redux';
 
 const arrowURLs = ['^http://keslertanner\\.com', '^https://www.wework\\.com', '^https://www.landay\\.org',    
   '^https://workona.com/', '^https://compositor.io/', '^https://fiftythree.com/', '^https://bookroo.com/',
-  '^https://www.airbnb.com/', '^https://stripe.com/', 'http://griffindietz.com/', 'https://graphics.stanford.edu/~hanrahan/'];
+  '^https://www.airbnb.com/', '^https://stripe.com/', 'http://griffindietz.com/', 'https://graphics.stanford.edu/~hanrahan/', 'https://interfacelovers.com/',
+  'http://localhost:3001/'];
 export function listen(store) {
 
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -11,21 +12,21 @@ export function listen(store) {
     const isValidDomain = tab.url.match(arrowURLs.join('|'))
     
     if(isCompleted && isValidDomain) {
-      injectDSXray(tabId, store);
-      const url = new URL(tab.url);
-      store.dispatch({
-        type: REGISTER_PAGE,
-        payload: {hostname: url.hostname, pathname: url.pathname},
-      })
+      injectDSXray(tab, store);
     }
   });
 }
 
-async function injectDSXray(tabId) {
-  const injected = await isInjected(tabId, 'injectUI');
+export async function injectDSXray(tab, store) {
+  const injected = await isInjected(tab.id, 'injectUI');
   if (chrome.runtime.lastError || injected) return;
-  loadScript('inject', tabId, () => console.log('Injected DSXray UI'));
-  setInjected(tabId, 'injectUI');
+  loadScript('inject', tab.id, () => console.log('Injected DSXray UI'));
+  setInjected(tab.id, 'injectUI');
+  const url = new URL(tab.url);
+  store.dispatch({
+    type: REGISTER_PAGE,
+    payload: {hostname: url.hostname, pathname: url.pathname},
+  })
 }
 
 async function isInjected(tabId, key) {
@@ -66,6 +67,3 @@ function loadScript(name, tabId, cb) {
     });
   }
 }
-
-
-

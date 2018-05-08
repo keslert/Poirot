@@ -50,7 +50,6 @@ class StyleMenu extends React.Component {
       backgroundSwatches: _.map(ds.colors.swatches, swatch => swatch.colors.map(c => c.value)),
       colorSwatches: _.map(ds.colors.swatches, swatch => swatch.colors.map(c => c.value)),
     })
-
   }
 
   updateSelected = changes => {
@@ -64,16 +63,19 @@ class StyleMenu extends React.Component {
       fontWeight: typography.fontWeight,
       fontSize: typography.fontSize,
     })
+    this.props.setSelectedControl('text');
   }
 
   handleResetColor = () => this.handleSetColor(null);
   handleSetColor = color => {
     this.updateSelected({color});
+    this.props.setSelectedControl('color');
   }
 
   handleResetBackground = () => this.handleSetBackground(null);
   handleSetBackground = backgroundColor => {
     this.updateSelected({ backgroundColor });
+    this.props.setSelectedControl('backgroundColor');
   }
 
   handleResetMarginPadding = () => this.handleSetMarginPadding(_.fromPairs(allSpacing.map(s => [s, null])))
@@ -97,11 +99,8 @@ class StyleMenu extends React.Component {
     }
 
     const style = {...selected.style, ...(overwrites[selected.uid] || {})}
-
-    const groups = _.flatMap(this.props.typography.categories, cat => cat.groups)
-    
+    const groups = _.flatMap(this.props.typography.groups)
     const symbolSelected = selectionMode === 'symbol';
-
     return (
       <Flex px={2} py={1} direction="column">
         <Flex mb={2} direction="column">
@@ -139,6 +138,7 @@ class StyleMenu extends React.Component {
               onChange={this.handleSetMarginPadding}
               spacing={this.props.ds.spacing.defaults}
               style={style}
+              setSelectedControl={this.props.setSelectedControl}
             />
           </Flex>
         </Flex>

@@ -1,10 +1,10 @@
 import * as types from './action-types';
-import WeWork from '../../../data/we-work';
+import DS from '../../../data/stack-ai';
 import { buildDSObject } from './actions';
 import _ from 'lodash';
 import { hostnameSpecificReducer } from '../../utils/redux';
 
-const dsState = () => buildDSObject(WeWork)
+const dsState = () => buildDSObject(DS)
 
 export const dsReducer = hostnameSpecificReducer((state = dsState(), { payload, type }) => {
   

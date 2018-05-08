@@ -32,12 +32,20 @@ class MarginPaddingUI extends React.Component {
 
   handleDragStart = (e, type, direction, sides) => {
     const startOffset = Number.parseInt(this.props.style[`${type}${_.capitalize(sides[0])}`])
+
+    const _sides = e.shiftKey 
+      ? allSides 
+      : e.altKey 
+        ? _.flatMap(sides, side => [side, opposites[side]])
+        : sides
+
+    this.props.setSelectedControl(`${type}${_sides.map(s => _.capitalize(s[0]))}`);
     this.setState({
       dragging: direction,
       point: {x: e.pageX, y: e.pageY},
       startOffset,
       type,
-      sides,
+      sides: _sides,
     });
   }
 
@@ -58,14 +66,8 @@ class MarginPaddingUI extends React.Component {
       const absOffset = Math.abs(offset);
       offset = _.sortBy(spacing, s => Math.abs(s - absOffset))[0] * (offset < 0 ? -1 : 1);
     }
-
-    const _sides = e.shiftKey 
-      ? allSides 
-      : e.altKey 
-        ? _.flatMap(sides, side => [side, opposites[side]])
-        : sides
     
-    const changes = _.fromPairs(_sides.map(side => [
+    const changes = _.fromPairs(sides.map(side => [
       `${type}${_.capitalize(side)}`, `${offset}px`
     ]))
 
@@ -104,7 +106,7 @@ class MarginPaddingUI extends React.Component {
                   color={_.includes(activeControls.margin, "T") && theme.colors.blue}
                   children={style.marginTop} 
                 />
-                <Text color="rgba(0,0,0,.5)" children="margin" />
+                <Text f={0} color="rgba(0,0,0,.5)" children="margin" />
               </SBar>
               <STriangle size={thickness} show="top" hide="right" color={theme.colors.marginTL} />
             </Flex>
@@ -163,7 +165,7 @@ class MarginPaddingUI extends React.Component {
                   color={_.includes(activeControls.padding, "T") && theme.colors.blue}
                   children={style.paddingTop} 
                 />
-                <Text color="rgba(0,0,0,.5)" children="padding" />
+                <Text f={0} color="rgba(0,0,0,.5)" children="padding" />
               </SBar>
               <STriangle size={thickness} show="top" hide="right" color={theme.colors.paddingTL} />
             </Flex>

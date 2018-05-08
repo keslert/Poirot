@@ -90,6 +90,8 @@ export function popOverwrite({payload: action, _sender}) {
         return popColor('color', style, ds, action);
       } else if(selectedControl === 'text') {
         return popText(style, ds, action);
+      } else if(selectedControl === 'boxShadow') {
+        return popShadow(style, ds, action);
       }
     })()
     dispatch(updateSelectedOverwrites({
@@ -125,6 +127,11 @@ function popColor(type, style, ds, action) {
 
   const value = getValue(action, color, colors);
   return {[type]: value};
+}
+
+function popShadow(style, ds, action) {
+  const value = getValue(action, style.boxShadow, ds.shadows.defaults);
+  return {boxShadow: value};
 }
 
 function getValue(action, currentValue, options) {

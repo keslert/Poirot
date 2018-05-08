@@ -89,7 +89,7 @@ class CopyPasteModal extends React.Component {
       key,
       label,
       copyValue: sides.map(side => this.props.copyStyle[`${key}${side}`]).join(' '),
-      pasteValue: sides.map(side => this.props.copyStyle[`${key}${side}`]).join(' '),
+      pasteValue: sides.map(side => this.props.pasteStyle[`${key}${side}`]).join(' '),
     })
   }
 

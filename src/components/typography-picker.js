@@ -47,7 +47,7 @@ class TypographyPicker extends React.Component {
     const { style, option, selectValue, focusOption, focusedOption } = props;
 
     const extraStyle = {
-      fontFamily: `'${option.value.fontFamily}'`,
+      // fontFamily: `'${option.value.fontFamily}'`,
       fontWeight: option.value.fontWeight,
     }
     return (
@@ -70,7 +70,7 @@ class TypographyPicker extends React.Component {
       : <VirtualizedSelect
           onChange={({ value }) => onChange(value)}
           options={options.map(value => ({label: this.fontLabel(value), value}))}
-          // optionRenderer={this.renderOption}
+          optionRenderer={this.renderOption}
           clearable={false}
           value={{ label: this.fontLabel(value), value }}
           scrollMenuIntoView={false}
@@ -86,7 +86,7 @@ class SelectOption extends React.PureComponent {
   handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    this.props.selectValue(this.props.option.value);
+    this.props.selectValue(this.props.option);
   }
 
   handleMouseEnter = (event) => {

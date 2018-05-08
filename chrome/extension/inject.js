@@ -15,18 +15,10 @@ function inject() {
   document.body.appendChild(el);
   const store = new Store({ 
     portName: 'DSXray',
-    serializer: payload => {
-      console.log('serializer', payload);
-      return payload;
-    },
-    deserializer: payload => {
-      console.log('deserializer', payload);
-      return payload;
-    }
   });
-  store.subscribe(payload => {
-    console.log('subscribe', store.getState().page)
-  })
+  // store.subscribe(payload => {
+  //   console.log('subscribe', store.getState().page)
+  // })
   store.ready().then(() => {
     render(
       <Provider store={store}>

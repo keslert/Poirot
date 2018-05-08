@@ -70,15 +70,22 @@ export const getPseudoSelectedNodes = createSelector(
         // 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight',
       ]
       return filterMatches(selected, nodes, matchStyles, overwrites);
-    } else {
-      const siblings = _.filter(selected.siblings.map(uid => nodes[uid]), Boolean);
-      const matchStyles = [
-        'backgroundColor', 'boxShadow',
-        'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 
-        'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight',
-      ]
-      return filterMatches(selected, siblings, matchStyles, overwrites);
     }
+
+    const siblings = _.filter(selected.siblings.map(uid => nodes[uid]), Boolean);
+    const matchStyles = [
+      'backgroundColor', 'boxShadow',
+      'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 
+      'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight',
+    ]
+    const siblingMatches = filterMatches(selected, siblings, matchStyles, overwrites);
+    const sizeMatches = _.filter(nodes, node => 
+      !node.isTextNode && 
+      Math.abs(node.bb.width - selected.bb.width) < 2 && 
+      Math.abs(node.bb.height - selected.bb.height) < 2
+    );
+    const matches = _.uniqBy([...siblingMatches, ...sizeMatches], 'uid');
+    return matches;
 
     /* Tree Selection
     const uids = [selected.uid, ...selected.parentUids];
@@ -91,9 +98,6 @@ export const getPseudoSelectedNodes = createSelector(
       return treeprintNodes;
     }
     */
-
-
-    return [];
   }
 )
 

@@ -49,7 +49,10 @@ export const getTypographyCategories = createSelector(
       }
     }).value();
     const unknownCategory = _.find(categories, cat => cat.label === 'Unknown');
-    unknownCategory.groups = _.chain([...unknownCategory.groups, ...unknownGroups]).sortBy('fontSize').reverse().value();
+    unknownCategory.groups = _.chain([...unknownCategory.groups, ...unknownGroups])
+      .sortBy(['fontFamily', 'fontWeight', 'fontSize'])
+      .reverse()
+      .value();
 
     return {
       ...ds.typography,

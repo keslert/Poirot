@@ -6,6 +6,7 @@ import { getSelectedNode, getPseudoSelectedNodes, getMouseInsideMenu } from '../
 import { getNodes } from '../core/models/page/selectors';
 import { 
   updateSelectedOverwrites,
+  updateOverwrites,
   popOverwrite,
 } from '../core/models/page/actions';
 import { 
@@ -91,8 +92,6 @@ class DOMInspector extends React.Component {
 
   state = {
     hoverBB: resetBB,
-    selectedBB: resetBB,
-    pseudoBBs: [],
     editingElement: null,
     lastClick: 0,
     lastKeyPress: null,
@@ -108,22 +107,6 @@ class DOMInspector extends React.Component {
     document.onmouseover = null;
     document.onclick = null;
     document.onkeydown = null;
-  }
-
-  componentWillUpdate(props) {
-    const { selected, pseudoSelectedNodes } = this.props;
-
-    if(props.selected && (!selected || props.selected.uid !== selected.uid)) {
-      const el = document.querySelector(`.${props.selected.uid}`);
-      this.setState({selectedBB: getBB(el)});
-    }
-    if(props.pseudoSelectedNodes !== pseudoSelectedNodes) {
-      const pseudoBBs = props.pseudoSelectedNodes.map(node => {
-        const el = document.querySelector(`.${node.uid}`);
-        return getBB(el);
-      })
-      this.setState({pseudoBBs});
-    }
   }
 
   updateSelected = changes => {
@@ -142,7 +125,7 @@ class DOMInspector extends React.Component {
       this.setState({ editingElement: null });
 
       if(selected.isTextNode && selected.innerHTML !== el.innerHTML) {
-        this.updateSelected({ innerHTML: el.innerHTML });
+        this.props.updateOverwrites({[selected.uid]: { innerHTML: el.innerHTML }});
       }
     }
     this.props.setSelectedNode(null);
@@ -297,9 +280,9 @@ class DOMInspector extends React.Component {
     const { selected } = this.props;
     reader.onload = () => {
       if(selected.nodeName === 'img') {
-        this.updateSelected({src: reader.result})
+        this.props.updateOverwrites({[selected.uid]: {src: reader.result}})
       } else {
-        this.updateSelected({backgroundImage: `url(${reader.result})`})
+        this.props.updateOverwrites({[selected.uid]: {backgroundImage: `url(${reader.result})`}})
       }
     };
 
@@ -321,7 +304,7 @@ class DOMInspector extends React.Component {
 
   render() {
     const { selected, nodes, mouseInsideMenu } = this.props;
-    const { hoverBB, selectedBB, pseudoBBs } = this.state;
+    const { hoverBB } = this.state;
     const hNode = nodes[hoverBB.uid]
     return (
       <div>
@@ -339,8 +322,6 @@ class DOMInspector extends React.Component {
             </SDescriptor>
           </SFrame>
         }
-        
-        
         {this.renderHiddenFileInput()}
       </div>
     );
@@ -350,7 +331,6 @@ class DOMInspector extends React.Component {
 const mapStateToProps = state => ({
   selected: getSelectedNode(state),
   nodes: getNodes(state),
-  pseudoSelectedNodes: getPseudoSelectedNodes(state),
   mouseInsideMenu: getMouseInsideMenu(state),
 })
 
@@ -358,6 +338,7 @@ const mapDispatchToProps = {
   setSelectedNode,
   toggleShowSpacing,
   updateSelectedOverwrites,
+  updateOverwrites,
   setSelectedControl,
   popOverwrite,
   setPasteNode,

@@ -50,8 +50,8 @@ const SOpenMenu = Box.extend`
 const SClosedMenu = Box.extend`
   width: 40px;
   height: 40px;
-  line-height: 38px;
-  text-align: center;
+  justify-content: center;
+  align-items: center;
   border-radius: 20px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   background-color: #fff;
@@ -60,7 +60,8 @@ const SClosedMenu = Box.extend`
     background: #f9f9f9;
   }
   img {
-    vertical-align: middle;
+    position: relative;
+    top: -2px;
   }
 `;
 
@@ -226,7 +227,7 @@ class Menu extends React.Component {
         </SOpenMenu>
         <SClosedMenu 
           onClick={() => this.setState({open: true})}
-          style={{ display: _open ? 'none' : 'block' }}
+          style={{ display: _open ? 'none' : 'flex' }}
         >
           <img src="https://icon.now.sh/grid" />
         </SClosedMenu>
