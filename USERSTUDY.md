@@ -2,6 +2,7 @@ Change Color
 Change Background Color
 Change Font 
 Add Dropshadow
+
 Update an image
 Update text 
 

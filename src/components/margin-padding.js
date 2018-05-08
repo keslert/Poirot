@@ -30,6 +30,18 @@ class MarginPaddingUI extends React.Component {
     dragging: null,
   }
 
+  componentWillMount() {
+    this.updateStyle(this.props);
+  }
+
+  componentWillReceiveProps(props) {
+    this.updateStyle(props);
+  }
+
+  updateStyle(props) {
+    this.setState({style: _.pick(props.style, styleKeys)});
+  }
+
   handleDragStart = (e, type, direction, sides) => {
     const startOffset = Number.parseInt(this.props.style[`${type}${_.capitalize(sides[0])}`])
 
@@ -51,6 +63,7 @@ class MarginPaddingUI extends React.Component {
 
   handleDragEnd = (e) => {
     this.setState({dragging: null});
+    this.props.onChange(this.state.style);
   }
 
   handleDrag = (e) => {
@@ -71,7 +84,7 @@ class MarginPaddingUI extends React.Component {
       `${type}${_.capitalize(side)}`, `${offset}px`
     ]))
 
-    this.props.onChange(changes)
+    this.setState({style: {...this.state.style, ...changes}});
   }
 
   handleDragMT = e => this.handleDragStart(e, 'margin', 'row', ['top']);
@@ -84,7 +97,8 @@ class MarginPaddingUI extends React.Component {
   handleDragPR = e => this.handleDragStart(e, 'padding', 'col', ['right']);
 
   render() {
-    const { style, activeControls } = this.props;
+    const { activeControls } = this.props;
+    const { style } = this.state;
 
     const spacing = 2;
     const thickness = 18;
@@ -229,3 +243,4 @@ export default MarginPaddingUI;
 
 const allSides = ['top', 'bottom', 'left', 'right'];
 const opposites = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' };
+const styleKeys = ['marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'];
