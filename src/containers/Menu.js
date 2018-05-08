@@ -123,7 +123,7 @@ class Menu extends React.Component {
               </SHoverMenuItem>
               <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowRedline}>
                 <Icon name="mode_edit" selected={this.props.showRedline} />
-                <Text ml={1} children="Show redlines" />
+                <Text ml={1} children="Highlight changes" />
               </SHoverMenuItem>
               <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowSpacing}>
                 <Icon name="vertical_align_center" selected={this.props.showSpacing} />

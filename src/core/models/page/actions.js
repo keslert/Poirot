@@ -54,6 +54,6 @@ export function popOverwrite(action) {
 }
 
 function loadFonts(overwrites) {
-  const fontFamilies = _.chain(overwrites).map(v => v.fontFamily).filter(Boolean).uniq().value();
-  fontFamilies.forEach(loadWebFont);
+  const fonts = _.chain(overwrites).map(v => `${v.fontFamily}:${v.fontWeight}`).filter(Boolean).uniq().value();
+  fonts.forEach(loadWebFont);
 }
