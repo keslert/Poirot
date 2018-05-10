@@ -50,6 +50,7 @@ export const getTypographyCategories = createSelector(
     }).value();
     const unknownCategory = _.find(categories, cat => cat.label === 'Unknown');
     unknownCategory.groups = _.chain([...unknownCategory.groups, ...unknownGroups])
+      .map(group => ({...group, unknown: true}))
       .sortBy(['fontFamily', 'fontWeight', 'fontSize'])
       .reverse()
       .value();

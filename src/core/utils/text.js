@@ -1,5 +1,5 @@
 export function getTextString(obj) {
-  return `${obj.fontFamily} ${obj.fontWeight} ${obj.fontSize}`
+  return `${obj.fontFamily} ${getWeightString(obj.fontWeight)} ${obj.fontSize}`
 }
 
 export function getWeightString(weight) {

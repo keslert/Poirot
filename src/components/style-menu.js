@@ -166,7 +166,7 @@ class StyleMenu extends React.Component {
               <TypographyPicker 
                 allowCustom={customControl[this._key('text')]}
                 value={style}
-                options={groups}
+                typography={this.props.typography}
                 onChange={this.handleSetTypography}
               />
             </Box>

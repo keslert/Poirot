@@ -41,6 +41,7 @@ export default {
     paddingTL: '#a2d091',
     paddingBR: '#abd5d4',
     gray: '#aaa',
+    nearWhite: "#f4f4f4",
     lightBlue: '#E7F8FF',
   },
   shadows: {
