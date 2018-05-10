@@ -3,11 +3,16 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Flex, Box, Text, Subhead } from 'rebass';
 import { updateDSTypography } from '../core/models/ds/actions';
-import { addPage, updateSelectedOverwrites } from '../core/models/page/actions';
+import { 
+  addPage, 
+  updateSelectedOverwrites, 
+  clearOverwrites,
+} from '../core/models/page/actions';
 import { 
   setSelectedControl,
   setMouseInsideMenu,
   setSelectionMode,
+  setSelectedNode,
   toggleVisible,
   toggleHideChanges,
   toggleShowRedline,
@@ -109,11 +114,15 @@ class Menu extends React.Component {
 
   }
 
+  handleResetPage = () => {
+    this.props.clearOverwrites();
+  }
+
   renderHeader = (str) => {
     return (
       <Flex px={2} py={1}>
         <Flex align="center"><Subhead f={2} mr={1} children={this.state.menu} /><Icon name="chevronDown" size={8} /></Flex>
-        <Flex flex={1} justify="flex-end" align="center" m={-1}>
+        <Flex flex={1} justify="flex-end" align="center" m={-1} onClick={() => this.props.setSelectedNode(null)}>
 
           <HoverMenu renderMenu={() => (
             <Flex bg="#fff" direction="column">
@@ -153,6 +162,10 @@ class Menu extends React.Component {
               <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
                 <Icon name="file_upload" /> 
                 <Text ml={1} children="Import Page" />
+              </SHoverMenuItem>
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleResetPage}>
+                <Icon name="power_settings_new" /> 
+                <Text ml={1} children="Reset Page Changes" />
               </SHoverMenuItem>
             </Flex>
           )}>
@@ -261,8 +274,10 @@ const mapDispatchToProps = {
   toggleCustomControl,
   setSelectedControl,
   setMouseInsideMenu,
+  setSelectedNode,
   toggleShowSpacing,
   setSelectionMode,
+  clearOverwrites,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

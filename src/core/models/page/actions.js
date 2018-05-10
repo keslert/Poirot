@@ -2,11 +2,15 @@ import * as types from './action-types';
 import WebFont from 'webfontloader';
 
 const webFontCache = {};
-function loadWebFont(fontFamily) {
-  if(!webFontCache[fontFamily]) {
-    webFontCache[fontFamily] = true;
-    WebFont.load({ google: { families: [fontFamily] } })
-  }
+function loadWebFont(font) {
+  const fonts = [`${font.fontFamily}:400`, `${font.fontFamily}:${font.fontWeight}`];
+
+  fonts.forEach(str => {
+    if(!webFontCache[str]) {
+      webFontCache[str] = true;
+      WebFont.load({ google: { families: [str] } })
+    }
+  })
 }
 
 export function addPage(page) {
@@ -53,7 +57,13 @@ export function popOverwrite(action) {
   }
 }
 
+export function clearOverwrites() {
+  return {
+    type: types.CLEAR_OVERWRITES,
+  }
+}
+
 function loadFonts(overwrites) {
-  const fonts = _.chain(overwrites).map(v => `${v.fontFamily}:${v.fontWeight}`).filter(Boolean).uniq().value();
+  const fonts = _.filter(overwrites, o => o.fontFamily);
   fonts.forEach(loadWebFont);
 }

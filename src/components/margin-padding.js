@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Box, Flex, Absolute, Relative, Text, Fixed } from 'rebass';
 import theme from '../styles/rebass-theme';
 import tinycolor from 'tinycolor2';
@@ -22,6 +23,9 @@ const SBar = Flex.extend`
     opacity: 1;
   }
 `
+SBar.propTypes = {
+  vertical: PropTypes.bool,
+}
 
 
 class MarginPaddingUI extends React.Component {
@@ -117,7 +121,7 @@ class MarginPaddingUI extends React.Component {
               <SBar style={{ width: hLength, height: thickness }} bg={theme.colors.marginTL} onMouseDown={this.handleDragMT}>
                 <Absolute 
                   style={{ top: -thickness - 4 }} 
-                  color={_.includes(activeControls.margin, "T") && theme.colors.blue}
+                  color={_.includes(activeControls.margin, "T") ? theme.colors.blue : null}
                   children={style.marginTop} 
                 />
                 <Text f={0} color="rgba(0,0,0,.5)" children="margin" />
@@ -132,7 +136,7 @@ class MarginPaddingUI extends React.Component {
               <SBar style={{ width: hLength, height: thickness }} bg={theme.colors.marginBR} onMouseDown={this.handleDragMB}>
                 <Absolute 
                   style={{ bottom: -thickness - 4 }} 
-                  color={_.includes(activeControls.margin, "B") && theme.colors.blue}
+                  color={_.includes(activeControls.margin, "B") ? theme.colors.blue : null}
                   children={style.marginBottom} 
                 />
               </SBar>
@@ -146,7 +150,7 @@ class MarginPaddingUI extends React.Component {
               <SBar style={{ width: thickness, height: vLength }} bg={theme.colors.marginTL} vertical onMouseDown={this.handleDragML}>
                 <Absolute 
                   style={{ left: -textOffset }} 
-                  color={_.includes(activeControls.margin, "L") && theme.colors.blue}
+                  color={_.includes(activeControls.margin, "L") ? theme.colors.blue : null}
                   children={style.marginLeft} 
                 />
               </SBar>
@@ -160,7 +164,7 @@ class MarginPaddingUI extends React.Component {
               <SBar style={{ width: thickness, height: vLength }} bg={theme.colors.marginBR} vertical onMouseDown={this.handleDragMR}>
                 <Absolute 
                   style={{ right: -textOffset }} 
-                  color={_.includes(activeControls.margin, "R") && theme.colors.blue}
+                  color={_.includes(activeControls.margin, "R") ? theme.colors.blue : null}
                   children={style.marginRight} 
                 />
               </SBar>
@@ -176,7 +180,7 @@ class MarginPaddingUI extends React.Component {
               <SBar style={{ width: hLength - thickness * 2, height: thickness }} bg={theme.colors.paddingTL} onMouseDown={this.handleDragPT}>
                 <Absolute 
                   style={{ top: thickness + 4 }} 
-                  color={_.includes(activeControls.padding, "T") && theme.colors.blue}
+                  color={_.includes(activeControls.padding, "T") ? theme.colors.blue : null}
                   children={style.paddingTop} 
                 />
                 <Text f={0} color="rgba(0,0,0,.5)" children="padding" />
@@ -191,7 +195,7 @@ class MarginPaddingUI extends React.Component {
               <SBar style={{ width: hLength - thickness * 2, height: thickness }} bg={theme.colors.paddingBR} onMouseDown={this.handleDragPB}>
                 <Absolute 
                   style={{ bottom: thickness + 4 }} 
-                  color={_.includes(activeControls.padding, "B") && theme.colors.blue}
+                  color={_.includes(activeControls.padding, "B") ? theme.colors.blue : null}
                   children={style.paddingBottom} 
                 />
               </SBar>
@@ -205,7 +209,7 @@ class MarginPaddingUI extends React.Component {
               <SBar style={{ width: thickness, height: vLength - thickness * 2 }} bg={theme.colors.paddingTL} vertical onMouseDown={this.handleDragPL}>
                 <Absolute 
                   style={{ left: textOffset }} 
-                  color={_.includes(activeControls.padding, "L") && theme.colors.blue}
+                  color={_.includes(activeControls.padding, "L") ? theme.colors.blue : null}
                   children={style.paddingLeft}
                 />
               </SBar>
@@ -219,7 +223,7 @@ class MarginPaddingUI extends React.Component {
               <SBar style={{ width: thickness, height: vLength - thickness * 2 }} bg={theme.colors.paddingBR} vertical onMouseDown={this.handleDragPR}>
                 <Absolute 
                   style={{ right: textOffset }} 
-                  color={_.includes(activeControls.padding, "R") && theme.colors.blue}
+                  color={_.includes(activeControls.padding, "R") ? theme.colors.blue : null}
                   children={style.paddingRight} 
                 />
               </SBar>

@@ -1,10 +1,10 @@
-Change Color
-Change Background Color
+x Change Color
+x Change Background Color
 Change Font 
 Add Dropshadow
 
 Update an image
-Update text 
+Update text
 
 Add Margin Between Text Nodes
 Add Padding on Cards
@@ -16,4 +16,4 @@ Edit a single block within multiple blocks
 Fix an unstyled section to match the styles of another section.
 (Use Copy & Paste)
 
-Explore New Google Fonts
+Explore 5 Google Fonts

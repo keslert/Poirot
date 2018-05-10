@@ -10,11 +10,17 @@ import {
 export function parseAndTagPage() {
   const all = getDOMNodes();
   const visible = getVisibleNodes(all);
+  const valid = _.filter(visible, ({node}) => {
+    const parents = generateList(node, 'parentElement', 'dataset.dsxrayIgnore');
+    return !_.get(node, 'dataset.dsxrayIgnore') && !_.some(parents, Boolean);
+  });
+
+
   const hostname = location.hostname;
   const pathname = location.pathname;
 
   const uidToDOMNode = {};
-  const nodes = visible.map(({node, computedStyle: style}, i) => {
+  const nodes = valid.map(({node, computedStyle: style}, i) => {
     const uid = `dsxray-node-${i}`;
     uidToDOMNode[uid] = node;
     return {

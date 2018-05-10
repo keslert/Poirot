@@ -23,7 +23,6 @@ export const pageReducer = pageSpecificReducer((state = pageState(), { payload, 
       });
 
     case types.UPDATE_NODE:
-      debugger;
       return Object.assign({}, state, {
         nodes: _.mapValues(state.nodes, node => node.uid === payload.node.uid
           ? {...node, ...payload.changes}
@@ -33,15 +32,12 @@ export const pageReducer = pageSpecificReducer((state = pageState(), { payload, 
 
     case types.ALIAS_UPDATE_OVERWRITES:
       key = payload.isEphemeral ? 'ephemerals' : 'overwrites';
-      
-      const newState = Object.assign({}, state, {
+      return Object.assign({}, state, {
         [key]: _.chain({})
           .mergeWith(_.cloneDeep(state[key]), _.cloneDeep(payload.overwrites), customMerge)
           .pickBy(i => !_.isEmpty(i))
           .value()
       })
-      console.log(key, newState[key]);
-      return newState;
 
     case types.ALIAS_CLEAR_SELECTED_OVERWRITES:
       key = payload.isEphemeral ? 'ephemerals' : 'overwrites';
@@ -51,6 +47,9 @@ export const pageReducer = pageSpecificReducer((state = pageState(), { payload, 
           .pickBy(i => !_.isEmpty(i))
           .value()
       })
+    
+    case types.CLEAR_OVERWRITES:
+      return Object.assign({}, state, {overwrites: {}});
 
     default:
       return state;

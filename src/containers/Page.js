@@ -132,7 +132,12 @@ class Page extends React.Component {
   }
 
   updateSelectedBBs = props => {
-    const selectedBBs = [props.selectedNode, ...props.psuedoSelectedNodes].map(node => {
+    if(!props.selectedNode) {
+      return this.setState({ selectedBBs: []})
+    }
+
+    const nodes = _.uniqBy([props.selectedNode, ...props.psuedoSelectedNodes], 'uid');
+    const selectedBBs = nodes.map(node => {
       const el = document.querySelector(`.${node.uid}`);
       const style = getStyle(node, props.overwrites, props.ephemerals);
       return {
@@ -216,11 +221,11 @@ class Page extends React.Component {
         <Style css={spacing} />
 
         {showRedline && this.state.redlineBBs.map(bb => 
-          <SBox color={theme.colors.red} key={bb.uid} text={bb.text} style={bb} />
+          <SBox color={theme.colors.red} key={`redline-${bb.uid}`} text={bb.text} style={bb} />
         )}
 
         {this.state.selectedBBs.map(bb => 
-          <SBox color={bb.color} key={bb.uid} style={bb} />
+          <SBox color={bb.color} key={`selected-${bb.uid}`} style={bb} />
         )}
       </div>
     );

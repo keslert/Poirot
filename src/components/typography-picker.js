@@ -24,7 +24,7 @@ class TypographyPicker extends React.Component {
             onChange={fontFamily => onChange({...value, fontFamily})}
           />
         </Box>
-        <Box flex={1}>
+        <Box flex={2}>
           <FontWeightPicker
             value={value.fontWeight}
             onChange={fontWeight => onChange({ ...value, fontWeight })}

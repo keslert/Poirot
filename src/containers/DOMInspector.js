@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Box, Text } from 'rebass';
 import { getBB } from '../core/utils/html';
@@ -18,6 +19,7 @@ import {
 import { 
   setCopyNode,
 } from '../core/models/clipboard/actions';
+import { getWeightString } from '../core/utils/text';
 
 import theme from '../styles/rebass-theme';
 
@@ -36,6 +38,9 @@ const SFrame = Box.extend`
   pointer-events: none;
   transition: all 200ms;
 `
+SFrame.propTypes = {
+  fade: PropTypes.bool,
+}
 
 const SToolbar = Box.extend`
   position: absolute;
@@ -103,7 +108,7 @@ class DOMInspector extends React.Component {
     document.onkeydown = (e) => this.handleKeyDown(e);
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     document.onmouseover = null;
     document.onclick = null;
     document.onkeydown = null;
@@ -316,7 +321,7 @@ class DOMInspector extends React.Component {
                 <Text
                   is="span"
                   ml={1}
-                  children={`${hNode.style.fontFamily} ${hNode.style.fontWeight} ${hNode.style.fontSize}`}
+                  children={`${hNode.style.fontFamily} ${getWeightString(hNode.style.fontWeight)} ${hNode.style.fontSize}`}
                 />
               }
             </SDescriptor>

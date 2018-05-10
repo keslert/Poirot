@@ -1,10 +1,10 @@
 import URL from 'url-parse';
 import { REGISTER_PAGE } from '../../../src/core/utils/redux';
 
-const arrowURLs = ['^http://keslertanner\\.com', '^https://www.wework\\.com', '^https://www.landay\\.org',    
-  '^https://workona.com/', '^https://compositor.io/', '^https://fiftythree.com/', '^https://bookroo.com/',
-  '^https://www.airbnb.com/', '^https://stripe.com/', 'http://griffindietz.com/', 'https://graphics.stanford.edu/~hanrahan/', 'https://interfacelovers.com/',
-  'http://localhost:3001/'];
+const arrowURLs = [
+  '^http://keslertanner\\.com', 
+  '^http://localhost:3001/',
+];
 export function listen(store) {
 
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -52,17 +52,6 @@ function loadScript(name, tabId, cb) {
     fetch(`http://localhost:3000/js/${name}.bundle.js`)
     .then(res => res.text())
     .then((fetchRes) => {
-      // Load redux-devtools-extension inject bundle,
-      // because inject script and page is in a different context
-      const request = new XMLHttpRequest();
-      request.open('GET', 'chrome-extension://lmhkpmbekcpmknklioeibfkpmmfibljd/js/redux-devtools-extension.js');  
-      // sync
-      request.send();
-      request.onload = () => {
-        if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
-          chrome.tabs.executeScript(tabId, { code: request.responseText, runAt: 'document_start' });
-        }
-      };
       chrome.tabs.executeScript(tabId, { code: fetchRes }, cb);
     });
   }
