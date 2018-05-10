@@ -112,7 +112,18 @@ function popSpacing(type, style, ds, action, control) {
   return _.fromPairs(sides.map(side => [side, value]));
 }
 
+const textKeys = ['fontFamily', 'fontWeight', 'fontSize'];
 function popText(style, ds, action) {
+  const catIndex = _.findIndex(ds.typography.categories, cat => _.find(cat.groups, group => 
+    _.every(textKeys, key => style[key] === group[key])
+  ));
+
+  if(catIndex > -1) {
+    const groups = _.reverse([...ds.typography.categories[catIndex].groups]);
+    const group = _.find(groups, group => _.every(textKeys, key => style[key] === group[key]));
+    const value = getValue(action, group, groups);
+    return _.pick(value, textKeys);
+  }
   return {};
 }
 
