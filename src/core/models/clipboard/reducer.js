@@ -7,7 +7,7 @@ const clipboardState = () => ({
 export function clipboardReducer(state = clipboardState(), { payload, type }) {
   switch (type) {
     
-    case types.SET_COPY_NODE:
+    case types.ALIAS_SET_COPY_NODE:
       return Object.assign({}, state, {
         copyNode: payload,
       })

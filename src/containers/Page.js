@@ -34,6 +34,7 @@ import {
   getHideChanges,
   getShowRedline,
   getPseudoSelectedNodes,
+  getPseudoSelecting,
 } from '../core/models/ui/selectors';
 
 import { 
@@ -136,7 +137,7 @@ class Page extends React.Component {
       return this.setState({ selectedBBs: []})
     }
 
-    const nodes = _.uniqBy([props.selectedNode, ...props.psuedoSelectedNodes], 'uid');
+    const nodes = _.uniqBy([props.selectedNode, ...props.pseudoSelectedNodes], 'uid');
     const selectedBBs = nodes.map(node => {
       const el = document.querySelector(`.${node.uid}`);
       const style = getStyle(node, props.overwrites, props.ephemerals);
@@ -164,7 +165,7 @@ class Page extends React.Component {
       this.selector(`.${key}`), {background: '#aaeeaaaa !important'}
     ]).fromPairs().value();
 
-    const nodes = showSpacing ? [selectedNode, ...selectedChildNodes] : [];
+    const nodes = showSpacing && selectedNode ? [selectedNode, ...selectedChildNodes] : [];
     const spacing = _.chain(nodes).map(node => {
       const overwrites = this.props.overwrites[node.uid] || {};
       const ephemerals = this.props.ephemerals[node.uid] || {};
@@ -238,7 +239,7 @@ const mapStateToProps = state => ({
   textNodes: getTextNodes(state),
   selectedNode: getSelectedNode(state),
   selectedChildNodes: getSelectedChildNodes(state),
-  psuedoSelectedNodes: getPseudoSelectedNodes(state),
+  pseudoSelectedNodes: getPseudoSelecting(state) ? getPseudoSelectedNodes(state) : [],
   showSpacing: getShowSpacing(state),
   showRedline: getShowRedline(state),
   hideChanges: getHideChanges(state),

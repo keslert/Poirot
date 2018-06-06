@@ -31,7 +31,7 @@ export function parseAndTagPage() {
       style: {
         fontFamily: style.fontFamily.split(',')[0].replace(/\"/g, ""),
         fontSize: style.fontSize,
-        fontWeight: style.fontWeight,
+        fontWeight: Number.parseInt(style.fontWeight),
         lineHeight: style.lineHeight,
         letterSpacing: style.letterSpacing,
 

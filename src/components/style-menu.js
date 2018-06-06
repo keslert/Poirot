@@ -93,7 +93,8 @@ class StyleMenu extends React.Component {
   _key = (key) => `${this.props.selected.uid}-${key}`
 
   render() {
-    const { typography, selected, overwrites, customControl, selectedControl, selectionMode } = this.props;
+    const { typography, selected, overwrites, customControl, selectedControl, selectionMode, 
+      pseudoSelectedCount } = this.props;
     if(!selected) {
       return null;
     }
@@ -106,40 +107,20 @@ class StyleMenu extends React.Component {
         <Flex mb={2} direction="column">
           <Flex align="center" mb={1}>
             <Subhead children={selected.nodeName} />
-            <Box mx={1}><Icon name="chevron" size={10} /></Box>
-            <Toggle
-              color={theme.colors.purple}
-              checked={symbolSelected}
-              onClick={() => this.props.setSelectionMode(symbolSelected ? 'individual' : 'symbol')}
-            />
-            <Text ml={1}>Edit Similar Instances</Text>
-            
-          </Flex>
-          <Flex justify="space-between">
-            <Flex>
-              <SLabel children="Margin & Padding" />
-              {_.some(allSpacing, spacing => selected.style[spacing] !== style[spacing]) &&
-                <SReset children="reset" onClick={this.handleResetMarginPadding} />
-              }
-            </Flex>
-            <SCustom 
-              active={customControl[this._key('margin-padding')]} 
-              onClick={this.handleToggleCustomControl(this._key('margin-padding'))}
-              children="allow custom" 
-            />
-          </Flex>
-          <Flex justify="center">
-            <MarginPaddingUI
-              activeControls={{
-                margin: _.startsWith(selectedControl, 'margin') ? selectedControl.slice(6).split('') : {},
-                padding: _.startsWith(selectedControl, 'padding') ? selectedControl.slice(7).split('') : {},
-              }}
-              allowCustom={customControl[this._key('margin-padding')]}
-              onChange={this.handleSetMarginPadding}
-              spacing={this.props.ds.spacing.defaults}
-              style={style}
-              setSelectedControl={this.props.setSelectedControl}
-            />
+            {!pseudoSelectedCount ? null : 
+              <Flex align="center">
+                <Box mx={1}><Icon name="chevron" size={10} /></Box>
+                <Toggle
+                  color={theme.colors.purple}
+                  checked={this.props.pseudoSelecting}
+                  onClick={this.props.togglePseudoSelecting}
+                />
+                <Text 
+                  ml={1}
+                  children={`Edit ${pseudoSelectedCount} Similar Instance${pseudoSelectedCount === 1 ? '' : 's'}`}
+                />
+              </Flex>
+            }
           </Flex>
         </Flex>
 
@@ -258,6 +239,33 @@ class StyleMenu extends React.Component {
             />
           </Flex>
         }
+
+        <Flex justify="space-between">
+          <Flex>
+            <SLabel children="Margin & Padding" />
+            {_.some(allSpacing, spacing => selected.style[spacing] !== style[spacing]) &&
+              <SReset children="reset" onClick={this.handleResetMarginPadding} />
+            }
+          </Flex>
+          <SCustom 
+            active={customControl[this._key('margin-padding')]} 
+            onClick={this.handleToggleCustomControl(this._key('margin-padding'))}
+            children="allow custom" 
+          />
+        </Flex>
+        <Flex justify="center">
+          <MarginPaddingUI
+            activeControls={{
+              margin: _.startsWith(selectedControl, 'margin') ? selectedControl.slice(6).split('') : {},
+              padding: _.startsWith(selectedControl, 'padding') ? selectedControl.slice(7).split('') : {},
+            }}
+            allowCustom={customControl[this._key('margin-padding')]}
+            onChange={this.handleSetMarginPadding}
+            spacing={this.props.ds.spacing.defaults}
+            style={style}
+            setSelectedControl={this.props.setSelectedControl}
+          />
+        </Flex>
         
       </Flex>
     )

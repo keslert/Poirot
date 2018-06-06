@@ -10,7 +10,8 @@ import fromPairs from 'lodash/fromPairs';
 import { 
   getSelectedNode, 
   getSelectedControl,
-  getPseudoSelectedNodes, 
+  getPseudoSelectedNodes,
+  getPseudoSelecting,
 } from '../ui/selectors';
 import { getDS } from '../ds/selectors';
 
@@ -19,9 +20,11 @@ export function updateSelectedOverwrites({payload: {overwrites, isEphemeral}, _s
   return (dispatch, getState) => {
     const state = getState();
     const selected = getSelectedNode(state, _sender.url);
-    const psuedoSelected = getPseudoSelectedNodes(state, _sender.url);
 
-    const overwrites_ = _.fromPairs([selected, ...psuedoSelected].map(node => [node.uid, overwrites]));
+    const pseudoSelecting = getPseudoSelecting(state, _sender.url);
+    const pseudoSelected = pseudoSelecting ? getPseudoSelectedNodes(state, _sender.url) : [];
+
+    const overwrites_ = _.fromPairs([selected, ...pseudoSelected].map(node => [node.uid, overwrites]));
     dispatch(updateOverwrites({
       payload: {overwrites: overwrites_, isEphemeral},
       _sender,
@@ -33,8 +36,10 @@ export function clearSelectedOverwrites({payload: {isEphemeral}, _sender}) {
   return (dispatch, getState) => {
     const state = getState();
     const selected = getSelectedNode(state, _sender.url);
-    const psuedoSelected = getPseudoSelectedNodes(state, _sender.url);
-    const uids = [selected, ...psuedoSelected].map(node => node.uid);
+
+    const pseudoSelecting = getPseudoSelecting(state, _sender.url);
+    const pseudoSelected = pseudoSelecting ? getPseudoSelectedNodes(state, _sender.url) : [];
+    const uids = [selected, ...pseudoSelected].map(node => node.uid);
     dispatch({
       type: ALIAS_CLEAR_SELECTED_OVERWRITES,
       payload: {uids, isEphemeral},

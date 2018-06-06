@@ -5126,6 +5126,10 @@ react-draggable@^3.0.5:
     classnames "^2.2.5"
     prop-types "^15.6.0"
 
+react-file-picker:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/react-file-picker/-/react-file-picker-0.0.5.tgz#b1505080c7d2d22149aeae879638007e8e3154ae"
+
 react-input-autosize@^2.1.2, react-input-autosize@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-2.2.1.tgz#ec428fa15b1592994fb5f9aa15bb1eb6baf420f8"

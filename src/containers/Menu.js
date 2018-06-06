@@ -7,6 +7,7 @@ import {
   addPage, 
   updateSelectedOverwrites, 
   clearOverwrites,
+  setOverwrites,
 } from '../core/models/page/actions';
 import { 
   setSelectedControl,
@@ -18,6 +19,7 @@ import {
   toggleShowRedline,
   toggleCustomControl,
   toggleShowSpacing,
+  togglePseudoSelecting,
 } from '../core/models/ui/actions';
 import { getTypographyCategories, getDS } from '../core/models/ds/selectors';
 import { getOverwrites } from '../core/models/page/selectors';
@@ -31,6 +33,8 @@ import {
   getShowSpacing,
   getSelectionMode,
   getPasteNode,
+  getPseudoSelectedNodes,
+  getPseudoSelecting,
 } from '../core/models/ui/selectors';
 import { getCopyNode } from '../core/models/clipboard/selectors';
 import MenuItem from '../components/menu-item';
@@ -40,6 +44,7 @@ import domtoimage from 'dom-to-image';
 import { parseAndTagPage } from '../core/utils/page';
 import Icon from '../components/icon';
 import HoverMenu from '../components/hover-menu';
+import { FilePicker } from 'react-file-picker'
 
 const SOpenMenu = Box.extend`
   display: flex;
@@ -114,15 +119,34 @@ class Menu extends React.Component {
 
   }
 
+  handleExport = () => {
+    const a = document.createElement("a");
+    const file = new Blob([JSON.stringify(this.props.overwrites)], {type: 'application/json'});
+    a.href = URL.createObjectURL(file);
+    a.download = 'overwrites.json';
+    a.click();
+  }
+
+  handleImport = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = e => {
+      const overwrites = JSON.parse(e.target.result);
+      this.props.setOverwrites(overwrites);
+    }
+    reader.readAsBinaryString(file);
+  }
+
   handleResetPage = () => {
     this.props.clearOverwrites();
   }
+
 
   renderHeader = (str) => {
     return (
       <Flex px={2} py={1}>
         <Flex align="center"><Subhead f={2} mr={1} children={this.state.menu} /><Icon name="chevronDown" size={8} /></Flex>
-        <Flex flex={1} justify="flex-end" align="center" m={-1} onClick={() => this.props.setSelectedNode(null)}>
+        <Flex flex={1} justify="flex-end" align="center" m={-1}>
 
           <HoverMenu renderMenu={() => (
             <Flex bg="#fff" direction="column">
@@ -132,11 +156,15 @@ class Menu extends React.Component {
               </SHoverMenuItem>
               <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowRedline}>
                 <Icon name="mode_edit" selected={this.props.showRedline} />
-                <Text ml={1} children="Highlight changes" />
+                <Text ml={1} children="Redline changes" />
               </SHoverMenuItem>
               <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.props.toggleShowSpacing}>
                 <Icon name="vertical_align_center" selected={this.props.showSpacing} />
                 <Text ml={1} children="Show margin & padding" />
+              </SHoverMenuItem>
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleResetPage}>
+                <Icon name="undo" /> 
+                <Text ml={1} children="Reset All Changes" />
               </SHoverMenuItem>
             </Flex>
           )}>
@@ -147,25 +175,22 @@ class Menu extends React.Component {
 
           <HoverMenu renderMenu={() => (
             <Flex bg="#fff" direction="column">
-              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleSnapshot}>
+              {false && <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleSnapshot}>
                 <Icon name="photo_camera" />
                 <Text ml={1} children="Capture Snapshot" />
-              </SHoverMenuItem>
-              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
+              </SHoverMenuItem>}
+              {false && <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleRefresh}>
                 <Icon name="refresh" /> 
                 <Text ml={1} children="Retag Page" />
-              </SHoverMenuItem>
-              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
-                <Icon name="file_download" /> 
-                <Text ml={1} children="Export Page" />
-              </SHoverMenuItem>
-              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleGenerateReport}>
+              </SHoverMenuItem>}
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={() => this.inputFile.click()}>
                 <Icon name="file_upload" /> 
-                <Text ml={1} children="Import Page" />
+                <Text ml={1} children="Import Changes" />
               </SHoverMenuItem>
-              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleResetPage}>
-                <Icon name="power_settings_new" /> 
-                <Text ml={1} children="Reset Page Changes" />
+              <SHoverMenuItem p={2} style={{ cursor: 'pointer' }} onClick={this.handleExport}>
+              
+                <Icon name="file_download" /> 
+                <Text ml={1} children="Export Changes" />
               </SHoverMenuItem>
             </Flex>
           )}>
@@ -179,6 +204,12 @@ class Menu extends React.Component {
             <Icon name="x" size="12" />
           </Box>
         </Flex>
+
+        <input 
+          type="file"
+          onChange={this.handleImport} style={{position: 'absolute', top: '-100em'}} 
+          ref={ref => this.inputFile = ref}
+        />
       </Flex>
     )
   }
@@ -208,8 +239,11 @@ class Menu extends React.Component {
           overwrites={this.props.overwrites}
           selected={this.props.selected}
           selectionMode={this.props.selectionMode}
+          pseudoSelectedCount={this.props.pseudoSelected.length}
+          pseudoSelecting={this.props.pseudoSelecting}
           typography={this.props.typography}
           toggleCustomControl={this.props.toggleCustomControl}
+          togglePseudoSelecting={this.props.togglePseudoSelecting}
           updateSelectedOverwrites={this.props.updateSelectedOverwrites}
           selectedControl={this.props.selectedControl}
           setSelectedControl={this.props.setSelectedControl}
@@ -254,6 +288,8 @@ const mapStateToProps = state => ({
   visible: getVisible(state),
   typography: getTypographyCategories(state),
   selected: getSelectedNode(state),
+  pseudoSelected: getPseudoSelectedNodes(state),
+  pseudoSelecting: getPseudoSelecting(state),
   overwrites: getOverwrites(state),
   hideChanges: getHideChanges(state),
   showRedline: getShowRedline(state),
@@ -272,12 +308,14 @@ const mapDispatchToProps = {
   toggleHideChanges,
   toggleShowRedline,
   toggleCustomControl,
+  togglePseudoSelecting,
   setSelectedControl,
   setMouseInsideMenu,
   setSelectedNode,
   toggleShowSpacing,
   setSelectionMode,
   clearOverwrites,
+  setOverwrites,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

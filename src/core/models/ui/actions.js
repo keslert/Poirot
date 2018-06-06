@@ -74,3 +74,9 @@ export function toggleCustomControl(key) {
     payload: key,
   }
 }
+
+export function togglePseudoSelecting() {
+  return {
+    type: types.TOGGLE_PSEUDO_SELECTING,
+  }
+}

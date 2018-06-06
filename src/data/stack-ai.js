@@ -83,7 +83,7 @@ const colors = {
         {value: '#979797', base: 50},
         {value: '#b0b0b0', base: 40},
         {value: '#cacaca', base: 30},
-        {value: '#e3e3e3', base: 20},
+        {value: '#eeeeee', base: 20},
       ]
     },
   }

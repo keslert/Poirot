@@ -33,7 +33,7 @@ function inject() {
 function injectStylesheets() {
   const head = document.getElementsByTagName('head')[0];
   const stylesheets = [
-    'react-select/dist/react-select.css', 
+    'react-select@1.2.0/dist/react-select.css', 
     'react-virtualized/styles.css', 
     'react-virtualized-select/styles.css',
   ];

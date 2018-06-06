@@ -52,6 +52,10 @@ export function getPasteNode(state, _url) {
   return getUI(state, _url).pasteNode;
 }
 
+export function getPseudoSelecting(state, _url) {
+  return getUI(state, _url).pseudoSelecting;
+}
+
 export const getPseudoSelectedNodes = createSelector(
   getNodes,
   getSelectedNode,
@@ -66,8 +70,6 @@ export const getPseudoSelectedNodes = createSelector(
     if(selected.isTextNode) {
       const matchStyles = [
         'fontFamily', 'fontWeight', 'fontSize', 'color', 'backgroundColor',
-        // 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 
-        // 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight',
       ]
       return filterMatches(selected, nodes, matchStyles, overwrites);
     }

@@ -12,6 +12,7 @@ const uiState = () => ({
   selectedControl: null,
   selectedNode: null,
   selectionMode: 'symbol',
+  pseudoSelecting: true,
   visible: [],
   mouseInsideMenu: false,
   pasteNode: null,
@@ -62,6 +63,9 @@ export const uiReducer = pageSpecificReducer((state = uiState(), { payload, type
         ...state.customControl,
         [payload]: !state.customControl[payload],
       }})
+
+    case types.TOGGLE_PSEUDO_SELECTING:
+      return Object.assign({}, state, { pseudoSelecting: !state.pseudoSelecting })
 
 
     default:

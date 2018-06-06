@@ -51,6 +51,9 @@ export const pageReducer = pageSpecificReducer((state = pageState(), { payload, 
     case types.CLEAR_OVERWRITES:
       return Object.assign({}, state, {overwrites: {}});
 
+    case types.SET_OVERWRITES:
+      return Object.assign({}, state, {overwrites: payload});
+
     default:
       return state;
 

@@ -36,6 +36,14 @@ export function updateOverwrites(overwrites, isEphemeral) {
   }
 }
 
+export function setOverwrites(overwrites) {
+  loadFonts(overwrites);
+  return {
+    type: types.SET_OVERWRITES,
+    payload: overwrites,
+  }
+}
+
 export function clearSelectedOverwrites(isEphemeral) {
   return {
     type: types.CLEAR_SELECTED_OVERWRITES,

@@ -10,12 +10,10 @@ import {
   clearSelectedOverwrites,
   popOverwrite,
 } from './models/page/aliases';
-import {
-  SET_PASTE_NODE,
-} from './models/ui/action-types';
-import {
-  setPasteNode,
-} from './models/ui/aliases';
+import { SET_PASTE_NODE } from './models/ui/action-types';
+import { setPasteNode } from './models/ui/aliases';
+import { SET_COPY_NODE } from './models/clipboard/action-types';
+import { setCopyNode } from './models/clipboard/aliases';
 
 export default {
   [UPDATE_OVERWRITES]: updateOverwrites,
@@ -23,4 +21,5 @@ export default {
   [CLEAR_SELECTED_OVERWRITES]: clearSelectedOverwrites,
   [POP_OVERWRITE]: popOverwrite,
   [SET_PASTE_NODE]: setPasteNode,
+  [SET_COPY_NODE]: setCopyNode,
 };

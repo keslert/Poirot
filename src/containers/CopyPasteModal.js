@@ -45,7 +45,6 @@ class CopyPasteModal extends React.Component {
 
   getStyle = (props=this.props, state=this.state) => {
     const keys = [];
-    console.log('getStyle');
     if(state.controls.margin) {
       keys.push('marginTop', 'marginBottom', 'marginLeft', 'marginRight');
     }
@@ -178,12 +177,8 @@ const mapStateToProps = createSelector(
       return {visible: false};
     }
 
-    // console.log(overwrites);
-
     const copyStyle = {...copyNode.style, ...(overwrites[copyNode.uid] || {})};
     const pasteStyle = {...pasteNode.style, ...(overwrites[pasteNode.uid] || {})};
-    // console.log('pasteStyle', pasteStyle);
-    // console.log('overwrites', overwrites[pasteNode.uid]);
 
     return {
       visible: true,
