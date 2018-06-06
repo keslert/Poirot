@@ -215,6 +215,9 @@ class Page extends React.Component {
           {`@keyframes dsxray-fade {
             0% { opacity: 1; }
             100% { opacity: 0; }
+          }
+          #dsxray {
+            color: #000;
           }`}
         </style>
         <Style css={overwrites} />
