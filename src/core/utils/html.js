@@ -77,7 +77,7 @@ export function getBB(el) {
 export function generateList(_el, selector, field) {
   let el = _el[selector];
   const parents = [];
-  while (el) {
+  while (el && el.nodeName !== 'HTML') {
     parents.push(_.get(el, field));
     el = el[selector];
   }

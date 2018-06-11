@@ -1,30 +1,41 @@
 import React from 'react';
-import { Box } from 'rebass';
+import { Text, Box } from 'rebass';
 import { Checkboard } from 'react-color/lib/components/common';
+import tinycolor from 'tinycolor2';
 
 const Swatch = Box.extend`
   position: relative;
-  // width: 24px;
   height: 24px;
   border: 1px solid #eaeaea;
   border-radius: 2px;
   overflow: hidden;
   cursor: pointer;
   &:after {
-    content: '';
-    position: relative;
-    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
     width: 100%;
     height: 100%;
+    font-size: 10px;
+    text-transform: uppercase;
+    padding-left: 8px;
     ${props => `
-      background: ${props.color};
+      content: "${props.content}";
+      color: ${props.color};
+      background: ${props.bg};
     `}
   }
 `
 
 export default (props) => {
+  const tcolor = tinycolor(props.color);
+  const showLabel = tcolor.isValid() && tcolor.getAlpha()
+  const content = showLabel ? tcolor.toHexString() : '';
+  const color = tcolor.isLight() ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,0.5)';
   return (
-    <Swatch color={props.color}>
+    <Swatch bg={props.color} content={content} color={color}>
       <Checkboard />
     </Swatch>
   )

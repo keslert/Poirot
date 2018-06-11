@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Box, Text } from 'rebass';
 import { getBB } from '../core/utils/html';
 import { getSelectedNode, getPseudoSelectedNodes, getMouseInsideMenu } from '../core/models/ui/selectors';
-import { getNodes } from '../core/models/page/selectors';
+import { getNodes, getOverwrites } from '../core/models/page/selectors';
 import { 
   updateSelectedOverwrites,
   updateOverwrites,
@@ -308,9 +308,14 @@ class DOMInspector extends React.Component {
   }
 
   render() {
-    const { selected, nodes, mouseInsideMenu } = this.props;
+    const { selected, nodes, mouseInsideMenu, overwrites } = this.props;
     const { hoverBB } = this.state;
     const hNode = nodes[hoverBB.uid]
+
+    const style = hNode && {
+      ...hNode.style,
+      ...(overwrites[hNode.uid] || {})
+    }
     return (
       <div>
         {hNode && 
@@ -321,7 +326,7 @@ class DOMInspector extends React.Component {
                 <Text
                   is="span"
                   ml={1}
-                  children={`${hNode.style.fontFamily} ${getWeightString(hNode.style.fontWeight)} ${hNode.style.fontSize}`}
+                  children={`${style.fontFamily} ${getWeightString(style.fontWeight)} ${style.fontSize}`}
                 />
               }
             </SDescriptor>
@@ -335,6 +340,7 @@ class DOMInspector extends React.Component {
 
 const mapStateToProps = state => ({
   selected: getSelectedNode(state),
+  overwrites: getOverwrites(state),
   nodes: getNodes(state),
   mouseInsideMenu: getMouseInsideMenu(state),
 })

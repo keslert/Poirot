@@ -1,11 +1,11 @@
 import * as types from './action-types';
-import DS from '../../../data/stack-ai';
+import StackAI from '../../../data/stack-ai';
+import BlueCoffee from '../../../data/blue-coffee';
 import { buildDSObject } from './actions';
 import _ from 'lodash';
 import { hostnameSpecificReducer } from '../../utils/redux';
 
-const dsState = () => buildDSObject(DS)
-
+const dsState = () => buildDSObject(BlueCoffee)
 export const dsReducer = hostnameSpecificReducer((state = dsState(), { payload, type }) => {
   
   switch (type) {

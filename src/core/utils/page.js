@@ -128,3 +128,20 @@ export function getStyle(node, overwrites={}, ephemerals={}) {
     ...(ephemerals[node.uid] || {}),
   }
 }
+
+export function getImageUrl(node, overwrites) {
+  if(node.nodeName === 'img') {
+    return node._src;
+  } else {
+    const style = getStyle(node, overwrites);
+    return style.backgroundImage;
+  }
+}
+
+export function imageIsOverwritten(node, overwrites) {
+  const url = getImageUrl(node, overwrites)
+  if(node.nodeName === 'img') {
+    return node.src !== url;
+  }
+  return node.style.backgroundImage !== url;
+}

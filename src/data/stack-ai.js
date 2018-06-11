@@ -71,6 +71,7 @@ const colors = {
         {value: '#f5776d', base: 40},
         {value: '#f8a49d', base: 30},
         {value: '#fcd0cc', base: 20},
+        {value: '#ffffff', base: 0},
       ]
     },
     grey: {
@@ -84,6 +85,7 @@ const colors = {
         {value: '#b0b0b0', base: 40},
         {value: '#cacaca', base: 30},
         {value: '#eeeeee', base: 20},
+        {value: '#ffffff', base: 0},
       ]
     },
   }

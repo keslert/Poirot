@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Box, Flex, Text, Subhead } from 'rebass';
+import Button from '../components/button';
 import MarginPaddingUI from './margin-padding';
 import ColorPicker from './color-picker';
 import ColorSwatch from './color-swatch';
@@ -9,6 +10,8 @@ import TypographyPicker from './typography-picker';
 import Icon from './icon';
 import theme from '../styles/rebass-theme';
 import Toggle from './toggle';
+import Breadcrumbs from './breadcrumbs';
+import { getStyle, imageIsOverwritten } from '../core/utils/page';
 
 
 const SLabel = Text.extend`
@@ -89,6 +92,31 @@ class StyleMenu extends React.Component {
   handleToggleCustomControl = _.memoize(key => () => this.props.toggleCustomControl(key));
   handleSetSelectedControl = _.memoize(key => () => this.props.setSelectedControl(key));
   handleSetSelectionMode = _.memoize(key => () => this.props.setSelectionMode(key));
+
+  handleChangeImage = () => {
+    const input = document.getElementById('dsxray-file-import');
+    input.click();
+  }
+
+  handleResetImage = () => {
+    this.updateSelected({src: null, backgroundImage: null})
+  }
+
+  handleDownloadImage = () => {
+    const { selected: node, overwrites } = this.props;
+    const style = getStyle(node, overwrites)
+    const href = node.nodeName === 'img' 
+      ? node._src 
+      : style.backgroundImage.match(/\((.*?)\)/)[1].replace(/('|")/g,'');
+    const ext = href.slice(href.last)
+
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = `${node.uid}.jpg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
   
   _key = (key) => `${this.props.selected.uid}-${key}`
 
@@ -104,8 +132,8 @@ class StyleMenu extends React.Component {
     const symbolSelected = selectionMode === 'symbol';
     return (
       <Flex px={2} py={1} direction="column">
-        <Flex mb={2} direction="column">
-          <Flex align="center" mb={1}>
+        <Flex direction="column">
+          <Flex align="center">
             <Subhead children={selected.nodeName} />
             {!pseudoSelectedCount ? null : 
               <Flex align="center">
@@ -123,6 +151,14 @@ class StyleMenu extends React.Component {
             }
           </Flex>
         </Flex>
+
+        <Box mb={2}>
+          <Breadcrumbs 
+            selected={selected}
+            nodes={this.props.selectedAncestors}
+            onSelect={this.props.setSelectedNode}
+          />
+        </Box>
 
         {selected.isTextNode && 
           <Flex mb={2} direction="column">
@@ -209,6 +245,25 @@ class StyleMenu extends React.Component {
             >
               <ColorSwatch color={style.backgroundColor} />
             </ColorPicker>
+          </Flex>
+        }
+
+        {selected.isImageNode &&
+          <Flex mb={2} direction="column">
+            <Flex>
+              <SLabel children="Image" />
+              {imageIsOverwritten(selected, overwrites) && 
+                <SReset children="reset" onClick={this.handleResetImage} />
+              }
+            </Flex>
+            <Flex>
+              <Button bg={theme.colors.black} color="#fff" onClick={this.handleChangeImage} style={{width: 120}}>
+                Change Image
+              </Button>
+              <Button bg={theme.colors.nearWhite} onClick={this.handleDownloadImage} style={{width: 130}} ml={2}>
+                Download Image
+              </Button>
+            </Flex>
           </Flex>
         }
 

@@ -35,6 +35,7 @@ import {
   getPasteNode,
   getPseudoSelectedNodes,
   getPseudoSelecting,
+  getSelectedAncestorNodes,
 } from '../core/models/ui/selectors';
 import { getCopyNode } from '../core/models/clipboard/selectors';
 import MenuItem from '../components/menu-item';
@@ -238,6 +239,7 @@ class Menu extends React.Component {
           customControl={this.props.customControl}
           overwrites={this.props.overwrites}
           selected={this.props.selected}
+          selectedAncestors={this.props.selectedAncestors}
           selectionMode={this.props.selectionMode}
           pseudoSelectedCount={this.props.pseudoSelected.length}
           pseudoSelecting={this.props.pseudoSelecting}
@@ -248,6 +250,7 @@ class Menu extends React.Component {
           selectedControl={this.props.selectedControl}
           setSelectedControl={this.props.setSelectedControl}
           setSelectionMode={this.props.setSelectionMode}
+          setSelectedNode={this.props.setSelectedNode}
         />
       case 'Typography':
         return <TypographyTable
@@ -290,6 +293,7 @@ const mapStateToProps = state => ({
   selected: getSelectedNode(state),
   pseudoSelected: getPseudoSelectedNodes(state),
   pseudoSelecting: getPseudoSelecting(state),
+  selectedAncestors: getSelectedAncestorNodes(state),
   overwrites: getOverwrites(state),
   hideChanges: getHideChanges(state),
   showRedline: getShowRedline(state),

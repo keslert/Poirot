@@ -70,8 +70,10 @@ export const getPseudoSelectedNodes = createSelector(
     if(selected.isTextNode) {
       const matchStyles = [
         'fontFamily', 'fontWeight', 'fontSize', 'color', 'backgroundColor',
+        'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight',
       ]
-      return filterMatches(selected, nodes, matchStyles, overwrites);
+      const textNodes = _.filter(nodes, n => n.isTextNode);
+      return filterMatches(selected, textNodes, matchStyles, overwrites);
     }
 
     const siblings = _.filter(selected.siblings.map(uid => nodes[uid]), Boolean);
@@ -100,6 +102,14 @@ export const getPseudoSelectedNodes = createSelector(
       return treeprintNodes;
     }
     */
+  }
+)
+
+export const getSelectedAncestorNodes = createSelector(
+  getNodes,
+  getSelectedNode,
+  (nodes, selected) => {
+    return selected ? selected.parentUids.map(uid => nodes[uid]) : []
   }
 )
 

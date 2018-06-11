@@ -11,4 +11,5 @@ export default Box.extend`
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.3px;
+  text-align: center;
 `
